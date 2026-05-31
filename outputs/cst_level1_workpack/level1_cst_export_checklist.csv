@@ -1,0 +1,37 @@
+﻿sample_id,priority,check_item,expected,owner,status
+L1_halfwave_dipole_z_1p2G,required,CST project saved,CST_L1_halfwave_dipole_z_1p2G.cst,B_CST,todo
+L1_halfwave_dipole_z_1p2G,required,Near-field CSV exported,data/cst_exports/level1/L1_halfwave_dipole_z_1p2G_nearfield.csv,B_CST,todo
+L1_halfwave_dipole_z_1p2G,required,Far-field CSV exported,data/cst_exports/level1/L1_halfwave_dipole_z_1p2G_farfield.csv,B_CST,todo
+L1_halfwave_dipole_z_1p2G,required,Export audit passed,merge_cst_level1_exports.py case_complete=True,A_algorithm,todo
+L1_halfwave_dipole_z_1p2G,required,Reconstruction metrics produced,outputs/cst_reconstruction/L1_halfwave_dipole_z_1p2G/cst_reconstruction_metrics.json,A_algorithm,todo
+L1_halfwave_dipole_z_1p2G,required,Screenshots archived,submission/05_cst/screenshots/level1/L1_halfwave_dipole_z_1p2G_*.png,C_docs,todo
+L1_short_dipole_z_1p2G,required,CST project saved,CST_L1_short_dipole_z_1p2G.cst,B_CST,todo
+L1_short_dipole_z_1p2G,required,Near-field CSV exported,data/cst_exports/level1/L1_short_dipole_z_1p2G_nearfield.csv,B_CST,todo
+L1_short_dipole_z_1p2G,required,Far-field CSV exported,data/cst_exports/level1/L1_short_dipole_z_1p2G_farfield.csv,B_CST,todo
+L1_short_dipole_z_1p2G,required,Export audit passed,merge_cst_level1_exports.py case_complete=True,A_algorithm,todo
+L1_short_dipole_z_1p2G,required,Reconstruction metrics produced,outputs/cst_reconstruction/L1_short_dipole_z_1p2G/cst_reconstruction_metrics.json,A_algorithm,todo
+L1_short_dipole_z_1p2G,required,Screenshots archived,submission/05_cst/screenshots/level1/L1_short_dipole_z_1p2G_*.png,C_docs,todo
+L1_short_dipole_x_1p2G,recommended,CST project saved,CST_L1_short_dipole_x_1p2G.cst,B_CST,todo
+L1_short_dipole_x_1p2G,recommended,Near-field CSV exported,data/cst_exports/level1/L1_short_dipole_x_1p2G_nearfield.csv,B_CST,todo
+L1_short_dipole_x_1p2G,recommended,Far-field CSV exported,data/cst_exports/level1/L1_short_dipole_x_1p2G_farfield.csv,B_CST,todo
+L1_short_dipole_x_1p2G,recommended,Export audit passed,merge_cst_level1_exports.py case_complete=True,A_algorithm,todo
+L1_short_dipole_x_1p2G,recommended,Reconstruction metrics produced,outputs/cst_reconstruction/L1_short_dipole_x_1p2G/cst_reconstruction_metrics.json,A_algorithm,todo
+L1_short_dipole_x_1p2G,recommended,Screenshots archived,submission/05_cst/screenshots/level1/L1_short_dipole_x_1p2G_*.png,C_docs,todo
+L1_short_dipole_y_1p2G,recommended,CST project saved,CST_L1_short_dipole_y_1p2G.cst,B_CST,todo
+L1_short_dipole_y_1p2G,recommended,Near-field CSV exported,data/cst_exports/level1/L1_short_dipole_y_1p2G_nearfield.csv,B_CST,todo
+L1_short_dipole_y_1p2G,recommended,Far-field CSV exported,data/cst_exports/level1/L1_short_dipole_y_1p2G_farfield.csv,B_CST,todo
+L1_short_dipole_y_1p2G,recommended,Export audit passed,merge_cst_level1_exports.py case_complete=True,A_algorithm,todo
+L1_short_dipole_y_1p2G,recommended,Reconstruction metrics produced,outputs/cst_reconstruction/L1_short_dipole_y_1p2G/cst_reconstruction_metrics.json,A_algorithm,todo
+L1_short_dipole_y_1p2G,recommended,Screenshots archived,submission/05_cst/screenshots/level1/L1_short_dipole_y_1p2G_*.png,C_docs,todo
+L1_halfwave_dipole_x_1p2G,optional,CST project saved,CST_L1_halfwave_dipole_x_1p2G.cst,B_CST,todo
+L1_halfwave_dipole_x_1p2G,optional,Near-field CSV exported,data/cst_exports/level1/L1_halfwave_dipole_x_1p2G_nearfield.csv,B_CST,todo
+L1_halfwave_dipole_x_1p2G,optional,Far-field CSV exported,data/cst_exports/level1/L1_halfwave_dipole_x_1p2G_farfield.csv,B_CST,todo
+L1_halfwave_dipole_x_1p2G,optional,Export audit passed,merge_cst_level1_exports.py case_complete=True,A_algorithm,todo
+L1_halfwave_dipole_x_1p2G,optional,Reconstruction metrics produced,outputs/cst_reconstruction/L1_halfwave_dipole_x_1p2G/cst_reconstruction_metrics.json,A_algorithm,todo
+L1_halfwave_dipole_x_1p2G,optional,Screenshots archived,submission/05_cst/screenshots/level1/L1_halfwave_dipole_x_1p2G_*.png,C_docs,todo
+L1_halfwave_dipole_y_1p2G,optional,CST project saved,CST_L1_halfwave_dipole_y_1p2G.cst,B_CST,todo
+L1_halfwave_dipole_y_1p2G,optional,Near-field CSV exported,data/cst_exports/level1/L1_halfwave_dipole_y_1p2G_nearfield.csv,B_CST,todo
+L1_halfwave_dipole_y_1p2G,optional,Far-field CSV exported,data/cst_exports/level1/L1_halfwave_dipole_y_1p2G_farfield.csv,B_CST,todo
+L1_halfwave_dipole_y_1p2G,optional,Export audit passed,merge_cst_level1_exports.py case_complete=True,A_algorithm,todo
+L1_halfwave_dipole_y_1p2G,optional,Reconstruction metrics produced,outputs/cst_reconstruction/L1_halfwave_dipole_y_1p2G/cst_reconstruction_metrics.json,A_algorithm,todo
+L1_halfwave_dipole_y_1p2G,optional,Screenshots archived,submission/05_cst/screenshots/level1/L1_halfwave_dipole_y_1p2G_*.png,C_docs,todo

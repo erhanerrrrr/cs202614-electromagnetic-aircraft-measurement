@@ -1,0 +1,28 @@
+{
+  "level1_case_count": 6,
+  "level1_required_count": 2,
+  "level1_required_cases": [
+    "L1_short_dipole_z_1p2G",
+    "L1_halfwave_dipole_z_1p2G"
+  ],
+  "level2_sample_count": 48,
+  "level2_frequency_task_count": 240,
+  "level2_source_count": 120,
+  "level2_pilot_cases": [
+    "L2_comm_pair_000",
+    "L2_mixed_avionics_000",
+    "L2_multi_state_on_000",
+    "L2_radar_top_000"
+  ],
+  "sensor_count": 162,
+  "selected_measurement_surface": "2pi_upper_hemisphere",
+  "source_files": {
+    "level1_cases": "outputs\\cst_level1_plan\\level1_case_manifest.csv",
+    "level1_sources": "outputs\\cst_level1_plan\\level1_source_manifest.csv",
+    "level2_cases": "outputs\\cst_level2_plan\\level2_case_manifest.csv",
+    "level2_sources": "outputs\\cst_level2_plan\\level2_source_manifest.csv",
+    "sensor_layout": "outputs\\cst_templates\\sensor_layout_hemisphere_for_cst.csv"
+  },
+  "output_dir": "outputs\\cst_macro_templates",
+  "is_simulation_evidence": false
+}

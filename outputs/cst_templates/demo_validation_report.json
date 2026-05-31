@@ -1,0 +1,55 @@
+{
+  "nearfield": {
+    "ok": true,
+    "errors": [],
+    "warnings": [
+      "nearfield uses Ex/Ey/Ez; Python can convert to theta/phi if coordinates are correct"
+    ],
+    "summary": {
+      "nearfield_rows": 486,
+      "sample_count": 1,
+      "samples": [
+        "L1_short_dipole_z_1p2G"
+      ],
+      "frequency_count": 1,
+      "frequencies_hz": [
+        1200000000.0
+      ],
+      "sensor_count": 162,
+      "polarizations": [
+        "Ex",
+        "Ey",
+        "Ez"
+      ],
+      "radius_min_m": 12.999999999999996,
+      "radius_max_m": 13.000000000000002,
+      "reconstruction_ready": true
+    }
+  },
+  "farfield": {
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "summary": {
+      "farfield_rows": 2664,
+      "farfield_sample_count": 1,
+      "farfield_samples": [
+        "L1_short_dipole_z_1p2G"
+      ],
+      "farfield_frequency_count": 1,
+      "farfield_frequencies_hz": [
+        1200000000.0
+      ],
+      "has_complex_farfield": true,
+      "has_gain_or_power": true
+    }
+  },
+  "pair": {
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "summary": {
+      "pair_checked": true
+    }
+  }
+}

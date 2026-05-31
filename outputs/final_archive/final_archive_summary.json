@@ -1,0 +1,18 @@
+{
+  "archive": "outputs\\final_archive\\CS-202614_submission.zip",
+  "manifest": "outputs\\final_archive\\final_archive_manifest.csv",
+  "created_at": "2026-05-29T12:55:06",
+  "file_count": 5139,
+  "total_uncompressed_bytes": 678472953,
+  "archive_size_bytes": 147174550,
+  "archive_sha256": "de83b6006efd15eeff407d267f612d9bcebf0acfe322d5fec875ef1c2eac5e31",
+  "expected_missing": [],
+  "completion_proven": true,
+  "manual_submission_items_remaining": [
+    "human playback of demo_video.mp4",
+    "school/team/applicant/contact metadata",
+    "registration form",
+    "organizer-specific archive naming"
+  ],
+  "is_final_archive": true
+}

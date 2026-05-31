@@ -1,0 +1,77 @@
+﻿label,source,target,status
+admin submission template,docs/admin_submission_template.md,submission\00_admin\admin_submission_template.md,copied
+report draft,docs/solution_report_draft.md,submission\01_report\solution_report_draft.md,copied
+final report PDF,submission/01_report/solution_report.pdf,submission\01_report\solution_report.pdf,copied
+final report DOCX,submission/01_report/solution_report.docx,submission\01_report\solution_report.docx,copied
+report status readme,generated,submission/01_report/README_report_status.md,generated
+presentation plan,docs/final_submission_package_plan.md,submission\02_presentation\final_submission_package_plan.md,copied
+final defense PPTX,submission/02_presentation/defense_slides.pptx,submission\02_presentation\defense_slides.pptx,copied
+final defense PDF,submission/02_presentation/defense_slides.pdf,submission\02_presentation\defense_slides.pdf,copied
+presentation package,outputs/presentation_package,submission\02_presentation\presentation_package,copied
+presentation outline,generated,submission/02_presentation/defense_slides_outline.md,generated
+video plan,docs/final_submission_package_plan.md,submission\03_video\final_submission_package_plan.md,copied
+final demo video MP4,submission/03_video/demo_video.mp4,submission\03_video\demo_video.mp4,copied
+video package,outputs/presentation_package,submission\03_video\video_package,copied
+video artifact,outputs/video_artifact,submission\03_video\video_artifact,copied
+video script draft,generated,submission/03_video/demo_script.md,generated
+code src,src,submission\04_code\src,copied
+code README,README.md,submission\04_code\README.md,copied
+requirements,requirements.txt,submission\04_code\requirements.txt,copied
+reproduce commands,docs/reproduce_commands.md,submission\04_code\reproduce_commands.md,copied
+data dictionary,docs/data_dictionary.md,submission\04_code\data_dictionary.md,copied
+Level 1 manifest,outputs/cst_level1_plan,submission\05_cst\level1_manifest,copied
+Level 1 workpack,outputs/cst_level1_workpack,submission\05_cst\level1_workpack,copied
+Level 1 CST project automation,outputs/cst_real_level1_projects,submission\05_cst\level1_project_automation,copied
+Level 1 CST solver-safe projects,outputs/cst_solver_ready_level1_projects,submission\05_cst\level1_solver_ready_projects,copied
+Level 1 CST solver trials,outputs/cst_solver_trials,submission\05_cst\level1_solver_trials,copied
+Level 1 CST farfield exports,outputs/cst_farfield_export,submission\05_cst\level1_farfield_export_logs,copied
+Level 1 analytic reference,outputs/level1_analytic_reference,submission\05_cst\level1_analytic_reference,copied
+Level 1 merge report,outputs/cst_level1_merge_report,submission\05_cst\level1_merge_report,copied
+Level 1 reconstruction batch,outputs/cst_level1_reconstruction_batch,submission\05_cst\level1_reconstruction_batch,copied
+Level 1 angular calibration,outputs/cst_level1_angular_calibration,submission\05_cst\level1_angular_calibration,copied
+Level 2 plan,outputs/cst_level2_plan,submission\05_cst\level2_manifest,copied
+Level 2 workpack,outputs/cst_level2_workpack,submission\05_cst\level2_workpack,copied
+Level 2 element library,outputs/cst_level2_element_library,submission\05_cst\level2_element_library,copied
+Level 2 element solver trials,outputs/cst_level2_element_trials,submission\05_cst\level2_element_solver_trials,copied
+Level 2 superposed export logs,outputs/cst_level2_superposed_export,submission\05_cst\level2_superposed_export_logs,copied
+Level 2 merge report,outputs/cst_level2_merge_report,submission\05_cst\level2_merge_report,copied
+Level 2 simplified structure comparison,outputs/cst_structure_comparison,submission\05_cst\level2_structure_comparison,copied
+CST macro templates,outputs/cst_macro_templates,submission\05_cst\macro_templates,copied
+CST execution dashboard,outputs/cst_execution_dashboard,submission\05_cst\execution_dashboard,copied
+CST operator runbook,outputs/cst_operator_runbook,submission\05_cst\operator_runbook,copied
+CST execution logs,outputs/cst_execution_logs,submission\05_cst\execution_logs,copied
+CST export dropzone,data/cst_exports,submission\06_data\cst_exports,copied
+phase conversion demo,outputs/cst_phase_demo,submission\06_data\phase_conversion_demo,copied
+synthetic Level 1 dataset,outputs/synthetic_cst_level1_dataset,submission\06_data\synthetic_cst_level1_dataset,copied
+synthetic recognition dataset,outputs/synthetic_cst_dataset,submission\06_data\synthetic_cst_dataset,copied
+baseline outputs,outputs/baseline,submission\06_data\processed_outputs\baseline,copied
+robustness outputs,outputs/reconstruction_robustness,submission\06_data\processed_outputs\reconstruction_robustness,copied
+Level 1 angular calibration outputs,outputs/cst_level1_angular_calibration,submission\06_data\processed_outputs\cst_level1_angular_calibration,copied
+Level 2 full48 recognition outputs,outputs/cst_recognition_level2,submission\06_data\processed_outputs\cst_recognition_level2,copied
+Level 2 full48 ablation outputs,outputs/cst_recognition_level2_ablation,submission\06_data\processed_outputs\cst_recognition_level2_ablation,copied
+Level 2 simplified structure comparison outputs,outputs/cst_structure_comparison,submission\06_data\processed_outputs\cst_structure_comparison,copied
+Level 2 pilot recognition outputs,outputs/cst_recognition_level2_pilot,submission\06_data\processed_outputs\cst_recognition_level2_pilot,copied
+Level 2 pilot ablation outputs,outputs/cst_recognition_level2_pilot_ablation,submission\06_data\processed_outputs\cst_recognition_level2_pilot_ablation,copied
+report package outputs,outputs/report_package,submission\06_data\metrics\report_package,copied
+scorecard outputs,outputs/scorecard,submission\06_data\metrics\scorecard,copied
+problem requirements outputs,outputs/problem_requirements,submission\06_data\metrics\problem_requirements,copied
+submission index outputs,outputs/submission_index,submission\06_data\metrics\submission_index,copied
+completion audit outputs,outputs/completion_audit,submission\06_data\metrics\completion_audit,copied
+master dashboard outputs,outputs/master_dashboard,submission\06_data\metrics\master_dashboard,copied
+progress report outputs,outputs/progress_report,submission\06_data\metrics\progress_report,copied
+literature matrix,docs/literature_matrix.md,submission\07_appendix\literature_matrix.md,copied
+literature strategy,docs/literature_screening_and_strategy.md,submission\07_appendix\literature_screening_and_strategy.md,copied
+literature algorithm traceability,docs/literature_to_algorithm_traceability.md,submission\07_appendix\literature_to_algorithm_traceability.md,copied
+problem requirements matrix,outputs/problem_requirements/problem_requirements_matrix.md,submission\07_appendix\problem_requirements_matrix.md,copied
+scorecard,outputs/scorecard/scorecard.md,submission\07_appendix\scorecard.md,copied
+completion audit,outputs/completion_audit/completion_audit.md,submission\07_appendix\completion_audit.md,copied
+master dashboard,outputs/master_dashboard/master_status_dashboard.md,submission\07_appendix\master_status_dashboard.md,copied
+CST operator runbook,outputs/cst_operator_runbook/README_cst_operator_runbook.md,submission\07_appendix\README_cst_operator_runbook.md,copied
+data dictionary,docs/data_dictionary.md,submission\07_appendix\data_dictionary.md,copied
+final package plan,docs/final_submission_package_plan.md,submission\07_appendix\final_submission_package_plan.md,copied
+project file index,docs/project_file_index.md,submission\07_appendix\project_file_index.md,copied
+project progress report,docs/project_progress_report.md,submission\07_appendix\project_progress_report.md,copied
+current work detailed explanation,docs/current_work_detailed_explanation.md,submission\07_appendix\current_work_detailed_explanation.md,copied
+mentor progress reports,docs/progress_reports,submission\07_appendix\progress_reports,copied
+Level 1 sprint handoff,docs/level1_cst_sprint_handoff.md,submission\07_appendix\level1_cst_sprint_handoff.md,copied
+stage notes,docs/stage_notes,submission\07_appendix\stage_notes,copied

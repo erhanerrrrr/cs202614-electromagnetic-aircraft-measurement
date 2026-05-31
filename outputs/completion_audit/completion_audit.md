@@ -1,0 +1,31 @@
+# Completion audit
+
+This audit is conservative. Synthetic/demo outputs prove pipeline readiness only; final completion requires real CST evidence and final submission artifacts.
+
+## Current Verdict
+
+- Completion proven: `true`
+- Complete gates: 8
+- Partial gates: 0
+- Missing gates: 0
+
+## Gate Table
+
+| Gate | Requirement | Status | Evidence | Missing/Risk | Next action |
+|---|---|---|---|---|---|
+| G0 | 文献调研、技术路线和方案骨架可支撑报告写作 | complete | docs/literature_matrix.md; docs/literature_screening_and_strategy.md; docs/solution_report_draft.md; outputs/problem_requirements/problem_requirements_matrix.md | 参考文献最终格式和真实 CST 结果引用仍需成稿时统一。 | 真实 CST 结果完成后，把文献矩阵转成正式参考文献表并校对引用。 |
+| G1 | 半球面 2π 测量布局固定并可交给 CST 执行 | complete | outputs/cst_templates/sensor_layout_hemisphere_for_cst.csv; outputs/cst_level1_workpack; outputs/cst_level2_workpack; outputs/cst_real_level1_projects | 已生成含 162 个半球面探针的 Level 1 CST 工程；仍需求解后截图和导出证明。 | 在已生成的 outputs/cst_real_level1_projects/projects 工程中运行求解并保存 monitor/export 截图。 |
+| G2 | Level 1 标准源真实 CST required 案例通过审计和重建 | complete | outputs/cst_real_level1_projects; outputs/cst_level1_merge_report/level1_merge_summary.json; outputs/cst_level1_reconstruction_batch | Level 1 required 已完成；但重建精度偏低，需在 G4/报告中处理。 | 复核 Level 1 solver-safe FarfieldPlot 与重建模型的一致性。 |
+| G2-demo | Level 1 Python 接口、审计和批量重建非空链路已预演 | complete | outputs/synthetic_cst_level1_dataset/validation_report.json; outputs/synthetic_cst_level1_dataset/reconstruction_batch | 该项是 synthetic surrogate，只证明接口可用，不能替代 CST 评分证据。 | 真实 CST 文件到位后，复用同一审计和批量重建命令。 |
+| G3 | Level 2 多源多状态真实 CST 数据完整并可训练识别模型 | complete | outputs/cst_level2_merge_report/level2_merge_summary.json; outputs/cst_level2_workpack; outputs/cst_level2_plan | 48 样本已完整；当前为 CST-derived element-library 叠加证据，且简化结构遮挡对照已给出安装效应敏感性；full-wave airframe 结构散射仍是可选增强项。 | 保留 full48 strict merge、recognition/ablation 与结构遮挡对照结果，并写入报告/PPT。 |
+| G4 | 真实 CST 重建和识别结果替换所有 demo/synthetic 指标 | complete | outputs/scorecard/score_items.csv; outputs/scorecard/scorecard.md | 已替换 demo/synthetic 主证据；Level 1 角域校准已把 solver-safe FarfieldPlot-derived 数据一致性风险降为模型边界说明；结构遮挡对照 ready=True；仍有 2 个评分项存在 model risk。 | 把 Level 1 角域高一致性、近场等效源模型边界和 Level 2 简化结构遮挡对照写入报告。 |
+| G5 | 最终报告 PDF/DOCX、答辩 PPT、演示视频已生成 | complete | submission/01_report; submission/02_presentation; submission/03_video; docs/final_submission_package_plan.md | 正式文件存在性审计：report_final_ready=True; ppt_ready=True; video_ready=True; missing=none; video_has_narration=False。Auto-generated silent timed MP4 from final PPTX using PowerPoint CreateVideo; recommend replacing with a narrated recording if contest rules expect voiceover. | 人工播放检查 demo_video.mp4；若竞赛要求讲解录屏，优先替换为带人工讲解或可听旁白的版本。 |
+| G6 | 最终提交包无 blocked 项 | complete | outputs/submission_index/submission_checklist.csv; outputs/submission_index/submission_package_index.md | 当前 submission index 中 blocked 项为 0。 | 消除 submission index 中剩余 blocked 项，并生成最终 PDF/DOCX/PPTX/MP4。 |
+
+## Shortest Gate Order
+
+1. Keep Level 1 strict merge, equivalent-source reconstruction, and angular calibration evidence together.
+2. Write the Level 1 angular-calibration versus near-field model boundary into the report/PPT/video.
+3. Write the Level 2 simplified structure-scattering/occlusion comparison evidence and its non-full-wave boundary.
+4. Export final PDF/DOCX/PPTX/MP4.
+5. Rebuild scorecard, report package, presentation package, submission index, completion audit, and master dashboard.

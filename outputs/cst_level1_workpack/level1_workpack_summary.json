@@ -1,0 +1,28 @@
+{
+  "case_manifest": "outputs\\cst_level1_plan\\level1_case_manifest.csv",
+  "source_manifest": "outputs\\cst_level1_plan\\level1_source_manifest.csv",
+  "targets": "outputs\\cst_level1_plan\\level1_validation_targets.csv",
+  "sensor_layout": "outputs\\cst_templates\\sensor_layout_hemisphere_for_cst.csv",
+  "selected_measurement_surface": "2pi_upper_hemisphere",
+  "sensor_count": 162,
+  "case_count": 6,
+  "priority_counts": {
+    "required": 2,
+    "recommended": 2,
+    "optional": 2
+  },
+  "required_cases": [
+    "L1_short_dipole_z_1p2G",
+    "L1_halfwave_dipole_z_1p2G"
+  ],
+  "output_files": {
+    "work_items": "outputs\\cst_level1_workpack\\level1_cst_work_items.csv",
+    "export_checklist": "outputs\\cst_level1_workpack\\level1_cst_export_checklist.csv",
+    "case_cards": "outputs\\cst_level1_workpack\\case_cards"
+  },
+  "gate_commands": [
+    "python src\\merge_cst_level1_exports.py --strict",
+    "python src\\run_cst_level1_batch_reconstruction.py --require-cases"
+  ],
+  "note": "This workpack is a CST execution aid. It is not simulation output."
+}

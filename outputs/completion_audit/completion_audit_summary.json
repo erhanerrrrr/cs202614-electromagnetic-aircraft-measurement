@@ -1,0 +1,8 @@
+{
+  "gate_count": 8,
+  "complete": 8,
+  "partial": 0,
+  "missing": 0,
+  "completion_proven": true,
+  "next_blocking_gate": ""
+}

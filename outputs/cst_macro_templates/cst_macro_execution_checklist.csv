@@ -1,0 +1,23 @@
+﻿phase,sample_id,owner,action,evidence,status
+G2_Level1_required_first,L1_short_dipole_z_1p2G,CST_operator,Build or update CST project from macro parameter row,CST_L1_short_dipole_z_1p2G.cst,todo
+G2_Level1_required_first,L1_short_dipole_z_1p2G,CST_operator,Export nearfield and farfield CSV,data/cst_exports/level1/L1_short_dipole_z_1p2G_nearfield.csv; data/cst_exports/level1/L1_short_dipole_z_1p2G_farfield.csv,todo
+G2_Level1_required_first,L1_short_dipole_z_1p2G,Algorithm_operator,Run merge and reconstruction audit,outputs/cst_reconstruction/L1_short_dipole_z_1p2G/cst_reconstruction_metrics.json,todo
+G2_Level1_required_first,L1_halfwave_dipole_z_1p2G,CST_operator,Build or update CST project from macro parameter row,CST_L1_halfwave_dipole_z_1p2G.cst,todo
+G2_Level1_required_first,L1_halfwave_dipole_z_1p2G,CST_operator,Export nearfield and farfield CSV,data/cst_exports/level1/L1_halfwave_dipole_z_1p2G_nearfield.csv; data/cst_exports/level1/L1_halfwave_dipole_z_1p2G_farfield.csv,todo
+G2_Level1_required_first,L1_halfwave_dipole_z_1p2G,Algorithm_operator,Run merge and reconstruction audit,outputs/cst_reconstruction/L1_halfwave_dipole_z_1p2G/cst_reconstruction_metrics.json,todo
+G2_Level1_extra,L1_short_dipole_x_1p2G,CST_operator,Build or update CST project from macro parameter row,CST_L1_short_dipole_x_1p2G.cst,todo
+G2_Level1_extra,L1_short_dipole_x_1p2G,CST_operator,Export nearfield and farfield CSV,data/cst_exports/level1/L1_short_dipole_x_1p2G_nearfield.csv; data/cst_exports/level1/L1_short_dipole_x_1p2G_farfield.csv,todo
+G2_Level1_extra,L1_short_dipole_x_1p2G,Algorithm_operator,Run merge and reconstruction audit,outputs/cst_reconstruction/L1_short_dipole_x_1p2G/cst_reconstruction_metrics.json,todo
+G2_Level1_extra,L1_short_dipole_y_1p2G,CST_operator,Build or update CST project from macro parameter row,CST_L1_short_dipole_y_1p2G.cst,todo
+G2_Level1_extra,L1_short_dipole_y_1p2G,CST_operator,Export nearfield and farfield CSV,data/cst_exports/level1/L1_short_dipole_y_1p2G_nearfield.csv; data/cst_exports/level1/L1_short_dipole_y_1p2G_farfield.csv,todo
+G2_Level1_extra,L1_short_dipole_y_1p2G,Algorithm_operator,Run merge and reconstruction audit,outputs/cst_reconstruction/L1_short_dipole_y_1p2G/cst_reconstruction_metrics.json,todo
+G2_Level1_extra,L1_halfwave_dipole_x_1p2G,CST_operator,Build or update CST project from macro parameter row,CST_L1_halfwave_dipole_x_1p2G.cst,todo
+G2_Level1_extra,L1_halfwave_dipole_x_1p2G,CST_operator,Export nearfield and farfield CSV,data/cst_exports/level1/L1_halfwave_dipole_x_1p2G_nearfield.csv; data/cst_exports/level1/L1_halfwave_dipole_x_1p2G_farfield.csv,todo
+G2_Level1_extra,L1_halfwave_dipole_x_1p2G,Algorithm_operator,Run merge and reconstruction audit,outputs/cst_reconstruction/L1_halfwave_dipole_x_1p2G/cst_reconstruction_metrics.json,todo
+G2_Level1_extra,L1_halfwave_dipole_y_1p2G,CST_operator,Build or update CST project from macro parameter row,CST_L1_halfwave_dipole_y_1p2G.cst,todo
+G2_Level1_extra,L1_halfwave_dipole_y_1p2G,CST_operator,Export nearfield and farfield CSV,data/cst_exports/level1/L1_halfwave_dipole_y_1p2G_nearfield.csv; data/cst_exports/level1/L1_halfwave_dipole_y_1p2G_farfield.csv,todo
+G2_Level1_extra,L1_halfwave_dipole_y_1p2G,Algorithm_operator,Run merge and reconstruction audit,outputs/cst_reconstruction/L1_halfwave_dipole_y_1p2G/cst_reconstruction_metrics.json,todo
+G3_Level2_pilot_one_per_class,L2_comm_pair_000,CST_operator,Run one pilot sample for this class before full 48-sample batch,data/cst_exports/level2/L2_comm_pair_000_nearfield.csv; data/cst_exports/level2/L2_comm_pair_000_farfield.csv,todo
+G3_Level2_pilot_one_per_class,L2_mixed_avionics_000,CST_operator,Run one pilot sample for this class before full 48-sample batch,data/cst_exports/level2/L2_mixed_avionics_000_nearfield.csv; data/cst_exports/level2/L2_mixed_avionics_000_farfield.csv,todo
+G3_Level2_pilot_one_per_class,L2_multi_state_on_000,CST_operator,Run one pilot sample for this class before full 48-sample batch,data/cst_exports/level2/L2_multi_state_on_000_nearfield.csv; data/cst_exports/level2/L2_multi_state_on_000_farfield.csv,todo
+G3_Level2_pilot_one_per_class,L2_radar_top_000,CST_operator,Run one pilot sample for this class before full 48-sample batch,data/cst_exports/level2/L2_radar_top_000_nearfield.csv; data/cst_exports/level2/L2_radar_top_000_farfield.csv,todo

@@ -1,0 +1,13 @@
+﻿sample_id,view,target_path,description,required_for_gate
+L1_short_dipole_z_1p2G,model,submission/05_cst/screenshots/level1/L1_short_dipole_z_1p2G_model.png,"dipole geometry, feed/port, coordinate axes and 12m x 10m x 8m reference envelope if shown",G2
+L1_short_dipole_z_1p2G,boundary,submission/05_cst/screenshots/level1/L1_short_dipole_z_1p2G_boundary.png,open/PML boundary and background/units,G2
+L1_short_dipole_z_1p2G,monitors,submission/05_cst/screenshots/level1/L1_short_dipole_z_1p2G_monitors.png,nearfield and farfield monitors at 1.2 GHz,G2
+L1_short_dipole_z_1p2G,probe_layout,submission/05_cst/screenshots/level1/L1_short_dipole_z_1p2G_probe_layout.png,162 upper-hemisphere probe points or imported point list,G2
+L1_short_dipole_z_1p2G,farfield_grid,submission/05_cst/screenshots/level1/L1_short_dipole_z_1p2G_farfield_grid.png,theta/phi farfield export settings,G2
+L1_short_dipole_z_1p2G,exports,submission/05_cst/screenshots/level1/L1_short_dipole_z_1p2G_exports.png,CSV export dialog or result tree showing final filenames,G2
+L1_halfwave_dipole_z_1p2G,model,submission/05_cst/screenshots/level1/L1_halfwave_dipole_z_1p2G_model.png,"dipole geometry, feed/port, coordinate axes and 12m x 10m x 8m reference envelope if shown",G2
+L1_halfwave_dipole_z_1p2G,boundary,submission/05_cst/screenshots/level1/L1_halfwave_dipole_z_1p2G_boundary.png,open/PML boundary and background/units,G2
+L1_halfwave_dipole_z_1p2G,monitors,submission/05_cst/screenshots/level1/L1_halfwave_dipole_z_1p2G_monitors.png,nearfield and farfield monitors at 1.2 GHz,G2
+L1_halfwave_dipole_z_1p2G,probe_layout,submission/05_cst/screenshots/level1/L1_halfwave_dipole_z_1p2G_probe_layout.png,162 upper-hemisphere probe points or imported point list,G2
+L1_halfwave_dipole_z_1p2G,farfield_grid,submission/05_cst/screenshots/level1/L1_halfwave_dipole_z_1p2G_farfield_grid.png,theta/phi farfield export settings,G2
+L1_halfwave_dipole_z_1p2G,exports,submission/05_cst/screenshots/level1/L1_halfwave_dipole_z_1p2G_exports.png,CSV export dialog or result tree showing final filenames,G2

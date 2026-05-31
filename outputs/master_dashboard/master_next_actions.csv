@@ -1,0 +1,3 @@
+﻿priority,owner_role,owner_responsibility,gate,action,trigger,expected_artifact,command_or_file,proof_to_close,blocked_by,notes
+1,C_docs,报告/答辩负责人：把真实指标、图表和过程证据写入报告、PPT、视频和提交包。,FINAL,人工完整播放 submission/03_video/demo_video.mp4。,completion_proven=true；当前 MP4 为 PowerPoint 自动计时静音版。,人工确认视频能正常播放，或替换为带人工讲解/旁白的版本。,submission/03_video/demo_video.mp4; outputs/video_artifact/demo_video_summary.json,视频播放无黑屏、卡顿、错页；若竞赛要求讲解录屏，则替换并重跑审计。,,这是提交前质量动作，不影响当前自动审计的 completion_proven=true。
+2,C_docs,报告/答辩负责人：把真实指标、图表和过程证据写入报告、PPT、视频和提交包。,FINAL,整理最终压缩包命名、报名表和人工提交信息。,所有核心文件已齐套，submission index blocked=0。,最终 zip、报名表扫描件/信息、学校和申报人信息。,submission; docs/final_submission_package_plan.md,压缩包目录与赛题命名规则一致，人工信息补齐。,,该项需要队伍成员提供真实学校、姓名、电话和报名表，不能由脚本自动完成。

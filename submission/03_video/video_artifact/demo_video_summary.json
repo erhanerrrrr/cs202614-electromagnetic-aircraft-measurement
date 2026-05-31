@@ -1,0 +1,17 @@
+﻿{
+    "video":  "C:\\Users\\heh20\\Desktop\\复杂航空载体电磁辐射空域特性测量技术比赛\\submission\\03_video\\demo_video.mp4",
+    "source_pptx":  "C:\\Users\\heh20\\Desktop\\复杂航空载体电磁辐射空域特性测量技术比赛\\submission\\02_presentation\\defense_slides.pptx",
+    "timed_pptx":  "C:\\Users\\heh20\\Desktop\\复杂航空载体电磁辐射空域特性测量技术比赛\\outputs\\video_artifact\\defense_slides_with_timing_and_narration.pptx",
+    "narration_dir":  "C:\\Users\\heh20\\Desktop\\复杂航空载体电磁辐射空域特性测量技术比赛\\outputs\\video_artifact\\narration",
+    "slide_count":  12,
+    "audio_file_count":  0,
+    "has_narration":  false,
+    "planned_duration_seconds":  171,
+    "powerpoint_create_video_status":  3,
+    "length_bytes":  7856755,
+    "last_write_time":  "2026-05-29T12:07:21",
+    "voice":  "not requested",
+    "visual_source":  "submission\\\\02_presentation\\\\defense_slides.pptx",
+    "is_final_video":  true,
+    "qa_note":  "Auto-generated silent timed MP4 from final PPTX using PowerPoint CreateVideo; recommend replacing with a narrated recording if contest rules expect voiceover."
+}

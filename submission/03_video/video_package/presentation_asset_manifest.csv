@@ -1,0 +1,7 @@
+﻿asset,exists,used_in,final_ready,note
+outputs/baseline/sensor_layout_hemisphere.png,True,presentation_or_video,False,Use with the source status from report_figure_manifest; reference-only visuals need explicit caveats.
+outputs/cst_level1_angular_calibration/L1_short_dipole_z_1p2G/angular_farfield_compare.png,True,presentation_or_video,False,Use with the source status from report_figure_manifest; reference-only visuals need explicit caveats.
+outputs/reconstruction_robustness/reconstruction_sensor_tradeoff_30dB.png,True,presentation_or_video,False,Use with the source status from report_figure_manifest; reference-only visuals need explicit caveats.
+outputs/cst_recognition_level2/cst_recognition_confusion_matrix.png,True,presentation_or_video,False,Use with the source status from report_figure_manifest; reference-only visuals need explicit caveats.
+outputs/cst_structure_comparison/plots/L2_comm_pair_000_1200MHz_structure_compare.png,True,presentation_or_video,False,Use with the source status from report_figure_manifest; reference-only visuals need explicit caveats.
+outputs/master_dashboard/master_status_dashboard.md,True,presentation_or_video,False,Use with the source status from report_figure_manifest; reference-only visuals need explicit caveats.

@@ -1,0 +1,289 @@
+﻿sample_id,class_label,check_item,expected,owner,status
+L2_comm_pair_000,comm_pair,CST project saved,CST_L2_comm_pair_000.cst,B_CST,todo
+L2_comm_pair_000,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_000,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_000_nearfield.csv,B_CST,todo
+L2_comm_pair_000,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_000_farfield.csv,B_CST,todo
+L2_comm_pair_000,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_000,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_000_*.png,C_docs,todo
+L2_comm_pair_001,comm_pair,CST project saved,CST_L2_comm_pair_001.cst,B_CST,todo
+L2_comm_pair_001,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_001,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_001_nearfield.csv,B_CST,todo
+L2_comm_pair_001,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_001_farfield.csv,B_CST,todo
+L2_comm_pair_001,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_001,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_001_*.png,C_docs,todo
+L2_comm_pair_002,comm_pair,CST project saved,CST_L2_comm_pair_002.cst,B_CST,todo
+L2_comm_pair_002,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_002,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_002_nearfield.csv,B_CST,todo
+L2_comm_pair_002,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_002_farfield.csv,B_CST,todo
+L2_comm_pair_002,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_002,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_002_*.png,C_docs,todo
+L2_comm_pair_003,comm_pair,CST project saved,CST_L2_comm_pair_003.cst,B_CST,todo
+L2_comm_pair_003,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_003,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_003_nearfield.csv,B_CST,todo
+L2_comm_pair_003,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_003_farfield.csv,B_CST,todo
+L2_comm_pair_003,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_003,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_003_*.png,C_docs,todo
+L2_comm_pair_004,comm_pair,CST project saved,CST_L2_comm_pair_004.cst,B_CST,todo
+L2_comm_pair_004,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_004,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_004_nearfield.csv,B_CST,todo
+L2_comm_pair_004,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_004_farfield.csv,B_CST,todo
+L2_comm_pair_004,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_004,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_004_*.png,C_docs,todo
+L2_comm_pair_005,comm_pair,CST project saved,CST_L2_comm_pair_005.cst,B_CST,todo
+L2_comm_pair_005,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_005,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_005_nearfield.csv,B_CST,todo
+L2_comm_pair_005,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_005_farfield.csv,B_CST,todo
+L2_comm_pair_005,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_005,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_005_*.png,C_docs,todo
+L2_comm_pair_006,comm_pair,CST project saved,CST_L2_comm_pair_006.cst,B_CST,todo
+L2_comm_pair_006,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_006,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_006_nearfield.csv,B_CST,todo
+L2_comm_pair_006,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_006_farfield.csv,B_CST,todo
+L2_comm_pair_006,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_006,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_006_*.png,C_docs,todo
+L2_comm_pair_007,comm_pair,CST project saved,CST_L2_comm_pair_007.cst,B_CST,todo
+L2_comm_pair_007,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_007,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_007_nearfield.csv,B_CST,todo
+L2_comm_pair_007,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_007_farfield.csv,B_CST,todo
+L2_comm_pair_007,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_007,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_007_*.png,C_docs,todo
+L2_comm_pair_008,comm_pair,CST project saved,CST_L2_comm_pair_008.cst,B_CST,todo
+L2_comm_pair_008,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_008,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_008_nearfield.csv,B_CST,todo
+L2_comm_pair_008,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_008_farfield.csv,B_CST,todo
+L2_comm_pair_008,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_008,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_008_*.png,C_docs,todo
+L2_comm_pair_009,comm_pair,CST project saved,CST_L2_comm_pair_009.cst,B_CST,todo
+L2_comm_pair_009,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_009,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_009_nearfield.csv,B_CST,todo
+L2_comm_pair_009,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_009_farfield.csv,B_CST,todo
+L2_comm_pair_009,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_009,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_009_*.png,C_docs,todo
+L2_comm_pair_010,comm_pair,CST project saved,CST_L2_comm_pair_010.cst,B_CST,todo
+L2_comm_pair_010,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_010,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_010_nearfield.csv,B_CST,todo
+L2_comm_pair_010,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_010_farfield.csv,B_CST,todo
+L2_comm_pair_010,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_010,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_010_*.png,C_docs,todo
+L2_comm_pair_011,comm_pair,CST project saved,CST_L2_comm_pair_011.cst,B_CST,todo
+L2_comm_pair_011,comm_pair,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_comm_pair_011,comm_pair,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_comm_pair_011_nearfield.csv,B_CST,todo
+L2_comm_pair_011,comm_pair,Far-field monitors exported,data/cst_exports/level2/L2_comm_pair_011_farfield.csv,B_CST,todo
+L2_comm_pair_011,comm_pair,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_comm_pair_011,comm_pair,Screenshots archived,submission/05_cst/screenshots/level2/L2_comm_pair_011_*.png,C_docs,todo
+L2_radar_top_000,radar_top,CST project saved,CST_L2_radar_top_000.cst,B_CST,todo
+L2_radar_top_000,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_000,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_000_nearfield.csv,B_CST,todo
+L2_radar_top_000,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_000_farfield.csv,B_CST,todo
+L2_radar_top_000,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_000,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_000_*.png,C_docs,todo
+L2_radar_top_001,radar_top,CST project saved,CST_L2_radar_top_001.cst,B_CST,todo
+L2_radar_top_001,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_001,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_001_nearfield.csv,B_CST,todo
+L2_radar_top_001,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_001_farfield.csv,B_CST,todo
+L2_radar_top_001,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_001,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_001_*.png,C_docs,todo
+L2_radar_top_002,radar_top,CST project saved,CST_L2_radar_top_002.cst,B_CST,todo
+L2_radar_top_002,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_002,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_002_nearfield.csv,B_CST,todo
+L2_radar_top_002,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_002_farfield.csv,B_CST,todo
+L2_radar_top_002,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_002,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_002_*.png,C_docs,todo
+L2_radar_top_003,radar_top,CST project saved,CST_L2_radar_top_003.cst,B_CST,todo
+L2_radar_top_003,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_003,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_003_nearfield.csv,B_CST,todo
+L2_radar_top_003,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_003_farfield.csv,B_CST,todo
+L2_radar_top_003,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_003,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_003_*.png,C_docs,todo
+L2_radar_top_004,radar_top,CST project saved,CST_L2_radar_top_004.cst,B_CST,todo
+L2_radar_top_004,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_004,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_004_nearfield.csv,B_CST,todo
+L2_radar_top_004,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_004_farfield.csv,B_CST,todo
+L2_radar_top_004,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_004,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_004_*.png,C_docs,todo
+L2_radar_top_005,radar_top,CST project saved,CST_L2_radar_top_005.cst,B_CST,todo
+L2_radar_top_005,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_005,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_005_nearfield.csv,B_CST,todo
+L2_radar_top_005,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_005_farfield.csv,B_CST,todo
+L2_radar_top_005,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_005,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_005_*.png,C_docs,todo
+L2_radar_top_006,radar_top,CST project saved,CST_L2_radar_top_006.cst,B_CST,todo
+L2_radar_top_006,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_006,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_006_nearfield.csv,B_CST,todo
+L2_radar_top_006,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_006_farfield.csv,B_CST,todo
+L2_radar_top_006,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_006,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_006_*.png,C_docs,todo
+L2_radar_top_007,radar_top,CST project saved,CST_L2_radar_top_007.cst,B_CST,todo
+L2_radar_top_007,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_007,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_007_nearfield.csv,B_CST,todo
+L2_radar_top_007,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_007_farfield.csv,B_CST,todo
+L2_radar_top_007,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_007,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_007_*.png,C_docs,todo
+L2_radar_top_008,radar_top,CST project saved,CST_L2_radar_top_008.cst,B_CST,todo
+L2_radar_top_008,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_008,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_008_nearfield.csv,B_CST,todo
+L2_radar_top_008,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_008_farfield.csv,B_CST,todo
+L2_radar_top_008,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_008,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_008_*.png,C_docs,todo
+L2_radar_top_009,radar_top,CST project saved,CST_L2_radar_top_009.cst,B_CST,todo
+L2_radar_top_009,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_009,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_009_nearfield.csv,B_CST,todo
+L2_radar_top_009,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_009_farfield.csv,B_CST,todo
+L2_radar_top_009,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_009,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_009_*.png,C_docs,todo
+L2_radar_top_010,radar_top,CST project saved,CST_L2_radar_top_010.cst,B_CST,todo
+L2_radar_top_010,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_010,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_010_nearfield.csv,B_CST,todo
+L2_radar_top_010,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_010_farfield.csv,B_CST,todo
+L2_radar_top_010,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_010,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_010_*.png,C_docs,todo
+L2_radar_top_011,radar_top,CST project saved,CST_L2_radar_top_011.cst,B_CST,todo
+L2_radar_top_011,radar_top,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_radar_top_011,radar_top,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_radar_top_011_nearfield.csv,B_CST,todo
+L2_radar_top_011,radar_top,Far-field monitors exported,data/cst_exports/level2/L2_radar_top_011_farfield.csv,B_CST,todo
+L2_radar_top_011,radar_top,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_radar_top_011,radar_top,Screenshots archived,submission/05_cst/screenshots/level2/L2_radar_top_011_*.png,C_docs,todo
+L2_mixed_avionics_000,mixed_avionics,CST project saved,CST_L2_mixed_avionics_000.cst,B_CST,todo
+L2_mixed_avionics_000,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_000,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_000_nearfield.csv,B_CST,todo
+L2_mixed_avionics_000,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_000_farfield.csv,B_CST,todo
+L2_mixed_avionics_000,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_000,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_000_*.png,C_docs,todo
+L2_mixed_avionics_001,mixed_avionics,CST project saved,CST_L2_mixed_avionics_001.cst,B_CST,todo
+L2_mixed_avionics_001,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_001,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_001_nearfield.csv,B_CST,todo
+L2_mixed_avionics_001,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_001_farfield.csv,B_CST,todo
+L2_mixed_avionics_001,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_001,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_001_*.png,C_docs,todo
+L2_mixed_avionics_002,mixed_avionics,CST project saved,CST_L2_mixed_avionics_002.cst,B_CST,todo
+L2_mixed_avionics_002,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_002,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_002_nearfield.csv,B_CST,todo
+L2_mixed_avionics_002,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_002_farfield.csv,B_CST,todo
+L2_mixed_avionics_002,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_002,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_002_*.png,C_docs,todo
+L2_mixed_avionics_003,mixed_avionics,CST project saved,CST_L2_mixed_avionics_003.cst,B_CST,todo
+L2_mixed_avionics_003,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_003,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_003_nearfield.csv,B_CST,todo
+L2_mixed_avionics_003,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_003_farfield.csv,B_CST,todo
+L2_mixed_avionics_003,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_003,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_003_*.png,C_docs,todo
+L2_mixed_avionics_004,mixed_avionics,CST project saved,CST_L2_mixed_avionics_004.cst,B_CST,todo
+L2_mixed_avionics_004,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_004,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_004_nearfield.csv,B_CST,todo
+L2_mixed_avionics_004,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_004_farfield.csv,B_CST,todo
+L2_mixed_avionics_004,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_004,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_004_*.png,C_docs,todo
+L2_mixed_avionics_005,mixed_avionics,CST project saved,CST_L2_mixed_avionics_005.cst,B_CST,todo
+L2_mixed_avionics_005,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_005,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_005_nearfield.csv,B_CST,todo
+L2_mixed_avionics_005,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_005_farfield.csv,B_CST,todo
+L2_mixed_avionics_005,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_005,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_005_*.png,C_docs,todo
+L2_mixed_avionics_006,mixed_avionics,CST project saved,CST_L2_mixed_avionics_006.cst,B_CST,todo
+L2_mixed_avionics_006,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_006,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_006_nearfield.csv,B_CST,todo
+L2_mixed_avionics_006,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_006_farfield.csv,B_CST,todo
+L2_mixed_avionics_006,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_006,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_006_*.png,C_docs,todo
+L2_mixed_avionics_007,mixed_avionics,CST project saved,CST_L2_mixed_avionics_007.cst,B_CST,todo
+L2_mixed_avionics_007,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_007,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_007_nearfield.csv,B_CST,todo
+L2_mixed_avionics_007,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_007_farfield.csv,B_CST,todo
+L2_mixed_avionics_007,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_007,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_007_*.png,C_docs,todo
+L2_mixed_avionics_008,mixed_avionics,CST project saved,CST_L2_mixed_avionics_008.cst,B_CST,todo
+L2_mixed_avionics_008,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_008,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_008_nearfield.csv,B_CST,todo
+L2_mixed_avionics_008,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_008_farfield.csv,B_CST,todo
+L2_mixed_avionics_008,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_008,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_008_*.png,C_docs,todo
+L2_mixed_avionics_009,mixed_avionics,CST project saved,CST_L2_mixed_avionics_009.cst,B_CST,todo
+L2_mixed_avionics_009,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_009,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_009_nearfield.csv,B_CST,todo
+L2_mixed_avionics_009,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_009_farfield.csv,B_CST,todo
+L2_mixed_avionics_009,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_009,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_009_*.png,C_docs,todo
+L2_mixed_avionics_010,mixed_avionics,CST project saved,CST_L2_mixed_avionics_010.cst,B_CST,todo
+L2_mixed_avionics_010,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_010,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_010_nearfield.csv,B_CST,todo
+L2_mixed_avionics_010,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_010_farfield.csv,B_CST,todo
+L2_mixed_avionics_010,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_010,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_010_*.png,C_docs,todo
+L2_mixed_avionics_011,mixed_avionics,CST project saved,CST_L2_mixed_avionics_011.cst,B_CST,todo
+L2_mixed_avionics_011,mixed_avionics,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_mixed_avionics_011,mixed_avionics,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_011_nearfield.csv,B_CST,todo
+L2_mixed_avionics_011,mixed_avionics,Far-field monitors exported,data/cst_exports/level2/L2_mixed_avionics_011_farfield.csv,B_CST,todo
+L2_mixed_avionics_011,mixed_avionics,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_mixed_avionics_011,mixed_avionics,Screenshots archived,submission/05_cst/screenshots/level2/L2_mixed_avionics_011_*.png,C_docs,todo
+L2_multi_state_on_000,multi_state_on,CST project saved,CST_L2_multi_state_on_000.cst,B_CST,todo
+L2_multi_state_on_000,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_000,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_000_nearfield.csv,B_CST,todo
+L2_multi_state_on_000,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_000_farfield.csv,B_CST,todo
+L2_multi_state_on_000,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_000,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_000_*.png,C_docs,todo
+L2_multi_state_on_001,multi_state_on,CST project saved,CST_L2_multi_state_on_001.cst,B_CST,todo
+L2_multi_state_on_001,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_001,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_001_nearfield.csv,B_CST,todo
+L2_multi_state_on_001,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_001_farfield.csv,B_CST,todo
+L2_multi_state_on_001,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_001,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_001_*.png,C_docs,todo
+L2_multi_state_on_002,multi_state_on,CST project saved,CST_L2_multi_state_on_002.cst,B_CST,todo
+L2_multi_state_on_002,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_002,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_002_nearfield.csv,B_CST,todo
+L2_multi_state_on_002,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_002_farfield.csv,B_CST,todo
+L2_multi_state_on_002,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_002,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_002_*.png,C_docs,todo
+L2_multi_state_on_003,multi_state_on,CST project saved,CST_L2_multi_state_on_003.cst,B_CST,todo
+L2_multi_state_on_003,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_003,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_003_nearfield.csv,B_CST,todo
+L2_multi_state_on_003,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_003_farfield.csv,B_CST,todo
+L2_multi_state_on_003,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_003,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_003_*.png,C_docs,todo
+L2_multi_state_on_004,multi_state_on,CST project saved,CST_L2_multi_state_on_004.cst,B_CST,todo
+L2_multi_state_on_004,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_004,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_004_nearfield.csv,B_CST,todo
+L2_multi_state_on_004,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_004_farfield.csv,B_CST,todo
+L2_multi_state_on_004,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_004,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_004_*.png,C_docs,todo
+L2_multi_state_on_005,multi_state_on,CST project saved,CST_L2_multi_state_on_005.cst,B_CST,todo
+L2_multi_state_on_005,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_005,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_005_nearfield.csv,B_CST,todo
+L2_multi_state_on_005,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_005_farfield.csv,B_CST,todo
+L2_multi_state_on_005,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_005,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_005_*.png,C_docs,todo
+L2_multi_state_on_006,multi_state_on,CST project saved,CST_L2_multi_state_on_006.cst,B_CST,todo
+L2_multi_state_on_006,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_006,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_006_nearfield.csv,B_CST,todo
+L2_multi_state_on_006,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_006_farfield.csv,B_CST,todo
+L2_multi_state_on_006,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_006,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_006_*.png,C_docs,todo
+L2_multi_state_on_007,multi_state_on,CST project saved,CST_L2_multi_state_on_007.cst,B_CST,todo
+L2_multi_state_on_007,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_007,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_007_nearfield.csv,B_CST,todo
+L2_multi_state_on_007,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_007_farfield.csv,B_CST,todo
+L2_multi_state_on_007,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_007,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_007_*.png,C_docs,todo
+L2_multi_state_on_008,multi_state_on,CST project saved,CST_L2_multi_state_on_008.cst,B_CST,todo
+L2_multi_state_on_008,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_008,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_008_nearfield.csv,B_CST,todo
+L2_multi_state_on_008,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_008_farfield.csv,B_CST,todo
+L2_multi_state_on_008,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_008,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_008_*.png,C_docs,todo
+L2_multi_state_on_009,multi_state_on,CST project saved,CST_L2_multi_state_on_009.cst,B_CST,todo
+L2_multi_state_on_009,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_009,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_009_nearfield.csv,B_CST,todo
+L2_multi_state_on_009,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_009_farfield.csv,B_CST,todo
+L2_multi_state_on_009,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_009,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_009_*.png,C_docs,todo
+L2_multi_state_on_010,multi_state_on,CST project saved,CST_L2_multi_state_on_010.cst,B_CST,todo
+L2_multi_state_on_010,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_010,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_010_nearfield.csv,B_CST,todo
+L2_multi_state_on_010,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_010_farfield.csv,B_CST,todo
+L2_multi_state_on_010,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_010,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_010_*.png,C_docs,todo
+L2_multi_state_on_011,multi_state_on,CST project saved,CST_L2_multi_state_on_011.cst,B_CST,todo
+L2_multi_state_on_011,multi_state_on,All source excitations set,source positions/orientations/amplitudes/phases match source manifest,B_CST,todo
+L2_multi_state_on_011,multi_state_on,Hemisphere near-field monitors exported,data/cst_exports/level2/L2_multi_state_on_011_nearfield.csv,B_CST,todo
+L2_multi_state_on_011,multi_state_on,Far-field monitors exported,data/cst_exports/level2/L2_multi_state_on_011_farfield.csv,B_CST,todo
+L2_multi_state_on_011,multi_state_on,Merge audit sample_complete,merge_cst_level2_exports.py reports sample_complete=True,A_algorithm,todo
+L2_multi_state_on_011,multi_state_on,Screenshots archived,submission/05_cst/screenshots/level2/L2_multi_state_on_011_*.png,C_docs,todo

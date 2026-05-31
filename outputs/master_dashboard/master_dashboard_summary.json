@@ -1,0 +1,16 @@
+{
+  "out_dir": "outputs\\master_dashboard",
+  "gate_count": 8,
+  "action_count": 2,
+  "blocked_action_count": 0,
+  "next_blocking_gate": "",
+  "completion_proven": true,
+  "submission_ready": 65,
+  "submission_blocked": 0,
+  "problem_requirement_count": 12,
+  "problem_blocked_or_missing_count": 0,
+  "missing_required_now_files": 0,
+  "missing_level2_pilot_files": 0,
+  "is_final": true,
+  "is_simulation_evidence": false
+}

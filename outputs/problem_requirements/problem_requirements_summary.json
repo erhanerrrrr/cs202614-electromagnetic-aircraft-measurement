@@ -1,0 +1,13 @@
+{
+  "out_dir": "outputs\\problem_requirements",
+  "source_pdf": "CS-202614-电磁空间安全全国重点实验室-复杂航空载体电磁辐射空域特性测量技术比赛方案.pdf",
+  "requirement_count": 12,
+  "deliverable_count": 7,
+  "subjective_points": 40,
+  "objective_points": 60,
+  "total_scored_points": 100,
+  "not_final_status_count": 7,
+  "blocked_or_missing_count": 0,
+  "is_final": true,
+  "completion_proven": true
+}

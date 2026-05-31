@@ -1,0 +1,25 @@
+{
+  "case_manifest": "outputs\\cst_level2_plan\\level2_case_manifest.csv",
+  "source_manifest": "outputs\\cst_level2_plan\\level2_source_manifest.csv",
+  "labels": "outputs\\cst_level2_plan\\level2_labels.csv",
+  "sensor_layout": "outputs\\cst_templates\\sensor_layout_hemisphere_for_cst.csv",
+  "selected_measurement_surface": "2pi_upper_hemisphere",
+  "sensor_count": 162,
+  "sample_count": 48,
+  "sample_frequency_tasks": 240,
+  "class_count": 4,
+  "frequency_count_per_sample": 5,
+  "output_files": {
+    "sample_work_items": "outputs\\cst_level2_workpack\\level2_cst_sample_work_items.csv",
+    "frequency_tasks": "outputs\\cst_level2_workpack\\level2_cst_frequency_tasks.csv",
+    "export_checklist": "outputs\\cst_level2_workpack\\level2_cst_export_checklist.csv",
+    "class_summary": "outputs\\cst_level2_workpack\\level2_class_summary.csv",
+    "case_cards": "outputs\\cst_level2_workpack\\case_cards"
+  },
+  "gate_commands": [
+    "python src\\merge_cst_level1_exports.py --strict",
+    "python src\\merge_cst_level2_exports.py --strict",
+    "python src\\run_cst_recognition.py --nearfield data\\cst_exports\\level2\\all_nearfield.csv --labels outputs\\cst_level2_plan\\level2_labels.csv --out-dir outputs\\cst_recognition_level2"
+  ],
+  "note": "This workpack is a CST execution aid. It is not simulation output."
+}

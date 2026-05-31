@@ -1,0 +1,7 @@
+﻿sample_id,priority,min_correlation,max_main_lobe_error_deg,max_nmse,must_check
+L1_short_dipole_z_1p2G,required,0.95,5.0,0.01,"coordinate unit, phase unit, theta/phi definition, source position inside equivalent grid"
+L1_halfwave_dipole_z_1p2G,required,0.95,5.0,0.01,"coordinate unit, phase unit, theta/phi definition, source position inside equivalent grid"
+L1_short_dipole_x_1p2G,recommended,0.95,5.0,0.01,"coordinate unit, phase unit, theta/phi definition, source position inside equivalent grid"
+L1_short_dipole_y_1p2G,recommended,0.95,5.0,0.01,"coordinate unit, phase unit, theta/phi definition, source position inside equivalent grid"
+L1_halfwave_dipole_x_1p2G,optional,0.95,5.0,0.01,"coordinate unit, phase unit, theta/phi definition, source position inside equivalent grid"
+L1_halfwave_dipole_y_1p2G,optional,0.95,5.0,0.01,"coordinate unit, phase unit, theta/phi definition, source position inside equivalent grid"

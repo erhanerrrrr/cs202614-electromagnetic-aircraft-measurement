@@ -1,0 +1,39 @@
+{
+  "contest": "CS-202614",
+  "stage": "G2_CST_Level_1_standard_source",
+  "sample_id": "L1_short_dipole_z_1p2G",
+  "frequency_hz": 1200000000,
+  "coordinate_system": {
+    "x": "future fuselage longitudinal axis",
+    "y": "lateral axis",
+    "z": "height axis",
+    "unit": "m",
+    "origin": "test object geometric center or fixed project origin"
+  },
+  "measurement_layout": {
+    "type": "2pi upper hemisphere",
+    "radius_m": 13.0,
+    "sensor_points": 162,
+    "polarization_plan": "Export Ex/Ey/Ez from CST; Python will convert to theta/phi if needed."
+  },
+  "object_envelope_m": {
+    "x": [
+      -6,
+      6
+    ],
+    "y": [
+      -5,
+      5
+    ],
+    "z": [
+      0,
+      8
+    ]
+  },
+  "required_outputs": [
+    "sensor_layout_hemisphere_for_cst.csv",
+    "nearfield csv with Ex/Ey/Ez complex field",
+    "farfield csv with Etheta/Ephi complex field or gain_db",
+    "CST parameter screenshots and project file"
+  ]
+}

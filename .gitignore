@@ -1,0 +1,52 @@
+# Local/runtime caches
+node_modules/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Large generated archives and media caches
+outputs/final_archive/*.zip
+outputs/video_artifact/narration/
+
+# Large synthetic/generated CSVs that can be regenerated
+outputs/synthetic_cst_dataset/*.csv
+outputs/cst_structure_comparison/structure_aware_*.csv
+submission/06_data/synthetic_cst_dataset/*.csv
+submission/06_data/processed_outputs/cst_structure_comparison/structure_aware_*.csv
+submission/05_cst/level2_structure_comparison/structure_aware_*.csv
+
+# Submission duplicates of CST/data products are kept locally but not pushed by default.
+submission/05_cst/
+submission/06_data/
+
+# Keep large generated evidence local by default. Force-add selected summaries/workpacks
+# when a small artifact is useful for collaboration.
+data/cst_exports/**/*.csv
+outputs/
+submission/04_code/
+submission/07_appendix/
+
+# CST solver/runtime caches
+outputs/**/Result/
+outputs/**/Temp/
+outputs/**/ModelCache/
+outputs/**/Export/
+submission/05_cst/**/Result/
+submission/05_cst/**/Temp/
+submission/05_cst/**/ModelCache/
+submission/05_cst/**/Export/
+
+# CST generated binary/cache formats
+*.pyc
+*.pyo
+*.log
+*.tmp
+*.sdb
+*.msqlite
+*.mem
+*.msh
+*.m2h
+*.xcfd
+*.docstore

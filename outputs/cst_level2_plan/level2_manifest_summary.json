@@ -1,0 +1,31 @@
+{
+  "stage": "CST_Level2_multisource_recognition",
+  "classes": [
+    "comm_pair",
+    "radar_top",
+    "mixed_avionics",
+    "multi_state_on"
+  ],
+  "variants_per_class": 12,
+  "sample_count": 48,
+  "sample_frequency_rows": 240,
+  "source_rows": 120,
+  "frequencies_hz": [
+    900000000,
+    1050000000,
+    1200000000,
+    1350000000,
+    1500000000
+  ],
+  "sensor_points": 162,
+  "nearfield_components": [
+    "Ex",
+    "Ey",
+    "Ez"
+  ],
+  "farfield_grid": {
+    "n_theta": 19,
+    "n_phi": 36
+  },
+  "note": "This is a CST execution manifest, not simulation output. Fill the listed export files with CST-generated complex fields."
+}

@@ -1,0 +1,11 @@
+{
+  "out_dir": "outputs\\cst_operator_runbook",
+  "required_case_count": 2,
+  "probe_point_count": 162,
+  "nearfield_rows_per_case": 486,
+  "farfield_rows_per_case": 2664,
+  "screenshot_count": 12,
+  "is_final": false,
+  "is_simulation_evidence": false,
+  "next_gate": "G2"
+}

@@ -1,0 +1,34 @@
+{
+  "stage": "CST_Level1_standard_source",
+  "frequency_hz": 1200000000,
+  "frequency_label": "1p2G",
+  "case_count": 6,
+  "required_cases": [
+    "L1_short_dipole_z_1p2G",
+    "L1_halfwave_dipole_z_1p2G"
+  ],
+  "recommended_cases": [
+    "L1_short_dipole_x_1p2G",
+    "L1_short_dipole_y_1p2G"
+  ],
+  "optional_cases": [
+    "L1_halfwave_dipole_x_1p2G",
+    "L1_halfwave_dipole_y_1p2G"
+  ],
+  "sensor_points": 162,
+  "nearfield_components": [
+    "Ex",
+    "Ey",
+    "Ez"
+  ],
+  "farfield_grid": {
+    "n_theta": 37,
+    "n_phi": 72
+  },
+  "source_center_m": [
+    0.0,
+    0.0,
+    4.0
+  ],
+  "note": "This is a CST execution manifest, not simulation output."
+}

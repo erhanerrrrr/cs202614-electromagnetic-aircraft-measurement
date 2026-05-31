@@ -1,0 +1,27 @@
+{
+  "pptx": "submission\\02_presentation\\defense_slides.pptx",
+  "pdf": "submission\\02_presentation\\defense_slides.pdf",
+  "video": "submission\\03_video\\demo_video.mp4",
+  "slide_count": 12,
+  "video_segment_count": 8,
+  "asset_count": 6,
+  "existing_asset_count": 6,
+  "final_ready_slides": 12,
+  "completion_proven": true,
+  "next_blocking_gate": "",
+  "missing_required_now_files": 0,
+  "submission_ready": 64,
+  "submission_missing": 0,
+  "is_final_presentation": true,
+  "is_final_video": true,
+  "video_has_narration": false,
+  "video_qa_note": "Auto-generated silent timed MP4 from final PPTX using PowerPoint CreateVideo; recommend replacing with a narrated recording if contest rules expect voiceover.",
+  "final_blocker": "All report/PPT/video delivery files exist. Remaining work is human playback, administrative submission metadata, and final archive review.",
+  "csv_write_status": {
+    "defense_slide_storyboard.csv": "unchanged",
+    "demo_video_storyboard.csv": "unchanged",
+    "presentation_asset_manifest.csv": "unchanged",
+    "presentation_replacement_todo.csv": "unchanged"
+  },
+  "write_warnings": []
+}

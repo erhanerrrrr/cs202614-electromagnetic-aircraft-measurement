@@ -1,0 +1,8 @@
+﻿deliverable_id,deliverable,source_page,final_expected_path,current_source_path,current_status,final_blocker
+DL1,方案报告 PDF,"p3, p5-p6",submission/01_report/solution_report.pdf,docs/solution_report_draft.md,ready,正式 PDF 已生成时状态为 ready；后续只需随最终视频和压缩包审计同步复核。
+DL2,方案报告 DOCX,"p3, p5-p6",submission/01_report/solution_report.docx,docs/solution_report_draft.md,ready,正式 DOCX 已生成时状态为 ready；后续只需随最终视频和压缩包审计同步复核。
+DL3,答辩 PPT/PDF,"p3, p5-p6",submission/02_presentation/defense_slides.pptx; submission/02_presentation/defense_slides.pdf,outputs/presentation_package; outputs/presentation_artifact,ready,PPTX/PDF 已生成时状态为 ready；仍需与最终视频口径保持一致。
+DL4,视频/录屏,"p3, p5-p6",submission/03_video/demo_video.mp4,outputs/presentation_package/demo_video_storyboard.md,ready,MP4 已生成时状态为 ready；当前自动生成版本需人工播放确认，若竞赛要求讲解录屏可替换为带人工讲解版本。
+DL5,测试用例程序代码,"p3, p5-p6",submission/04_code/src,src,ready,最终提交前需复核真实数据路径和 requirements。
+DL6,CST 工程与真实导出,p4,submission/05_cst/level1_standard_sources; submission/05_cst/level2_multisource,outputs/cst_real_level1_projects; outputs/cst_operator_runbook; outputs/cst_level1_workpack; outputs/cst_level2_workpack,draft/source ready,Level 1/2 数据和简化结构对照已到位；复杂载体 full-wave 结构对照可作为增强项，最终截图仍需补充。
+DL7,最终压缩包与报名表,p5-p6,CS-202614_submission.zip,submission,human_admin_pending,需要队伍补充学校、申报人、电话、报名表扫描件并按要求发送。

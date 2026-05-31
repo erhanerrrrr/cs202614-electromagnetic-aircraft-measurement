@@ -1,0 +1,13 @@
+﻿artifact,path,meaning
+Master dashboard,outputs/master_dashboard/master_status_dashboard.md,一页式总状态、当前阻塞门、三人任务队列入口。
+Completion audit,outputs/completion_audit/completion_audit.md,是否完成赛题的保守 gate 判断。
+Problem requirements matrix,outputs/problem_requirements/problem_requirements_matrix.md,赛题原文要求、100 分评分项、交付物和当前证据的一一映射。
+CST execution dashboard,outputs/cst_execution_dashboard/cst_execution_dashboard.md,真实 CST required/pilot 导出任务和 dropzone 规则。
+CST operator runbook,outputs/cst_operator_runbook/README_cst_operator_runbook.md,G2 两个 required 标准源的 CST 真机操作包、探针点、远场网格和导出合同。
+CST Level 1 generated projects,outputs/cst_real_level1_projects/README_cst_level1_automation.md,通过本机 CST API 生成的两个 Level 1 required .cst 工程、VBA history 和生成日志。
+CST Level 1 angular calibration,outputs/cst_level1_angular_calibration/README_cst_level1_angular_calibration.md,FarfieldPlot-derived solver-safe Level 1 导出的角域一致性校准和模型边界说明。
+CST Level 2 simplified structure comparison,outputs/cst_structure_comparison/README_cst_structure_comparison.md,基于 Level 2 CST-derived 数据的简化载体遮挡/安装效应对照、方向图偏差和 cross-domain 识别稳健性。
+Submission index,outputs/submission_index/submission_package_index.md,最终提交物 readiness/blocker 索引。
+Report package,outputs/report_package/README_report_package.md,报告章节、图表和替换任务。
+Presentation package,outputs/presentation_package/README_presentation_package.md,答辩 PPT storyboard、视频分镜和展示素材缺口。
+Scorecard,outputs/scorecard/scorecard.md,评分项证据板。
