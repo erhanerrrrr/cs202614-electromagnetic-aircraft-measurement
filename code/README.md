@@ -57,11 +57,25 @@ python code\run_cst_level1_convention_check.py
 python code\prepare_cst_true_nearfield_workpack.py
 python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check
 python code\run_spherical_nf_ff_baseline.py
+python code\run_spherical_nf_ff_tradeoff.py
 python code\prepare_huygens_surface_prior.py
 python code\run_cst_huygens_baseline.py
 python code\check_cst_export.py --nearfield data\cst_exports\level1\all_nearfield.csv --farfield data\cst_exports\level1\all_farfield.csv
 python code\run_cst_recognition.py
 ```
+
+## Spherical reduced-layout addendum
+
+`run_spherical_nf_ff_tradeoff.py` writes
+`data/sampling_layouts/spherical_nf_ff_tradeoff/`. It reuses the scalar
+spherical-harmonic NF-FF sanity baseline on every candidate layout and records
+the best `lmax`/regularization setting per candidate.
+
+Current diagnostic result: `geometric_farthest_32` is the smallest reduced
+layout that reaches `strict_pass` under this angular scalar check
+(`lmax = 4`, `lambda = 1e-10`, min corr about `0.9991`, max NMSE about
+`9.77e-04`, zero main-lobe error). Treat it as a priority layout for true CST
+near-field monitor reruns, not as final vector SWE or Huygens proof.
 
 ## Huygens baseline addendum
 

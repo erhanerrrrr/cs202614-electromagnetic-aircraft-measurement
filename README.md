@@ -74,6 +74,7 @@
 47. 项目进展跟踪与导师汇报生成：`code/build_progress_report.py`
 48. CST Level 1 FarfieldPlot-derived 角域校准：`code/run_cst_level1_angular_calibration.py`
 49. CST Level 2 简化结构遮挡对照：`code/run_cst_structure_comparison.py`
+50. 球谐 NF-FF 少测点布局诊断：`code/run_spherical_nf_ff_tradeoff.py`，当前将 `geometric_farthest_32` 标记为 true monitor 复跑优先候选。
 
 ## 如何阅读本项目
 

@@ -39,3 +39,15 @@ Current result: best model `huygens_em_minus`, `diagnostic_only`,
 evidence that the current simplified electric/magnetic dipole-sheet matrix is
 not yet a final physical reconstruction model. Read it together with
 `docs/huygens_surface_model_note.md` and the true near-field monitor workflow.
+
+## Spherical reduced-layout status
+
+`code/run_spherical_nf_ff_tradeoff.py` now writes
+`data/sampling_layouts/spherical_nf_ff_tradeoff/`. It applies the scalar
+spherical-harmonic NF-FF sanity check to the 162/120/81/48/32 point candidate
+layouts.
+
+Current result: `geometric_farthest_32` is the smallest `strict_pass` reduced
+candidate under the angular diagnostic (`lmax = 4`, `lambda = 1e-10`,
+`max_nmse ~= 9.77e-04`). Treat this as a true CST near-field monitor rerun
+priority, not as final vector SWE or Huygens evidence.

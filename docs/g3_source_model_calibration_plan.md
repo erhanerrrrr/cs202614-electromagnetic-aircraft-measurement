@@ -72,6 +72,7 @@ Use this sequence for the next round:
 | Group sparsity across frequencies | Share source support for multi-frequency samples. | `outputs/model_comparison/reconstruction_metrics.csv` |
 | Huygens-surface source prior | Move from point-source grids toward structure-aware equivalent currents. | `docs/huygens_surface_model_note.md`, `code/prepare_huygens_surface_prior.py` |
 | Spherical NF-FF sanity check | Detect coordinate, phase, and polarization convention errors independently of equivalent sources. | `code/run_spherical_nf_ff_baseline.py` |
+| Spherical reduced-layout tradeoff | Rank 162/120/81/48/32 candidate layouts under the scalar angular NF-FF diagnostic before true-monitor reruns. | `code/run_spherical_nf_ff_tradeoff.py` |
 
 ## Report Wording
 
@@ -214,3 +215,28 @@ near-field fit relative error about `2.58e-02`. This strengthens the data-path
 argument: the angular, polarization, and far-field comparison conventions are
 internally consistent. It does not remove the need for true near-field monitor
 exports or a more physical Huygens/source-prior model.
+
+## Spherical NF-FF Reduced-Layout Tradeoff
+
+Run:
+
+```powershell
+python code\run_spherical_nf_ff_tradeoff.py
+```
+
+This writes `data/sampling_layouts/spherical_nf_ff_tradeoff/`. It applies the
+same scalar spherical-harmonic NF-FF diagnostic to every candidate layout in
+`data/sampling_layouts/hemisphere_sampling_candidates.csv` and stores both raw
+case results and one best setting per candidate.
+
+Current result: `geometric_farthest_32` is the smallest reduced candidate with
+`strict_pass` under this check (`lmax = 4`, `lambda = 1e-10`, min correlation
+about `0.9991`, max NMSE about `9.77e-04`, zero main-lobe error, max near-field
+fit relative error about `1.49e-02`). This is a good next CST true-monitor
+priority, especially alongside one conservative 120-point layout and the full
+162-point reference.
+
+Boundary: the result is still based on FarfieldPlot-derived angular samples and
+a scalar, not full vector, SWE approximation. It should not be written as final
+reduced-sampling proof until the true near-field monitor and physical Huygens
+or vector SWE baseline agree.

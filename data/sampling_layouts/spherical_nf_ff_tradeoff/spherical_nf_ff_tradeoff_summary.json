@@ -1,0 +1,80 @@
+{
+  "generated_by": "code/run_spherical_nf_ff_tradeoff.py",
+  "nearfield": "data\\cst_exports\\level1\\all_nearfield.csv",
+  "farfield": "data\\cst_exports\\level1\\all_farfield.csv",
+  "layouts": "data\\sampling_layouts\\hemisphere_sampling_candidates.csv",
+  "out_dir": "data\\sampling_layouts\\spherical_nf_ff_tradeoff",
+  "basis": "independent scalar spherical-harmonic fit for tangential Etheta/Ephi components",
+  "is_full_vector_swe": false,
+  "purpose": "Reduced-layout NF-FF/SWE diagnostic for prioritizing CST true near-field monitor reruns.",
+  "candidate_count": 17,
+  "case_count": 952,
+  "sample_frequency_pair_count": 2,
+  "lmax_values": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    10
+  ],
+  "lambda_regs": [
+    0.0,
+    1e-10,
+    1e-08,
+    1e-06
+  ],
+  "include_l0": false,
+  "best_overall_setting": {
+    "candidate": "geometric_farthest_32",
+    "method": "geometric_farthest",
+    "sensor_count": 32,
+    "lmax": 4,
+    "lambda_reg": 1e-10,
+    "include_l0": false,
+    "mode_count": 24,
+    "status": "strict_pass",
+    "min_correlation": 0.9991228831465736,
+    "max_nmse": 0.0009766965566670605,
+    "max_main_lobe_error_deg": 0.0,
+    "max_nearfield_fit_relative_error": 0.014910566881503926,
+    "max_basis_condition": 73.97694258940265
+  },
+  "smallest_strict_reduced_candidate": {
+    "candidate": "geometric_farthest_32",
+    "method": "geometric_farthest",
+    "sensor_count": 32,
+    "lmax": 4,
+    "lambda_reg": 1e-10,
+    "include_l0": false,
+    "mode_count": 24,
+    "status": "strict_pass",
+    "min_correlation": 0.9991228831465736,
+    "max_nmse": 0.0009766965566670605,
+    "max_main_lobe_error_deg": 0.0,
+    "max_nearfield_fit_relative_error": 0.014910566881503926,
+    "max_basis_condition": 73.97694258940265
+  },
+  "smallest_sanity_or_better_reduced_candidate": {
+    "candidate": "geometric_farthest_32",
+    "method": "geometric_farthest",
+    "sensor_count": 32,
+    "lmax": 4,
+    "lambda_reg": 1e-10,
+    "include_l0": false,
+    "mode_count": 24,
+    "status": "strict_pass",
+    "min_correlation": 0.9991228831465736,
+    "max_nmse": 0.0009766965566670605,
+    "max_main_lobe_error_deg": 0.0,
+    "max_nearfield_fit_relative_error": 0.014910566881503926,
+    "max_basis_condition": 73.97694258940265
+  },
+  "boundary": "This is a scalar angular NF-FF diagnostic on the current FarfieldPlot-derived near-field table. Use it to rank sampling layouts before true CST near-field monitor reruns, not as final vector SWE proof.",
+  "files": {
+    "raw_results": "data\\sampling_layouts\\spherical_nf_ff_tradeoff\\spherical_nf_ff_tradeoff_results.csv",
+    "by_setting": "data\\sampling_layouts\\spherical_nf_ff_tradeoff\\spherical_nf_ff_tradeoff_by_setting.csv",
+    "best_by_candidate": "data\\sampling_layouts\\spherical_nf_ff_tradeoff\\spherical_nf_ff_tradeoff_best_by_candidate.csv"
+  }
+}

@@ -191,13 +191,30 @@ It writes `data/sampling_layouts/cst_level1_huygens_baseline/` and compares
 (`min_corr ~= 0.778`, `max_nmse ~= 0.264`, large main-lobe error), so this is
 not yet a report-ready reduced-sampling proof.
 
+The scalar spherical NF-FF reduced-layout tradeoff has also been added:
+
+```powershell
+python code\run_spherical_nf_ff_tradeoff.py
+```
+
+It writes `data/sampling_layouts/spherical_nf_ff_tradeoff/`. Under this
+FarfieldPlot-derived angular diagnostic, `geometric_farthest_32` is the
+smallest `strict_pass` reduced candidate (`lmax = 4`, `lambda = 1e-10`,
+`min_corr ~= 0.9991`, `max_nmse ~= 9.77e-04`, zero main-lobe error). This is a
+strong layout-prioritization signal for the next true CST near-field monitor
+rerun, not a final vector SWE/Huygens proof.
+
 Updated sprint order:
 
 1. Keep `spherical_nf_ff_baseline/` and the center-source prior as the current
    trustworthy data-path sanity checks.
 2. Wait for or produce true CST near-field monitor CSVs, then rerun source
-   sweep, convention check, SWE baseline, and Huygens baseline on that input.
+   sweep, convention check, SWE baseline, spherical reduced-layout tradeoff, and
+   Huygens baseline on that input.
 3. Improve the Huygens operator with fuller electric/magnetic surface-current
    Green functions and surface smoothness regularization.
-4. Only after a full-grid physical baseline reaches `strict_pass` or an
-   approved near-pass, rerun the 120/81/48/32 sampling candidates.
+4. Prioritize `geometric_farthest_32`, one conservative 120-point layout, and
+   the full 162-point reference in the true-monitor rerun queue.
+5. Only after a full-grid physical baseline reaches `strict_pass` or an
+   approved near-pass, write the 120/81/48/32 sampling candidates as report-level
+   reduced-layout evidence.
