@@ -1,0 +1,25 @@
+{
+  "generated_by": "code/run_cst_source_model_sweep.py",
+  "nearfield": "data\\cst_exports\\level1\\all_nearfield.csv",
+  "farfield": "data\\cst_exports\\level1\\all_farfield.csv",
+  "layouts": "data\\sampling_layouts\\hemisphere_sampling_candidates.csv",
+  "out_dir": "data\\sampling_layouts\\cst_level1_source_model_sweep",
+  "pair_count": 2,
+  "candidate_count": 1,
+  "model_count": 6,
+  "lambda_regs": [
+    1e-05,
+    0.0001,
+    0.001,
+    0.01
+  ],
+  "best_model": {
+    "model_id": "single_center",
+    "candidate": "full_grid_162",
+    "lambda_reg": 0.001,
+    "status": "corr_pass_nmse_near",
+    "min_correlation": 0.9926081196115,
+    "max_nmse": 0.017784451650445617,
+    "max_main_lobe_error_deg": 0.0
+  }
+}

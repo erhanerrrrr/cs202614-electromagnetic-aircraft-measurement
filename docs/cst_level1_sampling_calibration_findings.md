@@ -20,6 +20,7 @@ It writes compact CSV/JSON/README outputs for candidate comparison.
 |---|---|---|
 | `data/sampling_layouts/cst_level1_tradeoff/` | 5 x 3 x 3 equivalent-source grid around `(0, 0, 4 m)` | Calibration diagnostic. Full 162-point reconstruction is not yet strong enough, so this cannot support final sampling claims. |
 | `data/sampling_layouts/cst_level1_center_source_check/` | Single equivalent source at `(0, 0, 4 m)` | Level 1 sanity check. Correlation and main-lobe location are good, showing the CST export and comparison chain are broadly consistent. |
+| `data/sampling_layouts/cst_level1_source_model_sweep/` | Multiple Level 1 source supports and Tikhonov regularization values | Full-grid model-calibration sweep. Use it to choose the next baseline before judging lower-count layouts. |
 
 ## Current Reading
 
@@ -32,6 +33,16 @@ correlation is about `0.996`, with zero main-lobe error on the current two
 standard-source cases. Several 120-point and 81-point layouts remain near the
 full-grid correlation under this source prior. The half-wave case still has
 worst-case NMSE above `1e-2`, so this is not a final acceptance proof yet.
+
+`code/run_cst_source_model_sweep.py` now makes this diagnosis reproducible by
+scanning several Level 1 source supports and regularization values on the
+full-grid baseline. The current rule is simple: calibrate the full 162-point
+model first, then use the same model to compare reduced sampling layouts.
+
+The current sweep selects `single_center` as the best model with
+`corr_pass_nmse_near`: min correlation `0.9926`, max NMSE `1.7784e-02`, and
+zero main-lobe error. The generic multi-point source grids remain diagnostic
+only, so they should not be used as final reduced-sampling evidence yet.
 
 ## Engineering Implication
 

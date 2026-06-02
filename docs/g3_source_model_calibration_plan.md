@@ -1,0 +1,82 @@
+# G3 Source-Model Calibration Plan
+
+This note turns the broad G3 goal in `docs/future_engineering_plan.md` into the
+next engineering steps that can be assigned inside the GitHub repository.
+
+## Current Diagnosis
+
+The current CST Level 1 data path is credible under the known center-source
+prior: `data/sampling_layouts/cst_level1_center_source_check/` reaches high
+correlation and zero main-lobe error on the current two standard-source cases.
+
+The generic equivalent-source grid is not yet calibrated:
+`data/sampling_layouts/cst_level1_tradeoff/` shows that full 162-point
+reconstruction drops to about `Corr = 0.806`, `NMSE = 0.309`. Lower-count
+sampling claims must wait until the full-grid baseline is stable.
+
+## New Reproducible Check
+
+Run:
+
+```powershell
+python code\run_cst_source_model_sweep.py
+```
+
+The script writes `data/sampling_layouts/cst_level1_source_model_sweep/` with:
+
+- `cst_source_model_sweep_results.csv`
+- `cst_source_model_sweep_by_model.csv`
+- `cst_source_model_sweep_summary.json`
+- `README.md`
+
+The sweep currently varies equivalent-source support and Tikhonov
+regularization while keeping the candidate layout fixed to `full_grid_162`.
+This is deliberate: first make the full measurement baseline credible, then
+evaluate compressed layouts.
+
+## Current Sweep Result
+
+The current sweep selected `single_center` as the best Level 1 model:
+
+| Metric | Value |
+|---|---:|
+| Status | `corr_pass_nmse_near` |
+| Min correlation | `0.9926` |
+| Max NMSE | `1.7784e-02` |
+| Max main-lobe error / deg | `0.00` |
+
+The default 5 x 3 x 3 grid, compact cube, z-line, xy-plane, and wider cube all
+remain `diagnostic_only` on the full-grid baseline. This means the next
+algorithm step should not be "add more unconstrained equivalent-source points".
+It should focus on source priors, phase/amplitude convention checks, and sparse
+or structure-aware regularization.
+
+## Decision Rule
+
+Use this sequence for the next round:
+
+1. If a scanned model reaches `strict_pass`, freeze it as the Level 1
+   reconstruction baseline and rerun `run_cst_sampling_tradeoff.py`.
+2. If the best model reaches `corr_pass_nmse_near`, investigate NMSE through
+   phase/reference convention, amplitude normalization, and regularization.
+3. If only `diagnostic_only` models remain, expand the model family before
+   making sampling claims.
+
+## Next Algorithm Upgrades
+
+| Upgrade | Purpose | Suggested artifact |
+|---|---|---|
+| Sparse / ElasticNet equivalent sources | Reduce over-free source grids and suppress nonphysical energy leakage. | `code/run_cst_sparse_reconstruction.py` |
+| Group sparsity across frequencies | Share source support for multi-frequency samples. | `outputs/model_comparison/reconstruction_metrics.csv` |
+| Huygens-surface source prior | Move from point-source grids toward structure-aware equivalent currents. | `docs/huygens_surface_model_note.md` |
+| Spherical NF-FF sanity check | Detect coordinate, phase, and polarization convention errors independently of equivalent sources. | `code/run_spherical_nf_ff_baseline.py` |
+
+## Report Wording
+
+Use cautious wording for now:
+
+- The project has a reproducible CST/Python calibration chain.
+- Level 1 center-source results validate the data path.
+- Generic source-model calibration is the current bottleneck.
+- Non-redundant 120/81/48/32 point layouts are candidate plans, not final CST
+  evidence, until the full 162-point baseline passes under the chosen model.

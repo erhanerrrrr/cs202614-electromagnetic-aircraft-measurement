@@ -8,9 +8,10 @@
 2. `future_engineering_plan.md`：结合导师 DeepSeek 记录和推荐文献形成的后续工程方案。
 3. `nonredundant_sampling_design.md`：非冗余半球采样方案，包含 120/81/48/32 点候选布局和指标解释。
 4. `cst_level1_sampling_calibration_findings.md`：当前 CST Level 1 采样评估和等效源模型校准结论。
-5. `current_work_detailed_explanation.md`：当前工程进展和已有证据链。
-6. `project_file_index.md`：文件夹与关键产物索引。
-7. `literature_matrix.md`、`literature_screening_and_strategy.md`、`literature_to_algorithm_traceability.md`：文献依据与算法迁移关系。
+5. `g3_source_model_calibration_plan.md`：下一步反演模型校准、稀疏化和球面 NF-FF sanity check 路线。
+6. `current_work_detailed_explanation.md`：当前工程进展和已有证据链。
+7. `project_file_index.md`：文件夹与关键产物索引。
+8. `literature_matrix.md`、`literature_screening_and_strategy.md`、`literature_to_algorithm_traceability.md`：文献依据与算法迁移关系。
 
 ## 子目录
 
