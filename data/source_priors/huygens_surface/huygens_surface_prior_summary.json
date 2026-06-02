@@ -1,0 +1,36 @@
+{
+  "generated_by": "code/prepare_huygens_surface_prior.py",
+  "out_dir": "data\\source_priors\\huygens_surface",
+  "purpose": "Geometry and unknown-vector contract for Huygens-surface source-prior reconstruction.",
+  "unknowns_per_node": 4,
+  "unknown_vector": "J_t1,J_t2,M_t1,M_t2",
+  "priors": [
+    {
+      "prior_id": "level1_local_sphere_r0p35",
+      "surface_type": "sphere",
+      "file": "level1_local_sphere_r0p35_nodes.csv",
+      "node_count": 96,
+      "complex_unknown_count": 384,
+      "area_sum_m2": 1.5393804002589986,
+      "note": "Closed local Huygens sphere around the Level 1 known source center at (0, 0, 4 m)."
+    },
+    {
+      "prior_id": "airframe_box_coarse",
+      "surface_type": "box",
+      "file": "airframe_box_coarse_nodes.csv",
+      "node_count": 414,
+      "complex_unknown_count": 1656,
+      "area_sum_m2": 718.0000000000002,
+      "note": "Coarse box Huygens surface enclosing the 12 m x 10 m x 8 m aircraft envelope with margin."
+    },
+    {
+      "prior_id": "airframe_box_medium",
+      "surface_type": "box",
+      "file": "airframe_box_medium_nodes.csv",
+      "node_count": 718,
+      "complex_unknown_count": 2872,
+      "area_sum_m2": 718.0,
+      "note": "Medium box Huygens surface for later Level 2/Level 3 structure-aware reconstruction tests."
+    }
+  ]
+}

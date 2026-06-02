@@ -1,0 +1,4 @@
+﻿prior_id,surface_type,note,node_count_hint,center_x_m,center_y_m,center_z_m,radius_m,x_half_span_m,y_half_span_m,z_half_span_m,nx,ny,nz
+level1_local_sphere_r0p35,sphere,"Closed local Huygens sphere around the Level 1 known source center at (0, 0, 4 m).",96,0.0,0.0,4.0,0.35,,,,,,
+airframe_box_coarse,box,Coarse box Huygens surface enclosing the 12 m x 10 m x 8 m aircraft envelope with margin.,0,0.0,0.0,4.0,,6.5,5.5,4.5,9.0,9.0,7.0
+airframe_box_medium,box,Medium box Huygens surface for later Level 2/Level 3 structure-aware reconstruction tests.,0,0.0,0.0,4.0,,6.5,5.5,4.5,13.0,11.0,9.0

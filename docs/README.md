@@ -9,10 +9,11 @@
 3. `nonredundant_sampling_design.md`：非冗余半球采样方案，包含 120/81/48/32 点候选布局和指标解释。
 4. `cst_level1_sampling_calibration_findings.md`：当前 CST Level 1 采样评估和等效源模型校准结论。
 5. `g3_source_model_calibration_plan.md`：下一步反演模型校准、稀疏化、约定检查和球面 NF-FF sanity check 路线。
-6. `true_nearfield_monitor_workflow.md`：CST 真近场 monitor 导出、FarfieldPlot-derived 基线对照和后续 G3 复跑逻辑。
-7. `current_work_detailed_explanation.md`：当前工程进展和已有证据链。
-8. `project_file_index.md`：文件夹与关键产物索引。
-9. `literature_matrix.md`、`literature_screening_and_strategy.md`、`literature_to_algorithm_traceability.md`：文献依据与算法迁移关系。
+6. `huygens_surface_model_note.md`：Huygens 面源先验的模型口径、未知量、正则化和输出指标。
+7. `true_nearfield_monitor_workflow.md`：CST 真近场 monitor 导出、FarfieldPlot-derived 基线对照和后续 G3 复跑逻辑。
+8. `current_work_detailed_explanation.md`：当前工程进展和已有证据链。
+9. `project_file_index.md`：文件夹与关键产物索引。
+10. `literature_matrix.md`、`literature_screening_and_strategy.md`、`literature_to_algorithm_traceability.md`：文献依据与算法迁移关系。
 
 ## 子目录
 
@@ -25,4 +26,4 @@
 
 - 不要把 120/81/48/32 点候选直接写成最终采样结论；目前它们是待 CST 校准验证的候选方案。
 - 真实 CST Level 1 数据路径已经通过中心源 sanity check，但通用等效源网格仍是反演瓶颈。
-- 后续 G3 工作优先级：CST 真近场 monitor 对照、源先验校准、Huygens/SWE 物理基线、多频共享支撑和最终 reduced-layout 复跑。
+- 后续 G3 工作优先级：CST 真近场 monitor 对照、Huygens 面源矩阵实现、源先验校准、多频共享支撑和最终 reduced-layout 复跑。

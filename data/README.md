@@ -10,6 +10,7 @@
 | `cst_exports/level2/` | Level 2 多源、多状态样本 nearfield/farfield CSV、合并结果和 dropzone 说明。 |
 | `cst_true_nearfield_workpack/` | CST 真近场 monitor 导出工作包、162 点采样壳层、宏骨架、对照清单和 reference self-check。 |
 | `sampling_layouts/` | 162/120/81/48/32 点半球采样候选表、代理指标和当前 CST Level 1 诊断结果。 |
+| `source_priors/` | Huygens 面源等结构化反演先验的节点表、未知量合同和 README。 |
 
 ## 主要生成物
 
@@ -24,11 +25,13 @@
 | `sampling_layouts/cst_level1_convention_check/` | `python code\run_cst_level1_convention_check.py` | 相位、复共轭和极化约定诊断。 |
 | `cst_true_nearfield_workpack/` | `python code\prepare_cst_true_nearfield_workpack.py` | 真近场 monitor 导出任务包和 FarfieldPlot-derived 基线对照入口。 |
 | `cst_true_nearfield_workpack/reference_self_check/` | `python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check` | 对照脚本自检结果，不是新增 CST 物理证据。 |
+| `source_priors/huygens_surface/` | `python code\prepare_huygens_surface_prior.py` | Huygens 面源节点、法向/切向基、面积权重和四复未知量合同。 |
 
 ## 使用约定
 
 - 真实 CST 导出优先放在 `data/cst_exports/`，不要混入临时仿真缓存。
 - 合成数据和大体量中间结果优先由脚本生成到 `outputs/`。
 - 可协作的小型 CSV/JSON/README 摘要放入 `data/sampling_layouts/` 并进入 Git。
+- 结构化源先验放入 `data/source_priors/`；它定义反演模型允许的源支撑，不等同于采样布局或最终重建结果。
 - CST 真近场 monitor 当前先提交工作包和对照自检；真实 monitor 大 CSV 后续仍按 `data/cst_exports/` 大文件策略处理。
 - 如后续需要长期共享大 CST 文件，建议启用 Git LFS、GitHub Release 或网盘；仓库中只保留索引、校验摘要和复现命令。

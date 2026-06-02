@@ -70,7 +70,7 @@ Use this sequence for the next round:
 | Phase / polarization convention check | Test whether phase sign, complex conjugation, or theta/phi labeling explains the Level 1 bottleneck. | `code/run_cst_level1_convention_check.py` |
 | True near-field monitor workpack | Separate real CST near-field monitor evidence from the current FarfieldPlot-derived angular baseline. | `code/prepare_cst_true_nearfield_workpack.py` |
 | Group sparsity across frequencies | Share source support for multi-frequency samples. | `outputs/model_comparison/reconstruction_metrics.csv` |
-| Huygens-surface source prior | Move from point-source grids toward structure-aware equivalent currents. | `docs/huygens_surface_model_note.md` |
+| Huygens-surface source prior | Move from point-source grids toward structure-aware equivalent currents. | `docs/huygens_surface_model_note.md`, `code/prepare_huygens_surface_prior.py` |
 | Spherical NF-FF sanity check | Detect coordinate, phase, and polarization convention errors independently of equivalent sources. | `code/run_spherical_nf_ff_baseline.py` |
 
 ## Report Wording
@@ -147,6 +147,25 @@ This is now the immediate data-boundary gate before SWE/Huygens work. If true
 monitor exports differ materially from the FarfieldPlot-derived baseline, rerun
 the Level 1 source-model, sparse, convention, and sampling diagnostics on the
 true-monitor table before making any reduced-sampling claim.
+
+## Huygens Surface Prior Workpack
+
+Run:
+
+```powershell
+python code\prepare_huygens_surface_prior.py
+```
+
+This writes `data/source_priors/huygens_surface/`. The workpack contains
+surface nodes, outward normals, local tangential bases, area weights, and the
+four-complex-unknown contract `J_t1,J_t2,M_t1,M_t2` for each node. The detailed
+model note is `docs/huygens_surface_model_note.md`.
+
+This is a geometry and interface contract, not a completed Huygens
+reconstruction result. The next coding step is to implement a Huygens
+measurement matrix with shape `2 * sensor_count` by `4 * surface_node_count`,
+then compare its full-grid Level 1 metrics against the center-source, generic
+grid, group-sparse, convention, and spherical baselines.
 
 ## Spherical NF-FF Sanity Baseline
 

@@ -162,7 +162,7 @@ model_comparison.md
 
 1. 已新增 CST true near-field monitor 导出工作包、宏骨架和对照脚本；下一步等待 CST 真 monitor 实测 CSV 回填。
 2. 已实现 `code/run_spherical_nf_ff_baseline.py` 的轻量球谐 NF-FF sanity check，当前 Level 1 两例达到 `strict_pass`。
-3. 写 `docs/huygens_surface_model_note.md`，明确面源模型、未知量、正则化和输出指标。
+3. 已新增 `docs/huygens_surface_model_note.md` 和 `code/prepare_huygens_surface_prior.py`，明确面源模型、四复未知量、正则化、输出指标和先验节点工作包。
 4. 在当前 Level 1 两个标准源上复跑：center prior、generic grid、group-sparse、convention check、SWE sanity baseline。
 5. 只有当 full-grid 基线达到验收标准后，再复跑 120/81/48/32 点候选并更新报告。
 
