@@ -396,7 +396,7 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             "priority": 1,
             "owner": "CST operator",
             "gate": "true_monitor",
-            "action": "Export authoritative full-grid CST true near-field monitor CSVs for the queued Level 1 cases.",
+            "action": "Use outputs\\cst_true_nearfield_handoff\\expected_true_monitor_files.csv, then export authoritative full-grid CST true near-field monitor CSVs for the queued Level 1 cases.",
             "trigger": "G3 dashboard status is pending_source.",
             "artifact": "data/cst_exports/level1_true_nearfield/<sample>_true_nearfield.csv",
             "proof_to_close": "python code\\run_true_nearfield_gate.py reports no pending_source rows for full_grid_162.",

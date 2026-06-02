@@ -74,6 +74,17 @@ This writes `gate_report/true_nearfield_gate_status.csv`,
 Use the gate statuses to separate rows that are still `pending_source` from
 rows that are ready for `reference_match` or `needs_physical_rerun` decisions.
 
+For CST handoff, generate the operator-facing action sheet with:
+
+```powershell
+python code\build_true_nearfield_handoff.py
+```
+
+It writes `outputs/cst_true_nearfield_handoff/`, including the required
+full-grid CSV file list, exact row counts, gate status, and post-export
+algorithm commands. This is the preferred team-facing entry when assigning the
+next CST monitor export task.
+
 This is still a queue, not final evidence. The 32-point result came from the
 scalar spherical NF-FF angular diagnostic and must be rerun against true CST
 near-field monitor data before it is used as a competition claim.

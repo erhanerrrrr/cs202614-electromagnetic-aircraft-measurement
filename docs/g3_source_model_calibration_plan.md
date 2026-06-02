@@ -303,3 +303,13 @@ CSV files. The 32-point scalar SWE result stays in the dashboard as a rerun
 priority, not a final proof. The generic grid, sparse calibration, convention
 check, and Huygens rows remain diagnostic bottleneck evidence until a physical
 full-grid baseline reaches `strict_pass` or an approved near-pass.
+
+For CST assignment, also run:
+
+```powershell
+python code\build_true_nearfield_handoff.py
+```
+
+This writes `outputs/cst_true_nearfield_handoff/` with the exact required
+full-grid CSV filenames, 486-row checks, current gate status, and post-export
+algorithm commands.

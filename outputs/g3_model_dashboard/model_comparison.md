@@ -39,7 +39,7 @@ It separates report-safe sanity checks from diagnostic bottlenecks and true-moni
 
 | Priority | Owner | Gate | Action | Proof to close | Blocked by |
 |---:|---|---|---|---|---|
-| 1 | CST operator | true_monitor | Export authoritative full-grid CST true near-field monitor CSVs for the queued Level 1 cases. | python code\run_true_nearfield_gate.py reports no pending_source rows for full_grid_162. | CST monitor CSVs |
+| 1 | CST operator | true_monitor | Use outputs\cst_true_nearfield_handoff\expected_true_monitor_files.csv, then export authoritative full-grid CST true near-field monitor CSVs for the queued Level 1 cases. | python code\run_true_nearfield_gate.py reports no pending_source rows for full_grid_162. | CST monitor CSVs |
 | 2 | Algorithm operator | post_true_monitor | After full-grid monitor CSVs exist, derive queued 32/120 layouts and compare them against the FarfieldPlot-derived reference. | true_nearfield_gate_summary.json reports reference_match or needs_physical_rerun with comparison metrics, not pending_source. | Full-grid monitor CSVs |
 | 3 | Algorithm operator | physical_baseline | Rerun source-model, convention, scalar SWE, reduced-layout, and Huygens baselines on true-monitor input if the gate reports needs_physical_rerun. | A full-grid physical baseline reaches strict_pass or an approved near-pass before reduced-layout claims are written. | True-monitor gate comparison result |
 | 4 | Report/PPT operator | wording | Use center-source and scalar SWE rows as sanity evidence; keep generic, sparse, and Huygens rows as diagnostic bottleneck evidence. | Reduced-layout claims explicitly say 'priority for true-monitor rerun' until a physical full-grid baseline passes. |  |

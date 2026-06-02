@@ -1,0 +1,21 @@
+{
+  "generated_by": "code/build_true_nearfield_handoff.py",
+  "required_full_grid_count": 2,
+  "required_full_grid_pending_count": 2,
+  "all_full_grid_count": 6,
+  "action_counts": {
+    "derive_after_full_grid_export": 12,
+    "export_full_grid_in_cst": 6
+  },
+  "gate_status_counts": {
+    "pending_source": 18
+  },
+  "next_required_action": "export_required_full_grid_true_monitor_csvs",
+  "output_files": {
+    "handoff": "outputs\\cst_true_nearfield_handoff\\cst_true_nearfield_handoff.md",
+    "action_sheet": "outputs\\cst_true_nearfield_handoff\\cst_operator_action_sheet.csv",
+    "expected_files": "outputs\\cst_true_nearfield_handoff\\expected_true_monitor_files.csv",
+    "algorithm_commands": "outputs\\cst_true_nearfield_handoff\\post_export_algorithm_commands.csv"
+  },
+  "algorithm_command_count": 8
+}

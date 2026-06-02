@@ -36,6 +36,7 @@
 | `prepare_cst_templates.py`、`prepare_cst_macro_templates.py` | 生成 CST 建模和导出宏模板。 |
 | `prepare_cst_level1_workpack.py`、`prepare_cst_level2_workpack.py` | 生成 Level 1/2 CST 执行任务包。 |
 | `prepare_cst_true_nearfield_workpack.py` | 生成 CST 真近场 monitor 导出工作包、采样壳层、三档布局复跑队列、宏骨架和对照清单。 |
+| `build_true_nearfield_handoff.py` | 将真近场 monitor 队列、gate 状态和 CSV 合同汇总成 CST 操作者 action sheet。 |
 | `merge_cst_level1_exports.py`、`merge_cst_level2_exports.py` | 合并 CST 导出的 near/far-field 数据。 |
 | `run_cst_solver_project.py`、`export_cst_farfield_results.py` | 本机 CST 求解和结果导出辅助入口。 |
 
@@ -60,6 +61,7 @@ python code\run_cst_level1_convention_check.py
 python code\prepare_cst_true_nearfield_workpack.py
 python code\derive_true_nearfield_layout_exports.py --sample-id L1_short_dipole_z_1p2G
 python code\run_true_nearfield_gate.py
+python code\build_true_nearfield_handoff.py
 python code\build_g3_model_dashboard.py
 python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check
 python code\run_spherical_nf_ff_baseline.py

@@ -279,3 +279,30 @@ true-monitor gate remains pending, the CST operator exports monitor CSVs; if it
 reports `needs_physical_rerun`, the algorithm operator reruns the source-model,
 SWE, reduced-layout, and Huygens baselines on authoritative monitor data before
 updating report claims.
+
+## 9. 2026-06-02 CST true-monitor handoff update
+
+The pending true-monitor export is now turned into a CST operator handoff by:
+
+```powershell
+python code\build_true_nearfield_handoff.py
+```
+
+It writes `outputs/cst_true_nearfield_handoff/`:
+
+- `cst_true_nearfield_handoff.md`: the short human-facing task note.
+- `expected_true_monitor_files.csv`: the full-grid monitor CSVs CST should
+  produce first.
+- `cst_operator_action_sheet.csv`: all 18 queued case-layout rows with action
+  kind, target path, current file existence, and gate status.
+- `post_export_algorithm_commands.csv`: the command sequence after files arrive.
+- `handoff_summary.json`: machine-readable counts and next required action.
+
+Current handoff result: two required full-grid CSVs are still pending, both with
+486 expected rows:
+
+- `data/cst_exports/level1_true_nearfield/L1_short_dipole_z_1p2G_true_nearfield.csv`
+- `data/cst_exports/level1_true_nearfield/L1_halfwave_dipole_z_1p2G_true_nearfield.csv`
+
+This narrows the external CST task to two exact required files before the
+algorithm side derives 32/120 layouts or reruns physical G3 baselines.
