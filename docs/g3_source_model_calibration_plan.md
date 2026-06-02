@@ -189,29 +189,36 @@ python code\run_cst_huygens_baseline.py
 ```
 
 This writes `data/sampling_layouts/cst_level1_huygens_baseline/`. The script
-uses the `level1_local_sphere_r0p35` surface prior and tests three first-order
-variants: `electric_sheet_only`, `huygens_em_plus`, and `huygens_em_minus`.
-The electric/magnetic versions are a compact dipole-sheet approximation, not a
-full Stratton-Chu/Huygens surface-integral implementation.
+uses the `level1_local_sphere_r0p35` surface prior and tests six first-order
+variants: three compact `radiating_dipole` rows (`electric_sheet_only`,
+`huygens_em_plus`, `huygens_em_minus`) and three fuller `current_green`
+diagnostic rows (`electric_current_green`, `huygens_current_green_plus`,
+`huygens_current_green_minus`). These are still approximate surface-current
+basis functions, not a final Stratton-Chu/Huygens surface-integral
+implementation.
 
 The runner now also sweeps a nearest-neighbor surface smoothness penalty through
 `--smooth-lambda`. The committed default grid is `0`, `1e-6`, `1e-4`, and
 `1e-2`, with six neighboring surface nodes in the smoothness graph.
 
-The current result is diagnostic only. The best setting is
-`huygens_em_minus`, `lambda = 1e-2`, `smooth_lambda = 0`, with min correlation
-about `0.778`, max NMSE about `0.264`, mean near-field residual about `0.619`,
-and a large main-lobe error. The `smooth_lambda = 1e-4` branch slightly reduces
-the max NMSE and coefficient-jump metric, but it does not pass the correlation
-or main-lobe gate. This confirms that the surface-prior workflow is runnable,
-but the simplified Green-function and current-normalization model is not yet
-good enough to replace the center-source or spherical NF-FF sanity baselines.
+The current result is diagnostic only. The best setting remains
+`huygens_em_minus` with `field_model = radiating_dipole`, `lambda = 1e-2`,
+`smooth_lambda = 0`, min correlation about `0.778`, max NMSE about `0.264`,
+mean near-field residual about `0.619`, and a large main-lobe error. The
+`current_green` branch is also diagnostic-only and stays very close to the
+compact branch, which suggests the remaining gap is not fixed by simply adding
+the first near-field Green-function correction. The `smooth_lambda = 1e-4`
+branch slightly reduces the max NMSE and coefficient-jump metric, but it does
+not pass the correlation or main-lobe gate. This confirms that the
+surface-prior workflow is runnable, but the simplified source/operator
+convention is not yet good enough to replace the center-source or spherical
+NF-FF sanity baselines.
 
 Next action: keep the Huygens outputs as model-calibration evidence, then rerun
 the same script on true near-field monitor data and/or upgrade the Huygens
-operator to a fuller electric/magnetic surface-current Green function. Treat
-the existing smoothness sweep as a diagnostic regularization axis rather than a
-completed physical fix.
+operator to a validated electric/magnetic surface-current Green-function
+convention. Treat the current `current_green` and smoothness sweeps as
+diagnostic axes rather than completed physical fixes.
 
 ## Spherical NF-FF Sanity Baseline
 

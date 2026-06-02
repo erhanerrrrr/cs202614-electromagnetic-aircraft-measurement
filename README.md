@@ -75,7 +75,7 @@
 48. CST Level 1 FarfieldPlot-derived 角域校准：`code/run_cst_level1_angular_calibration.py`
 49. CST Level 2 简化结构遮挡对照：`code/run_cst_structure_comparison.py`
 50. 球谐 NF-FF 少测点布局诊断：`code/run_spherical_nf_ff_tradeoff.py`，当前将 `geometric_farthest_32` 标记为 true monitor 复跑优先候选，并已由 `code/prepare_cst_true_nearfield_workpack.py` 写入 162/32/120 三档 CST 复跑队列；`code/derive_true_nearfield_layout_exports.py` 可从 162 点真 monitor 导出派生 32/120 CSV；`code/run_true_nearfield_gate.py` 可刷新 `data/cst_true_nearfield_workpack/gate_report/`，记录当前 18 条队列项的源文件、派生和比较 gate 状态。
-51. Huygens 面源平滑正则诊断：`code/run_cst_huygens_baseline.py` 现在默认扫描 `smooth_lambda = 0, 1e-6, 1e-4, 1e-2`，结果写入 `data/sampling_layouts/cst_level1_huygens_baseline/`；当前最佳仍为 `diagnostic_only`，不能作为少测点最终证明。
+51. Huygens 面源 field-model/平滑正则诊断：`code/run_cst_huygens_baseline.py` 现在对比 `radiating_dipole` 与 `current_green`，并默认扫描 `smooth_lambda = 0, 1e-6, 1e-4, 1e-2`，结果写入 `data/sampling_layouts/cst_level1_huygens_baseline/`；当前最佳仍为 `diagnostic_only`，不能作为少测点最终证明。
 
 ## 如何阅读本项目
 

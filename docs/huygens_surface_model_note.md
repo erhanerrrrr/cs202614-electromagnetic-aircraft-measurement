@@ -192,6 +192,7 @@ Current best setting on the Level 1 export is:
 |---|---|
 | Prior | `level1_local_sphere_r0p35` |
 | Variant | `huygens_em_minus` |
+| Field model | `radiating_dipole` |
 | Candidate | `full_grid_162` |
 | Lambda | `1e-2` |
 | Smooth lambda | `0` |
@@ -208,19 +209,20 @@ Phase 2 is not physically sufficient yet. The simplified electric/magnetic
 dipole-sheet approximation does not recover the current CST Level 1 far-field
 baseline well enough to support reduced-layout sampling claims.
 
-The runner now includes a local surface smoothness sweep through
-`--smooth-lambda` with default values `0`, `1e-6`, `1e-4`, and `1e-2`.
-On the current FarfieldPlot-derived Level 1 export, `smooth_lambda = 1e-4`
-slightly lowers the worst NMSE and coefficient-jump metric, but it also lowers
-the minimum correlation and still stays `diagnostic_only`. This is useful as a
-regularization dimension for the next Huygens operator upgrade, not a solved
-physics model.
+The runner now includes both the compact `radiating_dipole` sheet and a fuller
+`current_green` near-field diagnostic branch, plus a local surface smoothness
+sweep through `--smooth-lambda` with default values `0`, `1e-6`, `1e-4`, and
+`1e-2`. On the current FarfieldPlot-derived Level 1 export, `current_green`
+stays very close to the compact model, while `smooth_lambda = 1e-4` slightly
+lowers the worst NMSE and coefficient-jump metric but also lowers the minimum
+correlation. Both branches still stay `diagnostic_only`. These axes are useful
+for the next Huygens operator upgrade, not a solved physics model.
 
 Immediate follow-up:
 
 1. Run the same baseline after true near-field monitor CSV data is available.
-2. Upgrade the operator from the simplified dipole-sheet approximation toward a
-   fuller electric/magnetic Huygens surface-current Green function.
-3. Keep the current surface smoothness sweep as a diagnostic axis, then add
-   node-group or multi-frequency support regularization after the full-grid
-   physical convention is stable.
+2. Validate the electric/magnetic Huygens surface-current Green-function
+   convention beyond the current `current_green` diagnostic branch.
+3. Keep the current field-model and surface smoothness sweeps as diagnostic
+   axes, then add node-group or multi-frequency support regularization after
+   the full-grid physical convention is stable.

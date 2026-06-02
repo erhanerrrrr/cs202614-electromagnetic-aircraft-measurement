@@ -25,7 +25,7 @@
 | `run_true_nearfield_gate.py` | Runs the true-monitor queue gate: source availability, optional 32/120 derivation, row-count checks, and FarfieldPlot-derived reference comparison. |
 | `run_spherical_nf_ff_baseline.py` | 用切向球谐拟合建立轻量 NF-FF/SWE sanity baseline，独立检查角度、极化和远场比较链路。 |
 | `prepare_huygens_surface_prior.py` | 生成 Huygens 面源先验节点、法向/切向基和四复未知量合同，供后续物理面源反演使用。 |
-| `run_cst_huygens_baseline.py` | 用 Huygens-style 电/磁偶极面源近似构造 Level 1 full-grid 诊断矩阵。 |
+| `run_cst_huygens_baseline.py` | 用 Huygens-style 电/磁面源近似构造 Level 1 full-grid 诊断矩阵，并对比 `radiating_dipole` 与 `current_green` 两类 field model。 |
 | `run_cst_reconstruction.py` | CST 数据等效源反演与远场外推入口。 |
 | `run_reconstruction_robustness.py` | 重建鲁棒性实验。 |
 
@@ -102,19 +102,24 @@ the FarfieldPlot-derived reference, and writes
 `huygens_core.py` builds the first Huygens-style surface measurement and
 far-field matrices. `run_cst_huygens_baseline.py` runs the Level 1 full-grid
 diagnostic using `data/source_priors/huygens_surface/level1_local_sphere_r0p35_nodes.csv`.
+It now compares two field models: the compact `radiating_dipole` sheet and the
+fuller diagnostic `current_green` near-field branch.
 
 The runner now includes a surface smoothness sweep through `--smooth-lambda`
 (default `0`, `1e-6`, `1e-4`, `1e-2`) and reports the coefficient jump metric
 in `data/sampling_layouts/cst_level1_huygens_baseline/`.
 
-The current best setting is still `diagnostic_only`: `huygens_em_minus`,
-`lambda = 1e-2`, `smooth_lambda = 0`, min corr about `0.778`, max NMSE about
-`0.264`, and a large main-lobe error. A small smoothness penalty slightly
-reduces NMSE/jump but does not close the gate, so this script remains a
-measurement-matrix smoke test and a physics-prior development entry point. Do
+The current best setting is still `diagnostic_only`: `huygens_em_minus` with
+`field_model = radiating_dipole`, `lambda = 1e-2`, `smooth_lambda = 0`, min
+corr about `0.778`, max NMSE about `0.264`, and a large main-lobe error. The
+new `current_green` branch is also diagnostic-only and tracks the best row very
+closely, so the remaining gap is likely a source/operator convention issue
+rather than a simple missing near-field term. A small smoothness penalty
+slightly reduces NMSE/jump but does not close the gate, so this script remains
+a measurement-matrix smoke test and a physics-prior development entry point. Do
 not use it as a final reduced-sampling proof until the full-grid Huygens
 baseline reaches the same acceptance gate used by the source-model diagnostics.
 
 ## 当前重点
 
-G2 已生成非冗余半球采样候选。G3 正在校准真实 CST Level 1 数据链：中心源先验和轻量球谐 NF-FF baseline 共同证明角度/极化/比较链路可信；Huygens 面源 baseline 已可运行但当前仍为 `diagnostic_only`，通用等效源网格也仍未达到最终采样证明要求。下一步应补 CST 真近场 monitor 实测，并升级 Huygens 电/磁面流 Green 算子与正则化。
+G2 已生成非冗余半球采样候选。G3 正在校准真实 CST Level 1 数据链：中心源先验和轻量球谐 NF-FF baseline 共同证明角度/极化/比较链路可信；Huygens 面源 baseline 已可运行并新增 `current_green` 诊断分支，但当前仍为 `diagnostic_only`，通用等效源网格也仍未达到最终采样证明要求。下一步应补 CST 真近场 monitor 实测，并升级 Huygens 电/磁面流 Green 算子与正则化。

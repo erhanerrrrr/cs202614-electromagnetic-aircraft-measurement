@@ -186,14 +186,15 @@ python code\run_cst_huygens_baseline.py
 ```
 
 It writes `data/sampling_layouts/cst_level1_huygens_baseline/` and compares
-`electric_sheet_only`, `huygens_em_plus`, and `huygens_em_minus` on the full
-162-point layout. The runner now also includes a nearest-neighbor surface
-smoothness sweep (`smooth_lambda = 0`, `1e-6`, `1e-4`, `1e-2`). The current
-best result is still `diagnostic_only` (`min_corr ~= 0.778`,
-`max_nmse ~= 0.264`, large main-lobe error), and the best row keeps
-`smooth_lambda = 0`. A small smoothness penalty lowers the worst NMSE and
-coefficient-jump metric slightly, but it does not close the physics gate. This
-is not yet a report-ready reduced-sampling proof.
+compact `radiating_dipole` rows against fuller `current_green` diagnostic rows
+on the full 162-point layout. The runner also includes a nearest-neighbor
+surface smoothness sweep (`smooth_lambda = 0`, `1e-6`, `1e-4`, `1e-2`). The
+current best result is still `diagnostic_only` (`field_model =
+radiating_dipole`, `min_corr ~= 0.778`, `max_nmse ~= 0.264`, large main-lobe
+error), and the best row keeps `smooth_lambda = 0`. The `current_green` rows
+track the compact model closely, and a small smoothness penalty lowers the
+worst NMSE and coefficient-jump metric slightly but does not close the physics
+gate. This is not yet a report-ready reduced-sampling proof.
 
 The scalar spherical NF-FF reduced-layout tradeoff has also been added:
 
@@ -215,10 +216,10 @@ Updated sprint order:
 2. Wait for or produce true CST near-field monitor CSVs, then rerun source
    sweep, convention check, SWE baseline, spherical reduced-layout tradeoff, and
    Huygens baseline on that input.
-3. Improve the Huygens operator with fuller electric/magnetic surface-current
-   Green functions; keep the new surface smoothness sweep as a diagnostic axis,
-   then add node-group and multi-frequency regularization after the operator
-   convention is stable.
+3. Validate the Huygens electric/magnetic surface-current convention beyond
+   the current `current_green` diagnostic branch; keep the field-model and
+   surface smoothness sweeps as diagnostic axes, then add node-group and
+   multi-frequency regularization after the operator convention is stable.
 4. Use the generated true-monitor rerun queue: `full_grid_162` first,
    `geometric_farthest_32` second, and `fibonacci_snap_120` as the conservative
    120-point cross-check.

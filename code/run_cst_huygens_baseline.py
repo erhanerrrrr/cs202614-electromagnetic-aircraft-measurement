@@ -39,9 +39,12 @@ DEFAULT_CANDIDATES = ("full_grid_162",)
 DEFAULT_LAMBDAS = (1e-10, 1e-8, 1e-6, 1e-4, 1e-2)
 DEFAULT_SMOOTH_LAMBDAS = (0.0, 1e-6, 1e-4, 1e-2)
 MODEL_VARIANTS = {
-    "electric_sheet_only": {"include_magnetic": False, "magnetic_sign": 0.0},
-    "huygens_em_plus": {"include_magnetic": True, "magnetic_sign": 1.0},
-    "huygens_em_minus": {"include_magnetic": True, "magnetic_sign": -1.0},
+    "electric_sheet_only": {"include_magnetic": False, "magnetic_sign": 0.0, "field_model": "radiating_dipole"},
+    "huygens_em_plus": {"include_magnetic": True, "magnetic_sign": 1.0, "field_model": "radiating_dipole"},
+    "huygens_em_minus": {"include_magnetic": True, "magnetic_sign": -1.0, "field_model": "radiating_dipole"},
+    "electric_current_green": {"include_magnetic": False, "magnetic_sign": 0.0, "field_model": "current_green"},
+    "huygens_current_green_plus": {"include_magnetic": True, "magnetic_sign": 1.0, "field_model": "current_green"},
+    "huygens_current_green_minus": {"include_magnetic": True, "magnetic_sign": -1.0, "field_model": "current_green"},
 }
 CENTER_POINT = np.array([0.0, 0.0, 4.0])
 
@@ -66,6 +69,7 @@ def predicted_power_from_solution(
     include_magnetic: bool,
     magnetic_sign: float,
     weight_mode: str,
+    field_model: str,
 ) -> np.ndarray:
     far_matrix = build_huygens_farfield_matrix(
         surface,
@@ -75,6 +79,7 @@ def predicted_power_from_solution(
         include_magnetic=include_magnetic,
         magnetic_sign=magnetic_sign,
         weight_mode=weight_mode,
+        field_model=field_model,
     )
     predicted = far_matrix @ solution
     n_angles = theta.size
@@ -156,6 +161,7 @@ def solve_case(
     variant = MODEL_VARIANTS[model_variant]
     include_magnetic = bool(variant["include_magnetic"])
     magnetic_sign = float(variant["magnetic_sign"])
+    field_model = str(variant["field_model"])
     sensor_ids_requested = pd.to_numeric(candidate_group["sensor_id"], errors="coerce").dropna().astype(int).to_numpy()
     candidate_nf = subset_nearfield(nearfield, sensor_ids_requested)
     measurement, sensor_ids_used = measurement_vector_from_nearfield(candidate_nf, sample_id, frequency_hz)
@@ -168,6 +174,7 @@ def solve_case(
         include_magnetic=include_magnetic,
         magnetic_sign=magnetic_sign,
         weight_mode=weight_mode,
+        field_model=field_model,
     )
     solution = solve_huygens_regularized(matrix, measurement, lambda_reg, smooth_lambda, smoothness_matrix)
     residual = matrix @ solution - measurement
@@ -182,8 +189,10 @@ def solve_case(
         include_magnetic=include_magnetic,
         magnetic_sign=magnetic_sign,
         weight_mode=weight_mode,
+        field_model=field_model,
     )
     metrics = sanitize_metrics(pattern_metrics(true_power, rec_power, theta, phi))
+    approximation = f"{'electric_magnetic' if include_magnetic else 'electric'}_{field_model}"
     row: dict[str, object] = {
         "sample_id": sample_id,
         "frequency_hz": float(frequency_hz),
@@ -195,7 +204,8 @@ def solve_case(
         "surface_path": display_path(surface_path),
         "surface_nodes": int(surface.positions.shape[0]),
         "model_variant": model_variant,
-        "approximation": "electric_magnetic_dipole_sheet" if include_magnetic else "electric_dipole_sheet",
+        "field_model": field_model,
+        "approximation": approximation,
         "include_magnetic": int(include_magnetic),
         "magnetic_sign": float(magnetic_sign),
         "weight_mode": weight_mode,
@@ -245,6 +255,7 @@ def solution_records(
     model_variant: str,
     lambda_reg: float,
     smooth_lambda: float,
+    field_model: str,
     weight_mode: str,
 ) -> list[dict[str, object]]:
     include_magnetic = bool(MODEL_VARIANTS[model_variant]["include_magnetic"])
@@ -262,6 +273,7 @@ def solution_records(
                 "frequency_hz": float(frequency_hz),
                 "candidate": candidate,
                 "model_variant": model_variant,
+                "field_model": field_model,
                 "lambda_reg": float(lambda_reg),
                 "smooth_lambda": float(smooth_lambda),
                 "weight_mode": weight_mode,
@@ -352,6 +364,7 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
                 "prior_id",
                 "surface_path",
                 "model_variant",
+                "field_model",
                 "approximation",
                 "include_magnetic",
                 "magnetic_sign",
@@ -404,6 +417,7 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
         (results["prior_id"] == best["prior_id"])
         & (results["surface_path"] == best["surface_path"])
         & (results["model_variant"] == best["model_variant"])
+        & (results["field_model"] == best["field_model"])
         & (results["weight_mode"] == best["weight_mode"])
         & (results["candidate"] == best["candidate"])
         & np.isclose(results["lambda_reg"], float(best["lambda_reg"]))
@@ -420,6 +434,7 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
             row["prior_id"] == best["prior_id"]
             and row["surface_path"] == best["surface_path"]
             and row["model_variant"] == best["model_variant"]
+            and row["field_model"] == best["field_model"]
             and row["weight_mode"] == best["weight_mode"]
             and row["candidate"] == best["candidate"]
             and math.isclose(float(row["lambda_reg"]), float(best["lambda_reg"]), rel_tol=1e-12, abs_tol=0.0)
@@ -436,6 +451,7 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
                     str(row["model_variant"]),
                     float(row["lambda_reg"]),
                     float(row["smooth_lambda"]),
+                    str(row["field_model"]),
                     str(row["weight_mode"]),
                 )
             )
@@ -456,6 +472,7 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
         "best_setting": {
             "prior_id": str(best["prior_id"]),
             "model_variant": str(best["model_variant"]),
+            "field_model": str(best["field_model"]),
             "candidate": str(best["candidate"]),
             "lambda_reg": float(best["lambda_reg"]),
             "smooth_lambda": float(best["smooth_lambda"]),
@@ -479,7 +496,8 @@ def write_markdown_summary(out_dir: Path, by_setting: pd.DataFrame, best_cases: 
     rows = []
     for row in by_setting.itertuples(index=False):
         rows.append(
-            f"| {row.prior_id} | {row.model_variant} | {row.candidate} | {row.lambda_reg:.0e} | {row.smooth_lambda:.0e} | "
+            f"| {row.prior_id} | {row.model_variant} | {row.field_model} | {row.candidate} | "
+            f"{row.lambda_reg:.0e} | {row.smooth_lambda:.0e} | "
             f"{row.status} | {row.min_correlation:.4f} | {row.max_nmse:.4e} | "
             f"{row.max_main_lobe_error_deg:.2f} | {row.mean_relative_residual:.4e} | "
             f"{row.mean_smoothness_relative_jump:.4e} | {row.mean_active_nodes:.1f} |"
@@ -508,8 +526,9 @@ def write_markdown_summary(out_dir: Path, by_setting: pd.DataFrame, best_cases: 
     content = f"""# CST Level 1 Huygens Surface Baseline
 
 This directory evaluates the first Huygens-style surface-source prior against
-the current Level 1 CST near/far-field export. The implementation uses a compact
-electric/magnetic dipole-sheet approximation: each surface node has two
+the current Level 1 CST near/far-field export. The implementation compares a
+compact radiating-dipole sheet against a fuller current-Green diagnostic:
+each surface node has two
 tangential electric-current coefficients and, for the Huygens variants, two
 tangential magnetic-current coefficients. The runner also sweeps a local
 surface smoothness penalty through `--smooth-lambda`. It is a runnable
@@ -529,6 +548,7 @@ diagnostic baseline, not a final Stratton-Chu/Huygens integral solver.
 |---|---|
 | Prior | `{best['prior_id']}` |
 | Model variant | `{best['model_variant']}` |
+| Field model | `{best['field_model']}` |
 | Candidate | `{best['candidate']}` |
 | Lambda | `{best['lambda_reg']:.0e}` |
 | Smooth lambda | `{best['smooth_lambda']:.0e}` |
@@ -550,8 +570,8 @@ diagnostic baseline, not a final Stratton-Chu/Huygens integral solver.
 
 ## Setting Ranking
 
-| Prior | Variant | Candidate | Lambda | Smooth lambda | Status | Min Corr | Max NMSE | Max lobe / deg | Mean residual | Mean smooth jump | Mean active nodes |
-|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|
+| Prior | Variant | Field model | Candidate | Lambda | Smooth lambda | Status | Min Corr | Max NMSE | Max lobe / deg | Mean residual | Mean smooth jump | Mean active nodes |
+|---|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|
 {chr(10).join(rows)}
 
 ## Reading

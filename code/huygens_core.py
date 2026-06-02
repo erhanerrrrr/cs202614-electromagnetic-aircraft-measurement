@@ -118,14 +118,23 @@ def electric_dipole_near_field(
     source_position: np.ndarray,
     moment: np.ndarray,
     frequency_hz: float,
+    field_model: str = "radiating_dipole",
 ) -> tuple[np.ndarray, np.ndarray]:
     k = 2.0 * np.pi * frequency_hz / C0
     rel = obs_positions - source_position[None, :]
     distance = np.linalg.norm(rel, axis=1)
     r_hat = rel / np.maximum(distance[:, None], 1e-15)
-    transverse = moment[None, :] - r_hat * np.sum(r_hat * moment[None, :], axis=1, keepdims=True)
+    radial_projection = np.sum(r_hat * moment[None, :], axis=1, keepdims=True)
+    transverse = moment[None, :] - r_hat * radial_projection
     phase = np.exp(-1j * k * distance) / np.maximum(distance, 1e-12)
-    return transverse * phase[:, None], r_hat
+    if field_model == "radiating_dipole":
+        return transverse * phase[:, None], r_hat
+    if field_model == "current_green":
+        kr = np.maximum(k * distance, 1e-12)
+        radial_term = 3.0 * r_hat * radial_projection - moment[None, :]
+        near_factor = (1.0 / (kr**2) + 1j / kr)[:, None]
+        return (transverse + near_factor * radial_term) * phase[:, None], r_hat
+    raise ValueError(f"unsupported Huygens field model: {field_model}")
 
 
 def electric_dipole_far_field(
@@ -133,7 +142,10 @@ def electric_dipole_far_field(
     source_position: np.ndarray,
     moment: np.ndarray,
     frequency_hz: float,
+    field_model: str = "radiating_dipole",
 ) -> np.ndarray:
+    if field_model not in {"radiating_dipole", "current_green"}:
+        raise ValueError(f"unsupported Huygens field model: {field_model}")
     k = 2.0 * np.pi * frequency_hz / C0
     phase = np.exp(1j * k * (r_hat @ source_position))
     transverse = moment[None, :] - r_hat * np.sum(r_hat * moment[None, :], axis=1, keepdims=True)
@@ -142,6 +154,45 @@ def electric_dipole_far_field(
 
 def magnetic_dual_field(r_hat: np.ndarray, electric_like_field: np.ndarray, sign: float = 1.0) -> np.ndarray:
     return sign * np.cross(r_hat, electric_like_field)
+
+
+def magnetic_current_near_field(
+    obs_positions: np.ndarray,
+    source_position: np.ndarray,
+    moment: np.ndarray,
+    frequency_hz: float,
+    sign: float = 1.0,
+    field_model: str = "radiating_dipole",
+) -> tuple[np.ndarray, np.ndarray]:
+    k = 2.0 * np.pi * frequency_hz / C0
+    rel = obs_positions - source_position[None, :]
+    distance = np.linalg.norm(rel, axis=1)
+    r_hat = rel / np.maximum(distance[:, None], 1e-15)
+    phase = np.exp(-1j * k * distance) / np.maximum(distance, 1e-12)
+    if field_model == "radiating_dipole":
+        field = np.cross(r_hat, moment[None, :]) * phase[:, None]
+    elif field_model == "current_green":
+        kr = np.maximum(k * distance, 1e-12)
+        curl_factor = (1.0 + 1.0 / (1j * kr))[:, None]
+        field = np.cross(r_hat, moment[None, :]) * curl_factor * phase[:, None]
+    else:
+        raise ValueError(f"unsupported Huygens field model: {field_model}")
+    return sign * field, r_hat
+
+
+def magnetic_current_far_field(
+    r_hat: np.ndarray,
+    source_position: np.ndarray,
+    moment: np.ndarray,
+    frequency_hz: float,
+    sign: float = 1.0,
+    field_model: str = "radiating_dipole",
+) -> np.ndarray:
+    if field_model not in {"radiating_dipole", "current_green"}:
+        raise ValueError(f"unsupported Huygens field model: {field_model}")
+    k = 2.0 * np.pi * frequency_hz / C0
+    phase = np.exp(1j * k * (r_hat @ source_position))
+    return sign * np.cross(r_hat, moment[None, :]) * phase[:, None]
 
 
 def project_theta_phi(field: np.ndarray, e_theta: np.ndarray, e_phi: np.ndarray) -> np.ndarray:
@@ -158,6 +209,7 @@ def build_huygens_measurement_matrix(
     include_magnetic: bool = True,
     magnetic_sign: float = 1.0,
     weight_mode: str = "sqrt_area",
+    field_model: str = "radiating_dipole",
 ) -> np.ndarray:
     if sensor_indices is None:
         sensor_indices = np.arange(layout.positions.shape[0])
@@ -172,11 +224,24 @@ def build_huygens_measurement_matrix(
     for node_idx, source_position in enumerate(surface.positions):
         tangents = (surface.tangent1[node_idx], surface.tangent2[node_idx])
         for tangent_idx, moment in enumerate(tangents):
-            electric_field, r_hat = electric_dipole_near_field(positions, source_position, moment, frequency_hz)
+            electric_field, _ = electric_dipole_near_field(
+                positions,
+                source_position,
+                moment,
+                frequency_hz,
+                field_model=field_model,
+            )
             col = basis_per_node * node_idx + tangent_idx
             matrix[:, col] = project_theta_phi(electric_field, e_theta, e_phi) * factors[node_idx]
             if include_magnetic:
-                magnetic_field = magnetic_dual_field(r_hat, electric_field, sign=magnetic_sign)
+                magnetic_field, _ = magnetic_current_near_field(
+                    positions,
+                    source_position,
+                    moment,
+                    frequency_hz,
+                    sign=magnetic_sign,
+                    field_model=field_model,
+                )
                 matrix[:, col + 2] = project_theta_phi(magnetic_field, e_theta, e_phi) * factors[node_idx]
     return matrix
 
@@ -189,6 +254,7 @@ def build_huygens_farfield_matrix(
     include_magnetic: bool = True,
     magnetic_sign: float = 1.0,
     weight_mode: str = "sqrt_area",
+    field_model: str = "radiating_dipole",
 ) -> np.ndarray:
     r_hat, e_theta, e_phi = spherical_basis(theta, phi)
     basis_per_node = surface_basis_count(include_magnetic)
@@ -198,10 +264,23 @@ def build_huygens_farfield_matrix(
     for node_idx, source_position in enumerate(surface.positions):
         tangents = (surface.tangent1[node_idx], surface.tangent2[node_idx])
         for tangent_idx, moment in enumerate(tangents):
-            electric_field = electric_dipole_far_field(r_hat, source_position, moment, frequency_hz)
+            electric_field = electric_dipole_far_field(
+                r_hat,
+                source_position,
+                moment,
+                frequency_hz,
+                field_model=field_model,
+            )
             col = basis_per_node * node_idx + tangent_idx
             matrix[:, col] = project_theta_phi(electric_field, e_theta, e_phi) * factors[node_idx]
             if include_magnetic:
-                magnetic_field = magnetic_dual_field(r_hat, electric_field, sign=magnetic_sign)
+                magnetic_field = magnetic_current_far_field(
+                    r_hat,
+                    source_position,
+                    moment,
+                    frequency_hz,
+                    sign=magnetic_sign,
+                    field_model=field_model,
+                )
                 matrix[:, col + 2] = project_theta_phi(magnetic_field, e_theta, e_phi) * factors[node_idx]
     return matrix

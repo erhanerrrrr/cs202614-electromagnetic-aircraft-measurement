@@ -27,7 +27,7 @@
 | `cst_true_nearfield_workpack/reference_self_check/` | `python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check` | 对照脚本自检结果，不是新增 CST 物理证据。 |
 | `cst_true_nearfield_workpack/gate_report/` | `python code\run_true_nearfield_gate.py` | 当前 true-monitor 队列状态、可用源文件、派生状态、行数检查和参考比较汇总。 |
 | `source_priors/huygens_surface/` | `python code\prepare_huygens_surface_prior.py` | Huygens 面源节点、法向/切向基、面积权重和四复未知量合同。 |
-| `sampling_layouts/cst_level1_huygens_baseline/` | `python code\run_cst_huygens_baseline.py` | First Huygens-style surface-source reconstruction baseline; current result is diagnostic only. |
+| `sampling_layouts/cst_level1_huygens_baseline/` | `python code\run_cst_huygens_baseline.py` | First Huygens-style surface-source reconstruction baseline, including `radiating_dipole` and `current_green` field-model diagnostics; current result is diagnostic only. |
 
 ## 使用约定
 
@@ -42,12 +42,14 @@
 
 `sampling_layouts/cst_level1_huygens_baseline/` is generated from the local
 Level 1 CST export and the `source_priors/huygens_surface/` geometry contract.
-It records a runnable electric/magnetic dipole-sheet approximation plus a
-surface smoothness sweep (`smooth_lambda = 0`, `1e-6`, `1e-4`, `1e-2`). The
-best setting is still `diagnostic_only` (`min_corr ~= 0.778`,
-`max_nmse ~= 0.264`, best `smooth_lambda = 0`). A small smoothness penalty
-slightly lowers NMSE/jump but does not pass the physics gate. Keep it as
-model-calibration evidence, not as reduced-sampling validation.
+It records a runnable electric/magnetic dipole-sheet approximation, a fuller
+`current_green` near-field diagnostic branch, and a surface smoothness sweep
+(`smooth_lambda = 0`, `1e-6`, `1e-4`, `1e-2`). The best setting is still
+`diagnostic_only` (`field_model = radiating_dipole`, `min_corr ~= 0.778`,
+`max_nmse ~= 0.264`, best `smooth_lambda = 0`). The `current_green` rows stay
+very close to the compact model, and a small smoothness penalty slightly lowers
+NMSE/jump but does not pass the physics gate. Keep it as model-calibration
+evidence, not as reduced-sampling validation.
 
 ## Spherical reduced-layout note
 

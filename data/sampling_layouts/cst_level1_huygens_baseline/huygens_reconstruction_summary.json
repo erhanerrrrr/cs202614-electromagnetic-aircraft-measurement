@@ -7,23 +7,24 @@
   "surface_count": 1,
   "pair_count": 2,
   "candidate_count": 1,
-  "model_variant_count": 3,
+  "model_variant_count": 6,
   "smooth_lambda_count": 4,
   "weight_mode": "sqrt_area",
   "best_setting": {
     "prior_id": "level1_local_sphere_r0p35",
     "model_variant": "huygens_em_minus",
+    "field_model": "radiating_dipole",
     "candidate": "full_grid_162",
     "lambda_reg": 0.01,
     "smooth_lambda": 0.0,
     "smoothness_neighbor_count": 6,
     "status": "diagnostic_only",
-    "min_correlation": 0.7780767817629075,
-    "max_nmse": 0.2642287639968162,
+    "min_correlation": 0.7780767817629073,
+    "max_nmse": 0.26422876399681716,
     "max_main_lobe_error_deg": 166.7079437239813,
     "mean_relative_residual": 0.6194226423415673,
     "mean_smoothness_relative_jump": 2.3931142304443416,
     "mean_active_nodes": 96.0,
-    "mean_top10_node_energy_share": 0.2971667675261782
+    "mean_top10_node_energy_share": 0.2971667675261783
   }
 }
