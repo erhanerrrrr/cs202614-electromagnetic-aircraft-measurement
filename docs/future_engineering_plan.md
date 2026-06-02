@@ -540,3 +540,53 @@ Remaining G5 validation before final report-level confidence:
 4. Keep the G3 boundary separate: this G5 result supports classification
    robustness, while reduced-layout reconstruction still waits on true CST
    near-field monitor CSVs and a physical/vector baseline gate.
+
+## 16. 2026-06-02 G5 leave-one-stress-family-out update
+
+The next G5 validation step is now implemented:
+
+```powershell
+python code\run_cst_recognition_leave_one_family_out.py
+```
+
+It writes `data/recognition_stress_tests/level2_leave_one_family_out/`:
+
+- `recognition_leave_one_family_metrics.csv`: one row per selected layout,
+  held-out error family, and held-out stress case.
+- `recognition_leave_one_family_summary.json`: input references, family
+  mapping, training manifests, model reports, and worst-case summary.
+- `README.md`: teammate-facing interpretation and claim boundary.
+
+Method:
+
+- Stress cases are grouped into `noise`, `phase`, `dropout`, and `combined`.
+- For each run, one family is withheld from augmentation.
+- The model trains on clean plus the remaining stress families.
+- The same held-out sample split is then evaluated only on the unseen family.
+
+Current result:
+
+- Five layouts are tested: `full_grid_162`, `geometric_farthest_32`,
+  `fibonacci_snap_120`, `task_driven_32`, and `task_driven_48`.
+- Four held-out families are tested, covering seven non-clean stress cases.
+- All 35 layout/family/stress rows remain above the `0.85` threshold.
+- The tightest rows are held-out `dropout_25pct` for
+  `geometric_farthest_32` and `task_driven_48`, both at accuracy about
+  `0.867`, which is `-0.133` versus full perturbation-aware training.
+- Held-out `noise`, `phase`, and `combined` rows remain at accuracy `1.000`.
+
+Engineering interpretation: this is stronger evidence than full augmentation
+because the tested error family is unseen during training augmentation. It
+supports the claim that the current feature/model stack has some internal
+generalization across measurement-error families on Level 2 CST-derived data.
+The main remaining G5 margin is missing-channel/dropout behavior.
+
+Next G5 actions:
+
+1. Add repeated random seeds for noise/dropout draws and report mean, minimum,
+   and confidence intervals for clean-train, full-augmented, and
+   leave-one-family settings.
+2. Try dropout-aware features or simple missing-channel imputation to widen the
+   `dropout_25pct` margin.
+3. Preserve the report boundary: this is still internal perturbation-family
+   evidence, not full-wave airframe validation or real instrument calibration.
