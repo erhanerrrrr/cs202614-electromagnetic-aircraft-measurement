@@ -248,3 +248,34 @@ true near-field monitor CSVs have not been exported into
 for collaboration: CST operators know exactly which files to produce, and
 algorithm operators have a single command to decide whether G3 can proceed or
 must be rerun on authoritative monitor data.
+
+## 8. 2026-06-02 G3 model dashboard update
+
+The current G3 evidence is now consolidated by:
+
+```powershell
+python code\build_g3_model_dashboard.py
+```
+
+It writes `outputs/g3_model_dashboard/` and produces the future-plan filenames
+`model_comparison.md` and `reconstruction_metrics.csv`, plus
+`g3_model_status.csv`, `g3_next_actions.csv`, and
+`g3_dashboard_summary.json`.
+
+Current dashboard summary:
+
+- `true_nearfield_monitor_gate` is `pending_source`; this is the active
+  project boundary.
+- Center-source prior and scalar spherical NF-FF baseline remain the trusted
+  sanity checks for angle, polarization, and far-field comparison.
+- `geometric_farthest_32` remains the smallest scalar SWE `strict_pass`
+  reduced layout, but only as a true-monitor rerun priority.
+- Generic grid, group-sparse, convention check, and Huygens surface prior remain
+  `diagnostic_only`, so they should be written as calibration/bottleneck
+  evidence rather than final sampling proof.
+
+Use this dashboard as the first G3 decision entry in future sprints: if the
+true-monitor gate remains pending, the CST operator exports monitor CSVs; if it
+reports `needs_physical_rerun`, the algorithm operator reruns the source-model,
+SWE, reduced-layout, and Huygens baselines on authoritative monitor data before
+updating report claims.

@@ -1,0 +1,18 @@
+{
+  "generated_by": "code/build_g3_model_dashboard.py",
+  "status_counts": {
+    "diagnostic_only": 4,
+    "strict_pass": 2,
+    "corr_pass_nmse_near": 2,
+    "pending_source": 1
+  },
+  "true_monitor_status": "pending_source",
+  "trusted_or_near_pass_count": 4,
+  "diagnostic_only_count": 4,
+  "output_files": {
+    "model_comparison": "outputs\\g3_model_dashboard\\model_comparison.md",
+    "g3_model_status": "outputs\\g3_model_dashboard\\g3_model_status.csv",
+    "reconstruction_metrics": "outputs\\g3_model_dashboard\\reconstruction_metrics.csv",
+    "next_actions": "outputs\\g3_model_dashboard\\g3_next_actions.csv"
+  }
+}

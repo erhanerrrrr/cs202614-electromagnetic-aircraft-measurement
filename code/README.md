@@ -45,6 +45,7 @@
 |---|---|
 | `run_cst_recognition.py`、`run_cst_recognition_ablation.py` | 空域、频率、极化等特征提取与分类识别实验。 |
 | `run_cst_structure_comparison.py` | 结构/安装影响对比实验。 |
+| `build_g3_model_dashboard.py` | 汇总 G3 源模型、SWE、Huygens 和真近场 gate 证据，输出当前可汇报结论与下一步动作。 |
 | `build_*.py` | 报告、PPT、提交包、仪表盘和审查材料生成脚本。 |
 
 ## 常用命令
@@ -59,6 +60,7 @@ python code\run_cst_level1_convention_check.py
 python code\prepare_cst_true_nearfield_workpack.py
 python code\derive_true_nearfield_layout_exports.py --sample-id L1_short_dipole_z_1p2G
 python code\run_true_nearfield_gate.py
+python code\build_g3_model_dashboard.py
 python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check
 python code\run_spherical_nf_ff_baseline.py
 python code\run_spherical_nf_ff_tradeoff.py
@@ -96,6 +98,24 @@ gate. It records whether each `full_grid_162`, `geometric_farthest_32`, and
 from a full-grid monitor export when possible, compares available rows against
 the FarfieldPlot-derived reference, and writes
 `data/cst_true_nearfield_workpack/gate_report/`.
+
+## G3 model dashboard addendum
+
+`build_g3_model_dashboard.py` writes `outputs/g3_model_dashboard/`. It
+consolidates the current Level 1 evidence into:
+
+- `model_comparison.md`: report-safe interpretation and next actions.
+- `g3_model_status.csv`: one evidence row per source/SWE/Huygens/gate artifact.
+- `reconstruction_metrics.csv`: same model status table under the future-plan
+  metric filename.
+- `g3_next_actions.csv`: owner/gate/action table for CST, algorithm, and report
+  operators.
+
+Current dashboard decision: do not claim final reduced-sampling proof yet. The
+true CST near-field monitor gate is still `pending_source`, so `full_grid_162`
+monitor data must be exported first. The scalar spherical NF-FF 32-point result
+is a true-monitor rerun priority, while Huygens and generic source-grid rows
+remain `diagnostic_only`.
 
 ## Huygens baseline addendum
 

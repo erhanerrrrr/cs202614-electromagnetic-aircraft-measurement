@@ -278,3 +278,28 @@ Boundary: the result is still based on FarfieldPlot-derived angular samples and
 a scalar, not full vector, SWE approximation. It should not be written as final
 reduced-sampling proof until the true near-field monitor and physical Huygens
 or vector SWE baseline agree.
+
+## G3 Model Dashboard
+
+Run:
+
+```powershell
+python code\build_g3_model_dashboard.py
+```
+
+This writes `outputs/g3_model_dashboard/` and gives the team a single decision
+surface for G3:
+
+- `model_comparison.md` is the human-facing status note.
+- `g3_model_status.csv` and `reconstruction_metrics.csv` summarize each
+  source/SWE/Huygens/gate artifact with status, trust level, best setting, and
+  blocker.
+- `g3_next_actions.csv` assigns the next actions to CST, algorithm, and
+  report/PPT operators.
+
+Current decision: the true-monitor gate is still `pending_source`, so the next
+CST task is to export authoritative `full_grid_162` true near-field monitor
+CSV files. The 32-point scalar SWE result stays in the dashboard as a rerun
+priority, not a final proof. The generic grid, sparse calibration, convention
+check, and Huygens rows remain diagnostic bottleneck evidence until a physical
+full-grid baseline reaches `strict_pass` or an approved near-pass.
