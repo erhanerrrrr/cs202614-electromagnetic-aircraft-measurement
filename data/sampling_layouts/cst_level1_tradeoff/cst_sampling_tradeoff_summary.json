@@ -1,0 +1,113 @@
+{
+  "generated_by": "code/run_cst_sampling_tradeoff.py",
+  "nearfield": "data\\cst_exports\\level1\\all_nearfield.csv",
+  "farfield": "data\\cst_exports\\level1\\all_farfield.csv",
+  "layouts": "data\\sampling_layouts\\hemisphere_sampling_candidates.csv",
+  "out_dir": "data\\sampling_layouts\\cst_level1_tradeoff",
+  "pair_count": 2,
+  "candidate_count": 6,
+  "lambda_reg": 0.0001,
+  "grid_shape": [
+    5,
+    3,
+    3
+  ],
+  "grid_span_m": {
+    "x": [
+      -0.25,
+      0.25
+    ],
+    "y": [
+      -0.25,
+      0.25
+    ],
+    "z": [
+      3.75,
+      4.25
+    ]
+  },
+  "best_by_sample": [
+    {
+      "sample_id": "L1_halfwave_dipole_z_1p2G",
+      "frequency_hz": 1200000000.0,
+      "best_candidate": "full_grid_162",
+      "best_correlation": 0.8201047927728131,
+      "best_nmse": 0.29838113661240345
+    },
+    {
+      "sample_id": "L1_short_dipole_z_1p2G",
+      "frequency_hz": 1200000000.0,
+      "best_candidate": "full_grid_162",
+      "best_correlation": 0.7929894882043745,
+      "best_nmse": 0.3203551638682805
+    }
+  ],
+  "candidate_summary": [
+    {
+      "candidate": "full_grid_162",
+      "method": "full_grid",
+      "sensor_count": 162,
+      "mean_correlation": 0.8065471404885938,
+      "min_correlation": 0.7929894882043745,
+      "mean_nmse": 0.309368150240342,
+      "max_nmse": 0.3203551638682805,
+      "mean_main_lobe_error_deg": 89.92574848934078,
+      "mean_stable_condition": 185.92676953422503
+    },
+    {
+      "candidate": "dictionary_weighted_120",
+      "method": "dictionary_weighted",
+      "sensor_count": 120,
+      "mean_correlation": 0.6987987179183559,
+      "min_correlation": 0.6740346546309671,
+      "mean_nmse": 0.48976272408095556,
+      "max_nmse": 0.49630159491996784,
+      "mean_main_lobe_error_deg": 114.88978550214199,
+      "mean_stable_condition": 139.18505005575938
+    },
+    {
+      "candidate": "fibonacci_snap_120",
+      "method": "fibonacci_snap",
+      "sensor_count": 120,
+      "mean_correlation": -0.3262935405384133,
+      "min_correlation": -0.3584860288528348,
+      "mean_nmse": 0.9417602973263326,
+      "max_nmse": 0.9429662243160236,
+      "mean_main_lobe_error_deg": 84.1749732914542,
+      "mean_stable_condition": 129.55081376059263
+    },
+    {
+      "candidate": "geometric_farthest_120",
+      "method": "geometric_farthest",
+      "sensor_count": 120,
+      "mean_correlation": -0.41814435092443913,
+      "min_correlation": -0.4444569763397695,
+      "mean_nmse": 0.9898862764805321,
+      "max_nmse": 0.9957033443453939,
+      "mean_main_lobe_error_deg": 84.28868721605852,
+      "mean_stable_condition": 139.5897302906224
+    },
+    {
+      "candidate": "dictionary_weighted_81",
+      "method": "dictionary_weighted",
+      "sensor_count": 81,
+      "mean_correlation": 0.2650843893755487,
+      "min_correlation": 0.256769411508928,
+      "mean_nmse": 0.857283204422874,
+      "max_nmse": 0.8627716319264563,
+      "mean_main_lobe_error_deg": 66.3997791619395,
+      "mean_stable_condition": 322.29535619722526
+    },
+    {
+      "candidate": "task_driven_48",
+      "method": "task_driven",
+      "sensor_count": 48,
+      "mean_correlation": 0.22879298495558284,
+      "min_correlation": 0.22615066144732254,
+      "mean_nmse": 0.6967369329911022,
+      "max_nmse": 0.6976392545577886,
+      "mean_main_lobe_error_deg": 114.85766415803315,
+      "mean_stable_condition": 29.663899813346887
+    }
+  ]
+}
