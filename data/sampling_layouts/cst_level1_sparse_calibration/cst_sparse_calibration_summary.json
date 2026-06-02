@@ -1,0 +1,24 @@
+{
+  "generated_by": "code/run_cst_sparse_reconstruction.py",
+  "nearfield": "data\\cst_exports\\level1\\all_nearfield.csv",
+  "farfield": "data\\cst_exports\\level1\\all_farfield.csv",
+  "layouts": "data\\sampling_layouts\\hemisphere_sampling_candidates.csv",
+  "out_dir": "data\\sampling_layouts\\cst_level1_sparse_calibration",
+  "pair_count": 2,
+  "candidate_count": 1,
+  "config_count": 2,
+  "solver_count": 2,
+  "best_setting": {
+    "config": "default_cube_5x3x3",
+    "solver": "group_sparse",
+    "candidate": "full_grid_162",
+    "l2_lambda": 0.0001,
+    "group_alpha_frac": 0.3,
+    "status": "diagnostic_only",
+    "min_correlation": 0.9283214104080826,
+    "max_nmse": 0.0811101083682113,
+    "max_main_lobe_error_deg": 152.70142692289906,
+    "mean_active_sources": 2.0,
+    "mean_center_energy_share": 0.0
+  }
+}

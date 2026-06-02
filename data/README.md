@@ -18,4 +18,5 @@
 - CST 采样诊断由 `python code\run_cst_sampling_tradeoff.py` 生成到 `data/sampling_layouts/cst_level1_tradeoff/`。
 - Level 1 标准源校准检查由 `python code\run_cst_sampling_tradeoff.py --level1-center-source-grid --out-dir data\sampling_layouts\cst_level1_center_source_check` 生成。
 - Level 1 等效源模型扫描由 `python code\run_cst_source_model_sweep.py` 生成到 `data/sampling_layouts/cst_level1_source_model_sweep/`。
+- Level 1 组稀疏等效源校准由 `python code\run_cst_sparse_reconstruction.py` 生成到 `data/sampling_layouts/cst_level1_sparse_calibration/`。
 - 大体量数据如需长期协作，建议后续启用 Git LFS 或发布到 Release/网盘，只在仓库保留索引和校验摘要。

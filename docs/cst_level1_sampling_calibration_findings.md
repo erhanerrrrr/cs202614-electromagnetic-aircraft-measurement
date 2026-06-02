@@ -44,6 +44,13 @@ The current sweep selects `single_center` as the best model with
 zero main-lobe error. The generic multi-point source grids remain diagnostic
 only, so they should not be used as final reduced-sampling evidence yet.
 
+`code/run_cst_sparse_reconstruction.py` adds a group-sparse check on the generic
+Level 1 grids. It improves the default-grid diagnostic from roughly
+`Corr = 0.794`, `NMSE = 0.318` to `Corr = 0.928`, `NMSE = 0.081`, while reducing
+the active source count to about `2`. The main-lobe error remains large, so the
+result confirms that sparsity helps but does not replace source-prior and
+phase/amplitude calibration.
+
 ## Engineering Implication
 
 Do not claim that the 120-point or 81-point CST sampling plan is final. The

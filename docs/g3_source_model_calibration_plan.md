@@ -80,3 +80,25 @@ Use cautious wording for now:
 - Generic source-model calibration is the current bottleneck.
 - Non-redundant 120/81/48/32 point layouts are candidate plans, not final CST
   evidence, until the full 162-point baseline passes under the chosen model.
+
+## Sparse Calibration Entry Point
+
+Run:
+
+```powershell
+python code\run_cst_sparse_reconstruction.py
+```
+
+This writes `data/sampling_layouts/cst_level1_sparse_calibration/`. The sparse
+solver uses a group penalty over each source point's three complex dipole
+moments, so it directly tests whether the generic grid can collapse back toward
+a small number of physical source locations instead of spreading energy across
+the volume.
+
+The current sparse run is diagnostic rather than a pass. The best setting is
+`default_cube_5x3x3` with group sparsity at `group_alpha_frac = 0.3`: min
+correlation improves to about `0.928`, max NMSE improves to about `0.081`, and
+the mean active source count drops to `2`. However, the max main-lobe error is
+still about `153 deg` and center energy share is `0`, so sparsity alone is not
+enough. The next step should be phase/amplitude convention checks and a more
+physical source prior, not just stronger L1 regularization.
