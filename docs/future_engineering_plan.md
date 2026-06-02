@@ -221,3 +221,23 @@ Updated sprint order:
 5. Only after a full-grid physical baseline reaches `strict_pass` or an
    approved near-pass, write the 120/81/48/32 sampling candidates as report-level
    reduced-layout evidence.
+
+## 7. 2026-06-02 true-monitor gate runner update
+
+The true-monitor rerun queue now has a status gate:
+
+```powershell
+python code\run_true_nearfield_gate.py
+```
+
+It writes `data/cst_true_nearfield_workpack/gate_report/`, checks all 18 queued
+case-layout rows, derives reduced layouts from a full-grid monitor export when
+possible, and classifies each row as `pending_source`, `reference_match`,
+`row_count_mismatch`, `pending_comparison`, or `needs_physical_rerun`.
+
+Current committed state: all 18 rows are `pending_source`, because the real CST
+true near-field monitor CSVs have not been exported into
+`data/cst_exports/level1_true_nearfield/` yet. This is the intended clean state
+for collaboration: CST operators know exactly which files to produce, and
+algorithm operators have a single command to decide whether G3 can proceed or
+must be rerun on authoritative monitor data.

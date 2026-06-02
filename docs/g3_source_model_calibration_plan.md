@@ -144,6 +144,18 @@ checklist. The paired comparison script is:
 python code\compare_true_nearfield_exports.py --true-nearfield <true-monitor-csv> --reference-nearfield <farfieldplot-derived-csv> --out-dir data\cst_true_nearfield_workpack\comparison\<sample-id>
 ```
 
+The queue-level gate runner is:
+
+```powershell
+python code\run_true_nearfield_gate.py
+```
+
+It writes `data/cst_true_nearfield_workpack/gate_report/` with one row per
+queued layout. Use `pending_source` to track missing CST monitor CSVs,
+`reference_match` to keep the current Level 1 calibration wording, and
+`needs_physical_rerun` to trigger source-model, sparse, convention, SWE, and
+Huygens reruns on the true-monitor table.
+
 This is now the immediate data-boundary gate before SWE/Huygens work. If true
 monitor exports differ materially from the FarfieldPlot-derived baseline, rerun
 the Level 1 source-model, sparse, convention, and sampling diagnostics on the

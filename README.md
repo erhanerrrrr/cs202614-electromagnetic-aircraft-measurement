@@ -74,7 +74,7 @@
 47. 项目进展跟踪与导师汇报生成：`code/build_progress_report.py`
 48. CST Level 1 FarfieldPlot-derived 角域校准：`code/run_cst_level1_angular_calibration.py`
 49. CST Level 2 简化结构遮挡对照：`code/run_cst_structure_comparison.py`
-50. 球谐 NF-FF 少测点布局诊断：`code/run_spherical_nf_ff_tradeoff.py`，当前将 `geometric_farthest_32` 标记为 true monitor 复跑优先候选，并已由 `code/prepare_cst_true_nearfield_workpack.py` 写入 162/32/120 三档 CST 复跑队列；`code/derive_true_nearfield_layout_exports.py` 可从 162 点真 monitor 导出派生 32/120 CSV。
+50. 球谐 NF-FF 少测点布局诊断：`code/run_spherical_nf_ff_tradeoff.py`，当前将 `geometric_farthest_32` 标记为 true monitor 复跑优先候选，并已由 `code/prepare_cst_true_nearfield_workpack.py` 写入 162/32/120 三档 CST 复跑队列；`code/derive_true_nearfield_layout_exports.py` 可从 162 点真 monitor 导出派生 32/120 CSV；`code/run_true_nearfield_gate.py` 可刷新 `data/cst_true_nearfield_workpack/gate_report/`，记录当前 18 条队列项的源文件、派生和比较 gate 状态。
 
 ## 如何阅读本项目
 
@@ -105,6 +105,7 @@
 23. 若要记录真实 CST 执行，使用 `outputs/cst_execution_logs/README_cst_execution_logs.md`。
 24. 若要判断当前总状态和三人下一步分工，先看 `outputs/master_dashboard/master_status_dashboard.md`。
 25. 若要判断是否能交付，查看 `outputs/completion_audit/completion_audit.md`。
+26. 若要推进真近场 monitor 复跑，先看 `docs/true_nearfield_monitor_workflow.md`，再运行 `python code\run_true_nearfield_gate.py` 查看 `data/cst_true_nearfield_workpack/gate_report/`。
 
 ## Baseline 运行方式
 
