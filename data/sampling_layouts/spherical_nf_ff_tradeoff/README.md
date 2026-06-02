@@ -18,25 +18,25 @@ sampling layouts before spending CST time on true near-field monitor reruns.
 
 ## Best Candidate Per Layout
 
-| Candidate | Sensors | Method | Lmax | Lambda | Modes | Status | Min Corr | Max NMSE | Max lobe error / deg | Max NF fit error | Max condition |
-|---|---:|---|---:|---:|---:|---|---:|---:|---:|---:|---:|
-| geometric_farthest_32 | 32 | geometric_farthest | 4 | 1e-10 | 24 | strict_pass | 0.9991 | 9.7670e-04 | 0.00 | 1.4911e-02 | 7.398e+01 |
-| dictionary_weighted_32 | 32 | dictionary_weighted | 4 | 1e-10 | 24 | strict_pass | 0.9992 | 1.0891e-03 | 0.00 | 1.5122e-02 | 7.843e+01 |
-| dictionary_weighted_48 | 48 | dictionary_weighted | 4 | 1e-10 | 24 | strict_pass | 0.9994 | 9.1960e-04 | 0.00 | 1.3170e-02 | 7.451e+01 |
-| geometric_farthest_48 | 48 | geometric_farthest | 4 | 1e-10 | 24 | strict_pass | 0.9994 | 6.1010e-04 | 0.00 | 1.3413e-02 | 7.689e+01 |
-| fibonacci_snap_81 | 81 | fibonacci_snap | 4 | 0e+00 | 24 | strict_pass | 0.9996 | 2.9256e-04 | 0.00 | 1.2049e-02 | 7.397e+01 |
-| task_driven_81 | 81 | task_driven | 4 | 0e+00 | 24 | strict_pass | 0.9995 | 4.0858e-04 | 0.00 | 1.5481e-02 | 7.785e+01 |
-| geometric_farthest_81 | 81 | geometric_farthest | 4 | 1e-10 | 24 | strict_pass | 0.9995 | 4.3342e-04 | 0.00 | 1.5676e-02 | 8.423e+01 |
-| dictionary_weighted_81 | 81 | dictionary_weighted | 4 | 1e-10 | 24 | strict_pass | 0.9994 | 9.7645e-04 | 0.00 | 1.6670e-02 | 9.223e+01 |
-| fibonacci_snap_120 | 120 | fibonacci_snap | 4 | 0e+00 | 24 | strict_pass | 0.9996 | 2.7067e-04 | 0.00 | 1.3327e-02 | 6.745e+01 |
-| task_driven_120 | 120 | task_driven | 4 | 0e+00 | 24 | strict_pass | 0.9996 | 2.8082e-04 | 0.00 | 1.2793e-02 | 6.916e+01 |
-| geometric_farthest_120 | 120 | geometric_farthest | 4 | 1e-10 | 24 | strict_pass | 0.9996 | 2.8219e-04 | 0.00 | 1.3211e-02 | 6.981e+01 |
-| dictionary_weighted_120 | 120 | dictionary_weighted | 4 | 1e-10 | 24 | strict_pass | 0.9995 | 5.9773e-04 | 0.00 | 1.7524e-02 | 9.157e+01 |
-| full_grid_162 | 162 | full_grid | 4 | 0e+00 | 24 | strict_pass | 0.9990 | 9.2604e-04 | 0.00 | 2.5766e-02 | 1.051e+02 |
-| fibonacci_snap_32 | 32 | fibonacci_snap | 8 | 0e+00 | 80 | diagnostic_only | 0.4020 | 5.5378e-01 | 67.14 | 1.7624e-15 | 2.136e+00 |
-| task_driven_32 | 32 | task_driven | 5 | 0e+00 | 35 | diagnostic_only | 0.9739 | 1.0673e-01 | 79.94 | 2.1761e-15 | 1.103e+03 |
-| fibonacci_snap_48 | 48 | fibonacci_snap | 3 | 0e+00 | 15 | diagnostic_only | 0.9784 | 1.6099e-02 | 17.39 | 5.0304e-02 | 1.918e+01 |
-| task_driven_48 | 48 | task_driven | 8 | 0e+00 | 80 | diagnostic_only | 0.8311 | 3.3350e-01 | 79.81 | 1.9173e-15 | 2.085e+01 |
+| Candidate | Sensors | Method | Lmax | Lambda | Modes | Status | Min power Corr | Max power NMSE | Max lobe error / deg | Max NF fit error | Min FF complex Corr | Max FF complex L2 | Max condition |
+|---|---:|---|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| geometric_farthest_32 | 32 | geometric_farthest | 4 | 1e-10 | 24 | strict_pass | 0.9991 | 9.7670e-04 | 0.00 | 1.4911e-02 | 0.9994 | 3.4677e-02 | 7.398e+01 |
+| dictionary_weighted_32 | 32 | dictionary_weighted | 4 | 1e-10 | 24 | strict_pass | 0.9992 | 1.0891e-03 | 0.00 | 1.5122e-02 | 0.9994 | 3.5153e-02 | 7.843e+01 |
+| dictionary_weighted_48 | 48 | dictionary_weighted | 4 | 1e-10 | 24 | strict_pass | 0.9994 | 9.1960e-04 | 0.00 | 1.3170e-02 | 0.9993 | 3.7529e-02 | 7.451e+01 |
+| geometric_farthest_48 | 48 | geometric_farthest | 4 | 1e-10 | 24 | strict_pass | 0.9994 | 6.1010e-04 | 0.00 | 1.3413e-02 | 0.9994 | 3.5729e-02 | 7.689e+01 |
+| fibonacci_snap_81 | 81 | fibonacci_snap | 4 | 0e+00 | 24 | strict_pass | 0.9996 | 2.9256e-04 | 0.00 | 1.2049e-02 | 0.9992 | 4.0872e-02 | 7.397e+01 |
+| task_driven_81 | 81 | task_driven | 4 | 0e+00 | 24 | strict_pass | 0.9995 | 4.0858e-04 | 0.00 | 1.5481e-02 | 0.9993 | 3.7309e-02 | 7.785e+01 |
+| geometric_farthest_81 | 81 | geometric_farthest | 4 | 1e-10 | 24 | strict_pass | 0.9995 | 4.3342e-04 | 0.00 | 1.5676e-02 | 0.9993 | 3.7260e-02 | 8.423e+01 |
+| dictionary_weighted_81 | 81 | dictionary_weighted | 4 | 1e-10 | 24 | strict_pass | 0.9994 | 9.7645e-04 | 0.00 | 1.6670e-02 | 0.9993 | 3.7962e-02 | 9.223e+01 |
+| fibonacci_snap_120 | 120 | fibonacci_snap | 4 | 0e+00 | 24 | strict_pass | 0.9996 | 2.7067e-04 | 0.00 | 1.3327e-02 | 0.9992 | 3.9041e-02 | 6.745e+01 |
+| task_driven_120 | 120 | task_driven | 4 | 0e+00 | 24 | strict_pass | 0.9996 | 2.8082e-04 | 0.00 | 1.2793e-02 | 0.9993 | 3.8215e-02 | 6.916e+01 |
+| geometric_farthest_120 | 120 | geometric_farthest | 4 | 1e-10 | 24 | strict_pass | 0.9996 | 2.8219e-04 | 0.00 | 1.3211e-02 | 0.9992 | 3.8771e-02 | 6.981e+01 |
+| dictionary_weighted_120 | 120 | dictionary_weighted | 4 | 1e-10 | 24 | strict_pass | 0.9995 | 5.9773e-04 | 0.00 | 1.7524e-02 | 0.9993 | 3.8086e-02 | 9.157e+01 |
+| full_grid_162 | 162 | full_grid | 4 | 0e+00 | 24 | strict_pass | 0.9990 | 9.2604e-04 | 0.00 | 2.5766e-02 | 0.9995 | 3.1596e-02 | 1.051e+02 |
+| fibonacci_snap_32 | 32 | fibonacci_snap | 8 | 0e+00 | 80 | diagnostic_only | 0.4020 | 5.5378e-01 | 67.14 | 1.7624e-15 | 0.7190 | 7.1244e-01 | 2.136e+00 |
+| task_driven_32 | 32 | task_driven | 5 | 0e+00 | 35 | diagnostic_only | 0.9739 | 1.0673e-01 | 79.94 | 2.1761e-15 | 0.9967 | 8.0937e-02 | 1.103e+03 |
+| fibonacci_snap_48 | 48 | fibonacci_snap | 3 | 0e+00 | 15 | diagnostic_only | 0.9784 | 1.6099e-02 | 17.39 | 5.0304e-02 | 0.9950 | 9.9579e-02 | 1.918e+01 |
+| task_driven_48 | 48 | task_driven | 8 | 0e+00 | 80 | diagnostic_only | 0.8311 | 3.3350e-01 | 79.81 | 1.9173e-15 | 0.9771 | 2.1444e-01 | 2.085e+01 |
 
 ## Reading
 

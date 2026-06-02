@@ -27,30 +27,34 @@ but it is not a full vector spherical-wave expansion.
 | Max NMSE | `9.2604e-04` |
 | Max main-lobe error / deg | `0.00` |
 | Max near-field fit relative error | `2.5766e-02` |
+| Min far-field total complex correlation | `0.9995007505023927` |
+| Max far-field total complex L2 error | `0.03159596928494739` |
+| Min theta-component complex correlation | `0.9995007505023924` |
+| Min phi-component complex correlation | `0.8226616814597081` |
 
 ## Top Settings
 
-| Lmax | Lambda | Modes | Status | Min Corr | Max NMSE | Max lobe error / deg | Max NF fit error | Max condition |
-|---:|---:|---:|---|---:|---:|---:|---:|---:|
-| 4 | 0e+00 | 24 | strict_pass | 0.9990 | 9.2604e-04 | 0.00 | 2.5766e-02 | 1.051e+02 |
-| 4 | 1e-10 | 24 | strict_pass | 0.9990 | 9.2604e-04 | 0.00 | 2.5766e-02 | 1.051e+02 |
-| 4 | 1e-08 | 24 | strict_pass | 0.9990 | 9.2604e-04 | 0.00 | 2.5766e-02 | 1.051e+02 |
-| 4 | 1e-06 | 24 | strict_pass | 0.9990 | 9.2580e-04 | 0.00 | 2.5766e-02 | 1.051e+02 |
-| 6 | 0e+00 | 48 | strict_pass | 0.9995 | 1.3790e-03 | 0.00 | 1.1791e-02 | 4.531e+03 |
-| 6 | 1e-10 | 48 | strict_pass | 0.9995 | 1.3790e-03 | 0.00 | 1.1791e-02 | 4.531e+03 |
-| 6 | 1e-08 | 48 | strict_pass | 0.9995 | 1.3786e-03 | 0.00 | 1.1791e-02 | 4.531e+03 |
-| 6 | 1e-06 | 48 | strict_pass | 0.9995 | 1.3439e-03 | 0.00 | 1.1791e-02 | 4.531e+03 |
-| 10 | 1e-06 | 120 | strict_pass | 0.9999 | 1.6088e-04 | 0.00 | 2.7559e-03 | 1.169e+16 |
-| 5 | 1e-10 | 35 | strict_pass | 0.9990 | 6.7071e-04 | 4.78 | 1.9526e-02 | 6.346e+02 |
-| 5 | 0e+00 | 35 | strict_pass | 0.9990 | 6.7071e-04 | 4.78 | 1.9526e-02 | 6.346e+02 |
-| 5 | 1e-08 | 35 | strict_pass | 0.9990 | 6.7071e-04 | 4.78 | 1.9526e-02 | 6.346e+02 |
+| Lmax | Lambda | Modes | Status | Min power Corr | Max power NMSE | Max lobe error / deg | Max NF fit error | Min FF complex Corr | Max FF complex L2 | Max condition |
+|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| 4 | 0e+00 | 24 | strict_pass | 0.9990 | 9.2604e-04 | 0.00 | 2.5766e-02 | 0.9995 | 3.1596e-02 | 1.051e+02 |
+| 4 | 1e-10 | 24 | strict_pass | 0.9990 | 9.2604e-04 | 0.00 | 2.5766e-02 | 0.9995 | 3.1596e-02 | 1.051e+02 |
+| 4 | 1e-08 | 24 | strict_pass | 0.9990 | 9.2604e-04 | 0.00 | 2.5766e-02 | 0.9995 | 3.1596e-02 | 1.051e+02 |
+| 4 | 1e-06 | 24 | strict_pass | 0.9990 | 9.2580e-04 | 0.00 | 2.5766e-02 | 0.9995 | 3.1596e-02 | 1.051e+02 |
+| 6 | 0e+00 | 48 | strict_pass | 0.9995 | 1.3790e-03 | 0.00 | 1.1791e-02 | 0.9998 | 1.8744e-02 | 4.531e+03 |
+| 6 | 1e-10 | 48 | strict_pass | 0.9995 | 1.3790e-03 | 0.00 | 1.1791e-02 | 0.9998 | 1.8744e-02 | 4.531e+03 |
+| 6 | 1e-08 | 48 | strict_pass | 0.9995 | 1.3786e-03 | 0.00 | 1.1791e-02 | 0.9998 | 1.8744e-02 | 4.531e+03 |
+| 6 | 1e-06 | 48 | strict_pass | 0.9995 | 1.3439e-03 | 0.00 | 1.1791e-02 | 0.9998 | 1.8735e-02 | 4.531e+03 |
+| 10 | 1e-06 | 120 | strict_pass | 0.9999 | 1.6088e-04 | 0.00 | 2.7559e-03 | 0.9999 | 1.0397e-02 | 1.169e+16 |
+| 5 | 1e-10 | 35 | strict_pass | 0.9990 | 6.7071e-04 | 4.78 | 1.9526e-02 | 0.9997 | 2.5821e-02 | 6.346e+02 |
+| 5 | 0e+00 | 35 | strict_pass | 0.9990 | 6.7071e-04 | 4.78 | 1.9526e-02 | 0.9997 | 2.5821e-02 | 6.346e+02 |
+| 5 | 1e-08 | 35 | strict_pass | 0.9990 | 6.7071e-04 | 4.78 | 1.9526e-02 | 0.9997 | 2.5821e-02 | 6.346e+02 |
 
 ## Best-Setting Case Results
 
-| Sample | Frequency Hz | Corr | NMSE | Lobe error / deg | NF fit error | True peak theta/phi | Pred peak theta/phi |
-|---|---:|---:|---:|---:|---:|---|---|
-| L1_halfwave_dipole_z_1p2G | 1200000000 | 0.9997 | 3.0115e-04 | 0.00 | 1.9084e-02 | (88.0, 315.0) | (88.0, 315.0) |
-| L1_short_dipole_z_1p2G | 1200000000 | 0.9990 | 9.2604e-04 | 0.00 | 2.5766e-02 | (88.0, 185.0) | (88.0, 185.0) |
+| Sample | Frequency Hz | Power Corr | Power NMSE | Lobe error / deg | NF fit error | FF complex Corr | FF complex L2 | True peak theta/phi | Pred peak theta/phi |
+|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| L1_halfwave_dipole_z_1p2G | 1200000000 | 0.9997 | 3.0115e-04 | 0.00 | 1.9084e-02 | 0.9997 | 2.3904e-02 | (88.0, 315.0) | (88.0, 315.0) |
+| L1_short_dipole_z_1p2G | 1200000000 | 0.9990 | 9.2604e-04 | 0.00 | 2.5766e-02 | 0.9995 | 3.1596e-02 | (88.0, 185.0) | (88.0, 185.0) |
 
 ## Reading
 

@@ -237,10 +237,13 @@ implementation.
 The stable best setting is `lmax = 4`, `lambda = 0`, with 24 modes per
 component. On the two current Level 1 z-dipole cases it reaches `strict_pass`:
 min correlation `0.9990`, max NMSE `9.2604e-04`, zero main-lobe error, and max
-near-field fit relative error about `2.58e-02`. This strengthens the data-path
-argument: the angular, polarization, and far-field comparison conventions are
-internally consistent. It does not remove the need for true near-field monitor
-exports or a more physical Huygens/source-prior model.
+near-field fit relative error about `2.58e-02`. The run now also compares the
+complex tangential far-field components, with total `Etheta/Ephi` complex
+correlation about `0.9995` and total complex relative L2 error about
+`3.16e-02`. This strengthens the data-path argument: the angular, polarization,
+phase, and tangential-component comparison conventions are internally
+consistent. It does not remove the need for true near-field monitor exports or
+a more physical Huygens/source-prior model.
 
 ## Spherical NF-FF Reduced-Layout Tradeoff
 
@@ -258,9 +261,10 @@ case results and one best setting per candidate.
 Current result: `geometric_farthest_32` is the smallest reduced candidate with
 `strict_pass` under this check (`lmax = 4`, `lambda = 1e-10`, min correlation
 about `0.9991`, max NMSE about `9.77e-04`, zero main-lobe error, max near-field
-fit relative error about `1.49e-02`). This is a good next CST true-monitor
-priority, especially alongside one conservative 120-point layout and the full
-162-point reference.
+fit relative error about `1.49e-02`, total complex `Etheta/Ephi` far-field
+correlation about `0.9994`, and total complex relative L2 error about
+`3.47e-02`). This is a good next CST true-monitor priority, especially
+alongside one conservative 120-point layout and the full 162-point reference.
 
 The true-monitor workpack has now encoded that rerun order in
 `data/cst_true_nearfield_workpack/true_nearfield_priority_layout_queue.csv`:

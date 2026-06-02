@@ -16,6 +16,7 @@ from run_spherical_nf_ff_baseline import (
     DEFAULT_NEARFIELD,
     rel,
     run_one_case,
+    safe_float,
     select_pairs,
     status_for_row,
     status_rank,
@@ -54,6 +55,12 @@ def row_record(row: pd.Series) -> dict[str, object]:
         "max_nmse": float(row["max_nmse"]),
         "max_main_lobe_error_deg": float(row["max_main_lobe_error_deg"]),
         "max_nearfield_fit_relative_error": float(row["max_nearfield_fit_relative_error"]),
+        "min_farfield_total_complex_correlation_abs": safe_float(
+            row.get("min_farfield_total_complex_correlation_abs")
+        ),
+        "max_farfield_total_complex_relative_l2_error": safe_float(
+            row.get("max_farfield_total_complex_relative_l2_error")
+        ),
         "max_basis_condition": float(row["max_basis_condition"]),
     }
 
@@ -136,6 +143,12 @@ def build_tables(results: pd.DataFrame, out_dir: Path) -> tuple[pd.DataFrame, pd
             max_main_lobe_error_deg=("main_lobe_error_deg", "max"),
             mean_nearfield_fit_relative_error=("nearfield_fit_relative_error", "mean"),
             max_nearfield_fit_relative_error=("nearfield_fit_relative_error", "max"),
+            min_farfield_total_complex_correlation_abs=("farfield_total_complex_correlation_abs", "min"),
+            max_farfield_total_complex_relative_l2_error=("farfield_total_complex_relative_l2_error", "max"),
+            min_theta_farfield_complex_correlation_abs=("theta_farfield_complex_correlation_abs", "min"),
+            min_phi_farfield_complex_correlation_abs=("phi_farfield_complex_correlation_abs", "min"),
+            max_theta_farfield_error_to_total_norm=("theta_farfield_error_to_total_norm", "max"),
+            max_phi_farfield_error_to_total_norm=("phi_farfield_error_to_total_norm", "max"),
             max_basis_condition=("basis_condition", "max"),
             max_mode_sensor_ratio=("mode_sensor_ratio", "max"),
             any_component_underdetermined=("is_component_underdetermined", "max"),
@@ -249,7 +262,9 @@ def write_readme(out_dir: Path, best_by_candidate: pd.DataFrame, summary: dict[s
             f"| {row.candidate} | {int(row.requested_sensor_count)} | {row.candidate_method} | "
             f"{int(row.lmax)} | {row.lambda_reg:.0e} | {int(row.mode_count)} | {row.status} | "
             f"{row.min_correlation:.4f} | {row.max_nmse:.4e} | {row.max_main_lobe_error_deg:.2f} | "
-            f"{row.max_nearfield_fit_relative_error:.4e} | {row.max_basis_condition:.3e} |"
+            f"{row.max_nearfield_fit_relative_error:.4e} | "
+            f"{row.min_farfield_total_complex_correlation_abs:.4f} | "
+            f"{row.max_farfield_total_complex_relative_l2_error:.4e} | {row.max_basis_condition:.3e} |"
         )
 
     strict = summary["smallest_strict_reduced_candidate"]
@@ -297,8 +312,8 @@ sampling layouts before spending CST time on true near-field monitor reruns.
 
 ## Best Candidate Per Layout
 
-| Candidate | Sensors | Method | Lmax | Lambda | Modes | Status | Min Corr | Max NMSE | Max lobe error / deg | Max NF fit error | Max condition |
-|---|---:|---|---:|---:|---:|---|---:|---:|---:|---:|---:|
+| Candidate | Sensors | Method | Lmax | Lambda | Modes | Status | Min power Corr | Max power NMSE | Max lobe error / deg | Max NF fit error | Min FF complex Corr | Max FF complex L2 | Max condition |
+|---|---:|---|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|
 {chr(10).join(rows)}
 
 ## Reading

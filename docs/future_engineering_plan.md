@@ -352,3 +352,37 @@ Use this script as the sprint decision entrance after every CST file drop. It
 keeps the project from accidentally advancing to reduced-layout or report
 claims before the authoritative monitor data and physical/vector baseline have
 passed the gate.
+
+## 11. 2026-06-02 component-aware SWE sanity update
+
+The scalar spherical NF-FF scripts now record complex tangential far-field
+component residuals in addition to angular power-pattern metrics:
+
+```powershell
+python code\run_spherical_nf_ff_baseline.py
+python code\run_spherical_nf_ff_tradeoff.py
+python code\build_g3_model_dashboard.py
+```
+
+Current full-grid scalar SWE sanity result:
+
+- `lmax = 4`, `lambda = 0`, status `strict_pass`
+- min power correlation about `0.9990`
+- max power NMSE about `9.26e-04`
+- min total complex `Etheta/Ephi` far-field correlation about `0.9995`
+- max total complex `Etheta/Ephi` relative L2 error about `3.16e-02`
+
+Current smallest strict reduced-layout result:
+
+- `geometric_farthest_32`, `lmax = 4`, `lambda = 1e-10`
+- min power correlation about `0.9991`
+- max power NMSE about `9.77e-04`
+- min total complex `Etheta/Ephi` far-field correlation about `0.9994`
+- max total complex `Etheta/Ephi` relative L2 error about `3.47e-02`
+
+This makes the scalar SWE sanity check stronger than a power-only comparison:
+it now checks the complex tangential component path used by the near/far-field
+workflow. The boundary is unchanged: these results are still based on the
+current FarfieldPlot-derived angular samples and a scalar harmonic fit. They
+should be used as layout-prioritization and convention evidence until true CST
+near-field monitor exports and a physical/vector full-grid baseline pass.

@@ -14,10 +14,10 @@ It separates report-safe sanity checks from diagnostic bottlenecks and true-moni
 | Category | Artifact | Status | Trust level | Best setting | Min Corr | Max NMSE | Max lobe / deg | Sensors | Evidence |
 |---|---|---|---|---|---:|---:|---:|---:|---|
 | data_boundary | true_nearfield_monitor_gate | pending_source | blocked_by_authoritative_monitor_data | queue_rows=18, status_counts={'pending_source': 18} |  |  |  |  | `data\cst_true_nearfield_workpack\gate_report\true_nearfield_gate_summary.json` |
-| trusted_sanity | scalar_spherical_nf_ff_baseline | strict_pass | trusted_angle_polarization_check | lmax=4, lambda=0.0, modes=24 | 0.9990 | 9.2604e-04 | 0.00 |  | `data\sampling_layouts\spherical_nf_ff_baseline\spherical_nf_ff_summary.json` |
+| trusted_sanity | scalar_spherical_nf_ff_baseline | strict_pass | trusted_angle_polarization_check | lmax=4, lambda=0.0, modes=24, ff_complex_l2=0.0316 | 0.9990 | 9.2604e-04 | 0.00 |  | `data\sampling_layouts\spherical_nf_ff_baseline\spherical_nf_ff_summary.json` |
 | trusted_sanity | center_source_prior | corr_pass_nmse_near | trusted_data_path_check | full_grid_162, lambda=0.0001, grid=[1, 1, 1] | 0.9926 | 0.0178 | 0.00 | 162 | `data\sampling_layouts\cst_level1_center_source_check\cst_sampling_tradeoff_summary.json` |
 | trusted_sanity | source_model_sweep_best | corr_pass_nmse_near | trusted_for_known_source_only | single_center, lambda=0.001, candidate=full_grid_162 | 0.9926 | 0.0178 | 0.00 |  | `data\sampling_layouts\cst_level1_source_model_sweep\cst_source_model_sweep_summary.json` |
-| rerun_priority | scalar_spherical_nf_ff_reduced_layout | strict_pass | layout_priority_not_final_proof | geometric_farthest_32, lmax=4, lambda=1e-10 | 0.9991 | 9.7670e-04 | 0.00 | 32 | `data\sampling_layouts\spherical_nf_ff_tradeoff\spherical_nf_ff_tradeoff_summary.json` |
+| rerun_priority | scalar_spherical_nf_ff_reduced_layout | strict_pass | layout_priority_not_final_proof | geometric_farthest_32, lmax=4, lambda=1e-10, ff_complex_l2=0.0347 | 0.9991 | 9.7670e-04 | 0.00 | 32 | `data\sampling_layouts\spherical_nf_ff_tradeoff\spherical_nf_ff_tradeoff_summary.json` |
 | model_bottleneck | generic_equivalent_source_grid | diagnostic_only | diagnostic_only | full_grid_162, lambda=0.0001, grid=[5, 3, 3] | 0.7930 | 0.3204 | 89.93 | 162 | `data\sampling_layouts\cst_level1_tradeoff\cst_sampling_tradeoff_summary.json` |
 | model_bottleneck | generic_grid_convention_check | diagnostic_only | diagnostic_only | default_cube_5x3x3, current_phi_sign_flip, lambda=1e-05 | 0.7941 | 0.3184 | 59.96 |  | `data\sampling_layouts\cst_level1_convention_check\cst_convention_check_summary.json` |
 | model_bottleneck | group_sparse_equivalent_sources | diagnostic_only | diagnostic_only | default_cube_5x3x3, group_sparse, l2=0.0001, group=0.3 | 0.9283 | 0.0811 | 152.70 |  | `data\sampling_layouts\cst_level1_sparse_calibration\cst_sparse_calibration_summary.json` |
@@ -26,10 +26,10 @@ It separates report-safe sanity checks from diagnostic bottlenecks and true-moni
 ## Interpretation
 
 - `true_nearfield_monitor_gate`: The immediate G3 boundary is data availability: real CST true near-field monitor CSVs are not present yet.
-- `scalar_spherical_nf_ff_baseline`: The scalar angular SWE check strongly supports angle, phase, and polarization consistency.
+- `scalar_spherical_nf_ff_baseline`: The scalar angular SWE check now includes total complex Etheta/Ephi residuals; it strongly supports angle, phase, and tangential-component consistency.
 - `center_source_prior`: Known center-source prior validates the current CST/Python angle and far-field comparison chain.
 - `source_model_sweep_best`: The scan confirms that the current data chain works under a tight known-source prior.
-- `scalar_spherical_nf_ff_reduced_layout`: The 32-point reduced layout is a true-monitor rerun priority, not final vector SWE proof.
+- `scalar_spherical_nf_ff_reduced_layout`: The 32-point reduced layout has strong power-pattern and complex-component sanity metrics; it is a true-monitor rerun priority, not final vector SWE proof.
 - `generic_equivalent_source_grid`: The generic grid fails before reduced-layout comparison, so low-point claims must wait.
 - `generic_grid_convention_check`: No simple global phase or theta/phi transform rescues the generic grid.
 - `group_sparse_equivalent_sources`: Sparse support improves Corr/NMSE but does not fix the main-lobe/source-convention issue.

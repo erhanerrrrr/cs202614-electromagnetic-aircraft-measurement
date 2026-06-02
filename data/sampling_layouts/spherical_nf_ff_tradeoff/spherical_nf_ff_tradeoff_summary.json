@@ -39,6 +39,8 @@
     "max_nmse": 0.0009766965566670605,
     "max_main_lobe_error_deg": 0.0,
     "max_nearfield_fit_relative_error": 0.014910566881503926,
+    "min_farfield_total_complex_correlation_abs": 0.9993991162604503,
+    "max_farfield_total_complex_relative_l2_error": 0.03467728043945683,
     "max_basis_condition": 73.97694258940265
   },
   "smallest_strict_reduced_candidate": {
@@ -54,6 +56,8 @@
     "max_nmse": 0.0009766965566670605,
     "max_main_lobe_error_deg": 0.0,
     "max_nearfield_fit_relative_error": 0.014910566881503926,
+    "min_farfield_total_complex_correlation_abs": 0.9993991162604503,
+    "max_farfield_total_complex_relative_l2_error": 0.03467728043945683,
     "max_basis_condition": 73.97694258940265
   },
   "smallest_sanity_or_better_reduced_candidate": {
@@ -69,6 +73,8 @@
     "max_nmse": 0.0009766965566670605,
     "max_main_lobe_error_deg": 0.0,
     "max_nearfield_fit_relative_error": 0.014910566881503926,
+    "min_farfield_total_complex_correlation_abs": 0.9993991162604503,
+    "max_farfield_total_complex_relative_l2_error": 0.03467728043945683,
     "max_basis_condition": 73.97694258940265
   },
   "boundary": "This is a scalar angular NF-FF diagnostic on the current FarfieldPlot-derived near-field table. Use it to rank sampling layouts before true CST near-field monitor reruns, not as final vector SWE proof.",

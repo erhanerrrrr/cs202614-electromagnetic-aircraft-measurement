@@ -86,8 +86,10 @@ the best `lmax`/regularization setting per candidate.
 Current diagnostic result: `geometric_farthest_32` is the smallest reduced
 layout that reaches `strict_pass` under this angular scalar check
 (`lmax = 4`, `lambda = 1e-10`, min corr about `0.9991`, max NMSE about
-`9.77e-04`, zero main-lobe error). Treat it as a priority layout for true CST
-near-field monitor reruns, not as final vector SWE or Huygens proof.
+`9.77e-04`, zero main-lobe error, total complex `Etheta/Ephi` far-field
+correlation about `0.9994`, and total complex relative L2 error about
+`3.47e-02`). Treat it as a priority layout for true CST near-field monitor
+reruns, not as final vector SWE or Huygens proof.
 
 `prepare_cst_true_nearfield_workpack.py` now consumes those results and writes
 `true_nearfield_priority_layout_queue.csv` plus
@@ -127,8 +129,9 @@ consolidates the current Level 1 evidence into:
 Current dashboard decision: do not claim final reduced-sampling proof yet. The
 true CST near-field monitor gate is still `pending_source`, so `full_grid_162`
 monitor data must be exported first. The scalar spherical NF-FF 32-point result
-is a true-monitor rerun priority, while Huygens and generic source-grid rows
-remain `diagnostic_only`.
+is a true-monitor rerun priority with both power-pattern and complex-component
+sanity metrics, while Huygens and generic source-grid rows remain
+`diagnostic_only`.
 
 ## Huygens baseline addendum
 

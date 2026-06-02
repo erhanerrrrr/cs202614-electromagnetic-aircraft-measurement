@@ -115,6 +115,99 @@ def component_relative_error(true_values: np.ndarray, pred_values: np.ndarray) -
     return float(np.linalg.norm(pred_values - true_values) / max(float(np.linalg.norm(true_values)), 1e-30))
 
 
+def complex_correlation_abs(true_values: np.ndarray, pred_values: np.ndarray) -> float:
+    true_norm = float(np.linalg.norm(true_values))
+    pred_norm = float(np.linalg.norm(pred_values))
+    if true_norm <= 1e-30 and pred_norm <= 1e-30:
+        return 1.0
+    if true_norm <= 1e-30 or pred_norm <= 1e-30:
+        return 0.0
+    return float(abs(np.vdot(true_values, pred_values)) / max(true_norm * pred_norm, 1e-30))
+
+
+def farfield_components_from_table(
+    df: pd.DataFrame,
+    sample_id: str,
+    frequency_hz: float,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray | None, np.ndarray | None, np.ndarray, tuple[int, int] | None]:
+    theta, phi, power, shape = farfield_power_from_table(df, sample_id, frequency_hz)
+    required = {"e_theta_real", "e_theta_imag", "e_phi_real", "e_phi_imag"}
+    if not required.issubset(set(df.columns)):
+        return theta, phi, None, None, power, shape
+
+    work = df.copy()
+    work["sample_id"] = work["sample_id"].astype(str).str.strip()
+    work["frequency_hz"] = pd.to_numeric(work["frequency_hz"], errors="coerce")
+    mask = (work["sample_id"] == sample_id) & np.isclose(work["frequency_hz"], frequency_hz)
+    sub = work.loc[mask].copy()
+    if sub.empty:
+        raise ValueError(f"no farfield rows for sample_id={sample_id}, frequency_hz={frequency_hz}")
+
+    true_theta = pd.to_numeric(sub["e_theta_real"], errors="coerce").to_numpy(dtype=float) + 1j * pd.to_numeric(
+        sub["e_theta_imag"], errors="coerce"
+    ).to_numpy(dtype=float)
+    true_phi = pd.to_numeric(sub["e_phi_real"], errors="coerce").to_numpy(dtype=float) + 1j * pd.to_numeric(
+        sub["e_phi_imag"], errors="coerce"
+    ).to_numpy(dtype=float)
+    if np.isnan(true_theta).any() or np.isnan(true_phi).any():
+        raise ValueError("farfield table contains non-numeric Etheta/Ephi values")
+    return theta, phi, true_theta, true_phi, power, shape
+
+
+def farfield_component_metrics(
+    true_theta: np.ndarray | None,
+    true_phi: np.ndarray | None,
+    pred_theta: np.ndarray,
+    pred_phi: np.ndarray,
+) -> dict[str, float | str]:
+    if true_theta is None or true_phi is None:
+        return {
+            "farfield_complex_component_status": "missing_complex_farfield_columns",
+            "farfield_total_complex_correlation_abs": float("nan"),
+            "farfield_total_complex_relative_l2_error": float("nan"),
+            "theta_farfield_complex_correlation_abs": float("nan"),
+            "phi_farfield_complex_correlation_abs": float("nan"),
+            "theta_farfield_error_to_total_norm": float("nan"),
+            "phi_farfield_error_to_total_norm": float("nan"),
+            "theta_true_energy_fraction": float("nan"),
+            "phi_true_energy_fraction": float("nan"),
+            "theta_pred_energy_fraction": float("nan"),
+            "phi_pred_energy_fraction": float("nan"),
+        }
+
+    true_total = np.concatenate([true_theta, true_phi])
+    pred_total = np.concatenate([pred_theta, pred_phi])
+    total_norm = max(float(np.linalg.norm(true_total)), 1e-30)
+    pred_total_norm = max(float(np.linalg.norm(pred_total)), 1e-30)
+    theta_true_norm = float(np.linalg.norm(true_theta))
+    phi_true_norm = float(np.linalg.norm(true_phi))
+    theta_pred_norm = float(np.linalg.norm(pred_theta))
+    phi_pred_norm = float(np.linalg.norm(pred_phi))
+    return {
+        "farfield_complex_component_status": "available",
+        "farfield_total_complex_correlation_abs": complex_correlation_abs(true_total, pred_total),
+        "farfield_total_complex_relative_l2_error": float(np.linalg.norm(pred_total - true_total) / total_norm),
+        "theta_farfield_complex_correlation_abs": complex_correlation_abs(true_theta, pred_theta),
+        "phi_farfield_complex_correlation_abs": complex_correlation_abs(true_phi, pred_phi),
+        "theta_farfield_error_to_total_norm": float(np.linalg.norm(pred_theta - true_theta) / total_norm),
+        "phi_farfield_error_to_total_norm": float(np.linalg.norm(pred_phi - true_phi) / total_norm),
+        "theta_true_energy_fraction": float(theta_true_norm**2 / max(total_norm**2, 1e-30)),
+        "phi_true_energy_fraction": float(phi_true_norm**2 / max(total_norm**2, 1e-30)),
+        "theta_pred_energy_fraction": float(theta_pred_norm**2 / max(pred_total_norm**2, 1e-30)),
+        "phi_pred_energy_fraction": float(phi_pred_norm**2 / max(pred_total_norm**2, 1e-30)),
+    }
+
+
+def safe_float(value: object) -> float | None:
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return None
+    if np.isnan(numeric) or np.isinf(numeric):
+        return None
+    return numeric
+
+
 def run_one_case(
     nearfield: pd.DataFrame,
     farfield: pd.DataFrame,
@@ -139,12 +232,17 @@ def run_one_case(
     theta_fit_error = component_relative_error(theta_measurement, theta_fit)
     phi_fit_error = component_relative_error(phi_measurement, phi_fit)
 
-    theta_ff, phi_ff, true_power, farfield_shape = farfield_power_from_table(farfield, sample_id, frequency_hz)
+    theta_ff, phi_ff, true_theta_ff, true_phi_ff, true_power, farfield_shape = farfield_components_from_table(
+        farfield,
+        sample_id,
+        frequency_hz,
+    )
     basis_ff, _ = build_scalar_harmonic_matrix(theta_ff, phi_ff, lmax, include_l0)
     pred_theta = basis_ff @ coeff_theta
     pred_phi = basis_ff @ coeff_phi
     pred_power = np.abs(pred_theta) ** 2 + np.abs(pred_phi) ** 2
     metrics = pattern_metrics(true_power, pred_power, theta_ff, phi_ff)
+    component_metrics = farfield_component_metrics(true_theta_ff, true_phi_ff, pred_theta, pred_phi)
 
     true_peak = int(np.argmax(true_power))
     pred_peak = int(np.argmax(pred_power))
@@ -169,6 +267,7 @@ def run_one_case(
         "main_lobe_error_deg": metrics["main_lobe_error_deg"],
         "raw_peak_angular_distance_deg": peak_distance,
         "peak_error_db": metrics["peak_error_db"],
+        **component_metrics,
         "true_peak_theta_deg": float(np.rad2deg(theta_ff[true_peak])),
         "true_peak_phi_deg": float(np.rad2deg(phi_ff[true_peak])),
         "pred_peak_theta_deg": float(np.rad2deg(theta_ff[pred_peak])),
@@ -212,6 +311,12 @@ def summarize(results: pd.DataFrame, out_dir: Path, args: argparse.Namespace) ->
             max_main_lobe_error_deg=("main_lobe_error_deg", "max"),
             mean_nearfield_fit_relative_error=("nearfield_fit_relative_error", "mean"),
             max_nearfield_fit_relative_error=("nearfield_fit_relative_error", "max"),
+            min_farfield_total_complex_correlation_abs=("farfield_total_complex_correlation_abs", "min"),
+            max_farfield_total_complex_relative_l2_error=("farfield_total_complex_relative_l2_error", "max"),
+            min_theta_farfield_complex_correlation_abs=("theta_farfield_complex_correlation_abs", "min"),
+            min_phi_farfield_complex_correlation_abs=("phi_farfield_complex_correlation_abs", "min"),
+            max_theta_farfield_error_to_total_norm=("theta_farfield_error_to_total_norm", "max"),
+            max_phi_farfield_error_to_total_norm=("phi_farfield_error_to_total_norm", "max"),
             max_basis_condition=("basis_condition", "max"),
         )
     )
@@ -262,6 +367,18 @@ def summarize(results: pd.DataFrame, out_dir: Path, args: argparse.Namespace) ->
             "max_nmse": float(best["max_nmse"]),
             "max_main_lobe_error_deg": float(best["max_main_lobe_error_deg"]),
             "max_nearfield_fit_relative_error": float(best["max_nearfield_fit_relative_error"]),
+            "min_farfield_total_complex_correlation_abs": safe_float(
+                best["min_farfield_total_complex_correlation_abs"]
+            ),
+            "max_farfield_total_complex_relative_l2_error": safe_float(
+                best["max_farfield_total_complex_relative_l2_error"]
+            ),
+            "min_theta_farfield_complex_correlation_abs": safe_float(
+                best["min_theta_farfield_complex_correlation_abs"]
+            ),
+            "min_phi_farfield_complex_correlation_abs": safe_float(best["min_phi_farfield_complex_correlation_abs"]),
+            "max_theta_farfield_error_to_total_norm": safe_float(best["max_theta_farfield_error_to_total_norm"]),
+            "max_phi_farfield_error_to_total_norm": safe_float(best["max_phi_farfield_error_to_total_norm"]),
             "max_basis_condition": float(best["max_basis_condition"]),
         },
     }
@@ -277,13 +394,17 @@ def write_readme(out_dir: Path, by_setting: pd.DataFrame, best_cases: pd.DataFra
         rows.append(
             f"| {int(row.lmax)} | {row.lambda_reg:.0e} | {int(row.mode_count)} | {row.status} | "
             f"{row.min_correlation:.4f} | {row.max_nmse:.4e} | {row.max_main_lobe_error_deg:.2f} | "
-            f"{row.max_nearfield_fit_relative_error:.4e} | {row.max_basis_condition:.3e} |"
+            f"{row.max_nearfield_fit_relative_error:.4e} | "
+            f"{row.min_farfield_total_complex_correlation_abs:.4f} | "
+            f"{row.max_farfield_total_complex_relative_l2_error:.4e} | {row.max_basis_condition:.3e} |"
         )
     case_rows = []
     for row in best_cases.itertuples(index=False):
         case_rows.append(
             f"| {row.sample_id} | {row.frequency_hz:.0f} | {row.correlation:.4f} | {row.nmse:.4e} | "
             f"{row.main_lobe_error_deg:.2f} | {row.nearfield_fit_relative_error:.4e} | "
+            f"{row.farfield_total_complex_correlation_abs:.4f} | "
+            f"{row.farfield_total_complex_relative_l2_error:.4e} | "
             f"({row.true_peak_theta_deg:.1f}, {row.true_peak_phi_deg:.1f}) | "
             f"({row.pred_peak_theta_deg:.1f}, {row.pred_peak_phi_deg:.1f}) |"
         )
@@ -332,17 +453,21 @@ but it is not a full vector spherical-wave expansion.
 | Max NMSE | `{best['max_nmse']:.4e}` |
 | Max main-lobe error / deg | `{best['max_main_lobe_error_deg']:.2f}` |
 | Max near-field fit relative error | `{best['max_nearfield_fit_relative_error']:.4e}` |
+| Min far-field total complex correlation | `{best['min_farfield_total_complex_correlation_abs']}` |
+| Max far-field total complex L2 error | `{best['max_farfield_total_complex_relative_l2_error']}` |
+| Min theta-component complex correlation | `{best['min_theta_farfield_complex_correlation_abs']}` |
+| Min phi-component complex correlation | `{best['min_phi_farfield_complex_correlation_abs']}` |
 
 ## Top Settings
 
-| Lmax | Lambda | Modes | Status | Min Corr | Max NMSE | Max lobe error / deg | Max NF fit error | Max condition |
-|---:|---:|---:|---|---:|---:|---:|---:|---:|
+| Lmax | Lambda | Modes | Status | Min power Corr | Max power NMSE | Max lobe error / deg | Max NF fit error | Min FF complex Corr | Max FF complex L2 | Max condition |
+|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|
 {chr(10).join(rows)}
 
 ## Best-Setting Case Results
 
-| Sample | Frequency Hz | Corr | NMSE | Lobe error / deg | NF fit error | True peak theta/phi | Pred peak theta/phi |
-|---|---:|---:|---:|---:|---:|---|---|
+| Sample | Frequency Hz | Power Corr | Power NMSE | Lobe error / deg | NF fit error | FF complex Corr | FF complex L2 | True peak theta/phi | Pred peak theta/phi |
+|---|---:|---:|---:|---:|---:|---:|---:|---|---|
 {chr(10).join(case_rows)}
 
 ## Reading

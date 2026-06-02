@@ -292,14 +292,24 @@ def build_rows() -> list[dict[str, Any]]:
                 scope="Level 1 full 162-point scalar angular NF-FF sanity check",
                 evidence_path=swe_path,
                 command="python code\\run_spherical_nf_ff_baseline.py",
-                best_setting=f"lmax={best.get('lmax', '')}, lambda={best.get('lambda_reg', '')}, modes={best.get('mode_count', '')}",
+                best_setting=(
+                    f"lmax={best.get('lmax', '')}, lambda={best.get('lambda_reg', '')}, "
+                    f"modes={best.get('mode_count', '')}, "
+                    f"ff_complex_l2={format_float(best.get('max_farfield_total_complex_relative_l2_error'))}"
+                ),
                 status=str(best.get("status", "missing")),
                 trust_level="trusted_angle_polarization_check",
                 min_correlation=best.get("min_correlation"),
                 max_nmse=best.get("max_nmse"),
                 max_main_lobe_error_deg=best.get("max_main_lobe_error_deg"),
-                interpretation="The scalar angular SWE check strongly supports angle, phase, and polarization consistency.",
-                next_action="Use this as a sanity baseline, while still labeling it non-vector and FarfieldPlot-derived.",
+                interpretation=(
+                    "The scalar angular SWE check now includes total complex Etheta/Ephi residuals; "
+                    "it strongly supports angle, phase, and tangential-component consistency."
+                ),
+                next_action=(
+                    "Use this as a component-aware sanity baseline, while still labeling it non-vector "
+                    "and FarfieldPlot-derived."
+                ),
             )
         )
     else:
@@ -316,14 +326,21 @@ def build_rows() -> list[dict[str, Any]]:
                 scope="Reduced-layout scalar NF-FF diagnostic for true-monitor queue priority",
                 evidence_path=swe_tradeoff_path,
                 command="python code\\run_spherical_nf_ff_tradeoff.py",
-                best_setting=f"{best.get('candidate', '')}, lmax={best.get('lmax', '')}, lambda={best.get('lambda_reg', '')}",
+                best_setting=(
+                    f"{best.get('candidate', '')}, lmax={best.get('lmax', '')}, "
+                    f"lambda={best.get('lambda_reg', '')}, "
+                    f"ff_complex_l2={format_float(best.get('max_farfield_total_complex_relative_l2_error'))}"
+                ),
                 status=str(best.get("status", "missing")),
                 trust_level="layout_priority_not_final_proof",
                 min_correlation=best.get("min_correlation"),
                 max_nmse=best.get("max_nmse"),
                 max_main_lobe_error_deg=best.get("max_main_lobe_error_deg"),
                 sensor_count=best.get("sensor_count"),
-                interpretation="The 32-point reduced layout is a true-monitor rerun priority, not final vector SWE proof.",
+                interpretation=(
+                    "The 32-point reduced layout has strong power-pattern and complex-component sanity metrics; "
+                    "it is a true-monitor rerun priority, not final vector SWE proof."
+                ),
                 next_action="Export full_grid_162 true-monitor CSV first, then derive or compare geometric_farthest_32 and fibonacci_snap_120.",
             )
         )

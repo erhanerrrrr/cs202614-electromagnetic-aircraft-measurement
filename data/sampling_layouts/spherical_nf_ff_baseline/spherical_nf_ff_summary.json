@@ -33,6 +33,12 @@
     "max_nmse": 0.0009260393811542808,
     "max_main_lobe_error_deg": 0.0,
     "max_nearfield_fit_relative_error": 0.02576559279771885,
+    "min_farfield_total_complex_correlation_abs": 0.9995007505023927,
+    "max_farfield_total_complex_relative_l2_error": 0.03159596928494739,
+    "min_theta_farfield_complex_correlation_abs": 0.9995007505023924,
+    "min_phi_farfield_complex_correlation_abs": 0.8226616814597081,
+    "max_theta_farfield_error_to_total_norm": 0.031595969284939546,
+    "max_phi_farfield_error_to_total_norm": 1.0623222472480579e-07,
     "max_basis_condition": 105.11189274628238
   }
 }
