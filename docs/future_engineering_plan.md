@@ -386,3 +386,25 @@ workflow. The boundary is unchanged: these results are still based on the
 current FarfieldPlot-derived angular samples and a scalar harmonic fit. They
 should be used as layout-prioritization and convention evidence until true CST
 near-field monitor exports and a physical/vector full-grid baseline pass.
+
+## 12. 2026-06-02 GitHub collaboration update
+
+The G1 collaboration action is now implemented in `.github/ISSUE_TEMPLATE/`
+and `CONTRIBUTING.md`.
+
+The repository has four issue templates:
+
+- CST data/modeling task: CST modeling, export, true-monitor handoff, and gate
+  checks.
+- Algorithm experiment task: sampling, reconstruction, SWE/Huygens, recognition,
+  and robustness experiments.
+- Documentation/report task: workflow, future plan, report, PPT, literature
+  matrix, and README updates.
+- Bug report: script errors, CSV contract problems, invalid paths, and GitHub
+  collaboration issues.
+
+`CONTRIBUTING.md` now records branch naming, commit scope, large-file rules,
+true-monitor validation commands, G3 dashboard refresh commands, and conclusion
+wording boundaries. This closes the first G1 follow-up from the future plan:
+teammates can now open structured issues for CST export, algorithm reruns,
+documentation updates, and bugs instead of relying on oral task assignment.

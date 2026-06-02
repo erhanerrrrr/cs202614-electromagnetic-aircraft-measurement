@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 当前 G3 真近场决策入口
+    url: https://github.com/erhanerrrrr/cs202614-electromagnetic-aircraft-measurement/blob/main/outputs/cst_true_nearfield_workflow_decision/true_nearfield_workflow_decision.md
+    about: 先看这里确认 true-monitor 阻塞、下一步命令和声明边界。
+  - name: 项目 workflow
+    url: https://github.com/erhanerrrrr/cs202614-electromagnetic-aircraft-measurement/blob/main/docs/project_workflow.md
+    about: 采样、CST/Python 数据接口、算法反演和分类识别的主流程。
