@@ -52,6 +52,16 @@ FarfieldPlot-derived reference, `compare_true_nearfield_exports.py` computes
 metrics on common sensor rows and reports the omitted full-grid rows as expected
 `missing_candidate_rows`.
 
+After a full-grid true-monitor CSV is available, derive the reduced-layout CSVs
+with:
+
+```powershell
+python code\derive_true_nearfield_layout_exports.py --sample-id <sample-id>
+```
+
+The script reads the queue and sensor subset table, writes the queued 32/120
+CSV files, and records a JSON summary.
+
 This is still a queue, not final evidence. The 32-point result came from the
 scalar spherical NF-FF angular diagnostic and must be rerun against true CST
 near-field monitor data before it is used as a competition claim.

@@ -67,6 +67,19 @@ For reduced layouts, `compare_true_nearfield_exports.py` computes metrics on
 the common sensor rows. Missing candidate rows are expected if the reference
 table is still the full 162-point FarfieldPlot-derived export.
 
+After a full-grid true-monitor CSV has been exported for a case, derive the
+queued reduced-layout CSVs with:
+
+```powershell
+python code\derive_true_nearfield_layout_exports.py --sample-id <sample-id>
+```
+
+The script reads `true_nearfield_priority_layout_queue.csv` and
+`true_nearfield_priority_sensor_subsets.csv`, then writes the queued 32/120
+files using the filenames already listed in the queue. A self-check against the
+existing FarfieldPlot-derived Level 1 table has verified the row counts for
+`geometric_farthest_32` and `fibonacci_snap_120`.
+
 ## Comparison Gate
 
 After CST export, compare each true-monitor table with the corresponding

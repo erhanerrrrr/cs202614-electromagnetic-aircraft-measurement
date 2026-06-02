@@ -60,3 +60,7 @@ treat it as final vector SWE or Huygens validation.
 `cst_true_nearfield_workpack/true_nearfield_priority_layout_queue.csv` now
 promotes this into a CST execution queue together with `full_grid_162` and the
 conservative `fibonacci_snap_120` cross-check layout.
+
+After a full 162-point true-monitor CSV is available,
+`python code\derive_true_nearfield_layout_exports.py --sample-id <sample-id>`
+derives the queued 32/120 reduced-layout CSVs from the subset table.

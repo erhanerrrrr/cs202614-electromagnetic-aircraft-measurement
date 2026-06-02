@@ -243,6 +243,11 @@ The true-monitor workpack has now encoded that rerun order in
 `true_nearfield_priority_sensor_subsets.csv` to derive reduced-layout exports
 from the full 162-point monitor table when possible.
 
+The derivation step is now scripted by
+`code/derive_true_nearfield_layout_exports.py`, so a CST operator can export the
+full 162-point true-monitor shell first and the algorithm operator can derive
+the queued 32/120 CSVs without reopening CST.
+
 Boundary: the result is still based on FarfieldPlot-derived angular samples and
 a scalar, not full vector, SWE approximation. It should not be written as final
 reduced-sampling proof until the true near-field monitor and physical Huygens

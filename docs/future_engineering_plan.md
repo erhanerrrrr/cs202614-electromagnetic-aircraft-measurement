@@ -216,6 +216,8 @@ Updated sprint order:
 4. Use the generated true-monitor rerun queue: `full_grid_162` first,
    `geometric_farthest_32` second, and `fibonacci_snap_120` as the conservative
    120-point cross-check.
+   `code/derive_true_nearfield_layout_exports.py` can derive the queued 32/120
+   CSVs from a full 162-point true-monitor export.
 5. Only after a full-grid physical baseline reaches `strict_pass` or an
    approved near-pass, write the 120/81/48/32 sampling candidates as report-level
    reduced-layout evidence.
