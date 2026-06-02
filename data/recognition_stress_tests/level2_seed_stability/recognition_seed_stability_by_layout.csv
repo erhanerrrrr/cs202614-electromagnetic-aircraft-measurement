@@ -1,0 +1,6 @@
+﻿candidate,seed_count,row_count,mean_accuracy,std_accuracy,ci95_low_accuracy,ci95_high_accuracy,min_accuracy,max_accuracy,worst_seed,worst_case,all_rows_pass_085
+full_grid_162,3,12,1.0,0.0,1.0,1.0,1.0,1.0,202614,noise_20db,True
+geometric_farthest_32,3,12,0.9833333333333334,0.04143877070053739,0.9570042170298972,1.0,0.8666666666666667,1.0,202616,dropout_25pct,True
+fibonacci_snap_120,3,12,1.0,0.0,1.0,1.0,1.0,1.0,202614,noise_20db,True
+task_driven_32,3,12,0.9944444444444445,0.019245008972987525,0.9822166666666667,1.0,0.9333333333333333,1.0,202614,dropout_25pct,True
+task_driven_48,3,12,0.9944444444444445,0.01924500897298752,0.9822166666666667,1.0,0.9333333333333333,1.0,202616,noise_10db,True

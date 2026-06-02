@@ -583,10 +583,68 @@ The main remaining G5 margin is missing-channel/dropout behavior.
 
 Next G5 actions:
 
-1. Add repeated random seeds for noise/dropout draws and report mean, minimum,
-   and confidence intervals for clean-train, full-augmented, and
-   leave-one-family settings.
-2. Try dropout-aware features or simple missing-channel imputation to widen the
+1. Try dropout-aware features or simple missing-channel imputation to widen the
    `dropout_25pct` margin.
-3. Preserve the report boundary: this is still internal perturbation-family
+2. Preserve the report boundary: this is still internal perturbation-family
    evidence, not full-wave airframe validation or real instrument calibration.
+
+## 17. 2026-06-02 G5 repeated-seed stability update
+
+The focused repeated-seed validation step is now implemented:
+
+```powershell
+python code\run_cst_recognition_seed_stability.py
+```
+
+It writes `data/recognition_stress_tests/level2_seed_stability/`:
+
+- `recognition_seed_stability_metrics.csv`: per-seed, per-layout, per-stress
+  recognition metrics.
+- `recognition_seed_stability_by_case.csv`: mean, standard deviation, minimum,
+  and clipped approximate 95 percent CI by layout/stress case.
+- `recognition_seed_stability_by_family.csv`: aggregate stability by held-out
+  family.
+- `recognition_seed_stability_by_layout.csv`: aggregate stability by layout.
+- `recognition_seed_stability_summary.json` and `README.md`: machine-readable
+  and human-facing summaries.
+
+Method:
+
+- Repeat the leave-one-stress-family-out protocol for seeds `202614`, `202615`,
+  and `202616`.
+- Focus on held-out `noise` and `dropout`, because those families contain
+  stochastic perturbation draws and dropout was the tightest margin in the
+  previous run.
+- Vary both the stratified train/test split and the stochastic perturbation
+  draws.
+
+Current result:
+
+- Five layouts, two held-out families, four stress cases, and three seeds give
+  60 rows.
+- All 60 rows remain above the `0.85` threshold.
+- The worst single row is seed `202616`,
+  `geometric_farthest_32/dropout/dropout_25pct`, accuracy about `0.867`.
+- The tightest aggregated case is the same row family:
+  `geometric_farthest_32/dropout/dropout_25pct`, mean accuracy about `0.933`,
+  minimum accuracy about `0.867`, and clipped approximate 95 percent CI
+  `[0.768, 1.000]`.
+- Held-out `noise` is stable overall: family mean about `0.998`, minimum about
+  `0.933`.
+- Held-out `dropout` remains the main G5 margin: family mean about `0.991`,
+  minimum about `0.867`.
+
+Engineering interpretation: the repeated-seed result makes the G5 conclusion
+less dependent on one random split or one stochastic perturbation draw. It also
+confirms the same engineering priority as the leave-one-family run:
+missing-channel/dropout robustness is the next useful calibration target.
+
+Next G5 actions:
+
+1. Add dropout-aware features that explicitly encode missing-channel masks or
+   per-sensor valid-channel counts.
+2. Test simple missing-channel imputation before classification, then compare
+   against the current zero-fill convention.
+3. Keep the report wording conservative: the seed-stability check strengthens
+   internal perturbation evidence, but it is not real measurement calibration
+   or full-wave complex-airframe validation.
