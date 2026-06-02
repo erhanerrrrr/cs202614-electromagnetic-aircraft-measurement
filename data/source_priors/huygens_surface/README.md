@@ -41,9 +41,18 @@ y = [Etheta(sensor_1..N), Ephi(sensor_1..N)]
   later Level 2/Level 3 structure-aware reconstruction.
 - Use these priors only after the CST true near-field monitor gate is checked,
   or state clearly that the input is still FarfieldPlot-derived angular data.
+- The first runnable matrix baseline is now in
+  `data/sampling_layouts/cst_level1_huygens_baseline/`; it is diagnostic only
+  on the current Level 1 export.
 
 ## Generation Command
 
 ```powershell
 python code\prepare_huygens_surface_prior.py
+```
+
+## Baseline Command
+
+```powershell
+python code\run_cst_huygens_baseline.py
 ```

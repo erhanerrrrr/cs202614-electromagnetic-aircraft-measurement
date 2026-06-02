@@ -26,6 +26,7 @@
 | `cst_true_nearfield_workpack/` | `python code\prepare_cst_true_nearfield_workpack.py` | 真近场 monitor 导出任务包和 FarfieldPlot-derived 基线对照入口。 |
 | `cst_true_nearfield_workpack/reference_self_check/` | `python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check` | 对照脚本自检结果，不是新增 CST 物理证据。 |
 | `source_priors/huygens_surface/` | `python code\prepare_huygens_surface_prior.py` | Huygens 面源节点、法向/切向基、面积权重和四复未知量合同。 |
+| `sampling_layouts/cst_level1_huygens_baseline/` | `python code\run_cst_huygens_baseline.py` | First Huygens-style surface-source reconstruction baseline; current result is diagnostic only. |
 
 ## 使用约定
 
@@ -35,3 +36,11 @@
 - 结构化源先验放入 `data/source_priors/`；它定义反演模型允许的源支撑，不等同于采样布局或最终重建结果。
 - CST 真近场 monitor 当前先提交工作包和对照自检；真实 monitor 大 CSV 后续仍按 `data/cst_exports/` 大文件策略处理。
 - 如后续需要长期共享大 CST 文件，建议启用 Git LFS、GitHub Release 或网盘；仓库中只保留索引、校验摘要和复现命令。
+
+## Huygens baseline note
+
+`sampling_layouts/cst_level1_huygens_baseline/` is generated from the local
+Level 1 CST export and the `source_priors/huygens_surface/` geometry contract.
+It records a runnable electric/magnetic dipole-sheet approximation, but the
+best setting is still `diagnostic_only` (`min_corr ~= 0.778`, `max_nmse ~= 0.264`).
+Keep it as model-calibration evidence, not as reduced-sampling validation.

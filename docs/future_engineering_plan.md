@@ -175,3 +175,29 @@ model_comparison.md
 - Sarkar et al., Spherical Near-Field to Far-Field Transformation：`https://doi.org/10.1002/9781119076230.ch7`
 - Non-redundant spherical near-field sampling for efficient incident power density assessment：`https://www.frontiersin.org/journals/antennas-and-propagation/articles/10.3389/fanpr.2025.1738329/full`
 - RWTH Aachen spherical near-field measurements：`https://www.ihf.rwth-aachen.de/en/research/research-topics/antenna-measurement/spherical-near-field-measurements`
+
+## 6. 2026-06-02 G3 baseline update
+
+The Huygens geometry contract has moved from a workpack to a runnable Level 1
+diagnostic:
+
+```powershell
+python code\run_cst_huygens_baseline.py
+```
+
+It writes `data/sampling_layouts/cst_level1_huygens_baseline/` and compares
+`electric_sheet_only`, `huygens_em_plus`, and `huygens_em_minus` on the full
+162-point layout. The current best result is still `diagnostic_only`
+(`min_corr ~= 0.778`, `max_nmse ~= 0.264`, large main-lobe error), so this is
+not yet a report-ready reduced-sampling proof.
+
+Updated sprint order:
+
+1. Keep `spherical_nf_ff_baseline/` and the center-source prior as the current
+   trustworthy data-path sanity checks.
+2. Wait for or produce true CST near-field monitor CSVs, then rerun source
+   sweep, convention check, SWE baseline, and Huygens baseline on that input.
+3. Improve the Huygens operator with fuller electric/magnetic surface-current
+   Green functions and surface smoothness regularization.
+4. Only after a full-grid physical baseline reaches `strict_pass` or an
+   approved near-pass, rerun the 120/81/48/32 sampling candidates.

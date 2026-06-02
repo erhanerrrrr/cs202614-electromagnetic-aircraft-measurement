@@ -167,6 +167,32 @@ measurement matrix with shape `2 * sensor_count` by `4 * surface_node_count`,
 then compare its full-grid Level 1 metrics against the center-source, generic
 grid, group-sparse, convention, and spherical baselines.
 
+## Huygens Baseline Entry Point
+
+Run:
+
+```powershell
+python code\run_cst_huygens_baseline.py
+```
+
+This writes `data/sampling_layouts/cst_level1_huygens_baseline/`. The script
+uses the `level1_local_sphere_r0p35` surface prior and tests three first-order
+variants: `electric_sheet_only`, `huygens_em_plus`, and `huygens_em_minus`.
+The electric/magnetic versions are a compact dipole-sheet approximation, not a
+full Stratton-Chu/Huygens surface-integral implementation.
+
+The current result is diagnostic only. The best setting is
+`huygens_em_minus`, `lambda = 1e-2`, with min correlation about `0.778`, max
+NMSE about `0.264`, mean near-field residual about `0.619`, and a large
+main-lobe error. This confirms that the surface-prior workflow is runnable, but
+the simplified Green-function and current-normalization model is not yet good
+enough to replace the center-source or spherical NF-FF sanity baselines.
+
+Next action: keep the Huygens outputs as model-calibration evidence, then rerun
+the same script on true near-field monitor data and/or upgrade the Huygens
+operator to a fuller electric/magnetic surface-current Green function with
+surface smoothness regularization.
+
 ## Spherical NF-FF Sanity Baseline
 
 Run:

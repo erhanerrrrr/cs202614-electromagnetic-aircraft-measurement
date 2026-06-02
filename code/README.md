@@ -23,6 +23,7 @@
 | `compare_true_nearfield_exports.py` | 对比 CST 真近场 monitor 导出与当前 FarfieldPlot-derived nearfield 基线。 |
 | `run_spherical_nf_ff_baseline.py` | 用切向球谐拟合建立轻量 NF-FF/SWE sanity baseline，独立检查角度、极化和远场比较链路。 |
 | `prepare_huygens_surface_prior.py` | 生成 Huygens 面源先验节点、法向/切向基和四复未知量合同，供后续物理面源反演使用。 |
+| `run_cst_huygens_baseline.py` | 用 Huygens-style 电/磁偶极面源近似构造 Level 1 full-grid 诊断矩阵。 |
 | `run_cst_reconstruction.py` | CST 数据等效源反演与远场外推入口。 |
 | `run_reconstruction_robustness.py` | 重建鲁棒性实验。 |
 
@@ -57,10 +58,22 @@ python code\prepare_cst_true_nearfield_workpack.py
 python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check
 python code\run_spherical_nf_ff_baseline.py
 python code\prepare_huygens_surface_prior.py
+python code\run_cst_huygens_baseline.py
 python code\check_cst_export.py --nearfield data\cst_exports\level1\all_nearfield.csv --farfield data\cst_exports\level1\all_farfield.csv
 python code\run_cst_recognition.py
 ```
 
+## Huygens baseline addendum
+
+`huygens_core.py` builds the first Huygens-style surface measurement and
+far-field matrices. `run_cst_huygens_baseline.py` runs the Level 1 full-grid
+diagnostic using `data/source_priors/huygens_surface/level1_local_sphere_r0p35_nodes.csv`.
+
+The current best setting is still `diagnostic_only`, so this script is a
+measurement-matrix smoke test and a physics-prior development entry point. Do
+not use it as a final reduced-sampling proof until the full-grid Huygens
+baseline reaches the same acceptance gate used by the source-model diagnostics.
+
 ## 当前重点
 
-G2 已生成非冗余半球采样候选。G3 正在校准真实 CST Level 1 数据链：中心源先验和轻量球谐 NF-FF baseline 共同证明角度/极化/比较链路可信；Huygens 面源先验几何合同已建立，但通用等效源网格仍未达到最终采样证明要求。下一步应补 CST 真近场 monitor 实测，并实现 Huygens measurement matrix。
+G2 已生成非冗余半球采样候选。G3 正在校准真实 CST Level 1 数据链：中心源先验和轻量球谐 NF-FF baseline 共同证明角度/极化/比较链路可信；Huygens 面源 baseline 已可运行但当前仍为 `diagnostic_only`，通用等效源网格也仍未达到最终采样证明要求。下一步应补 CST 真近场 monitor 实测，并升级 Huygens 电/磁面流 Green 算子与正则化。

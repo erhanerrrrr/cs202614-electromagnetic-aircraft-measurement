@@ -26,4 +26,16 @@
 
 - 不要把 120/81/48/32 点候选直接写成最终采样结论；目前它们是待 CST 校准验证的候选方案。
 - 真实 CST Level 1 数据路径已经通过中心源 sanity check，但通用等效源网格仍是反演瓶颈。
-- 后续 G3 工作优先级：CST 真近场 monitor 对照、Huygens 面源矩阵实现、源先验校准、多频共享支撑和最终 reduced-layout 复跑。
+- 后续 G3 工作优先级：CST 真近场 monitor 对照、Huygens 面源矩阵物理升级、源先验校准、多频共享支撑和最终 reduced-layout 复跑。
+
+## Huygens baseline status
+
+`code/run_cst_huygens_baseline.py` now implements the first runnable
+Huygens-style surface-prior diagnostic. It writes
+`data/sampling_layouts/cst_level1_huygens_baseline/`.
+
+Current result: best model `huygens_em_minus`, `diagnostic_only`,
+`min_corr ~= 0.778`, `max_nmse ~= 0.264`, and large main-lobe error. This is
+evidence that the current simplified electric/magnetic dipole-sheet matrix is
+not yet a final physical reconstruction model. Read it together with
+`docs/huygens_surface_model_note.md` and the true near-field monitor workflow.

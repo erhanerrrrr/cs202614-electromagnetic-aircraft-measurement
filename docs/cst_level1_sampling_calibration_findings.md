@@ -22,6 +22,7 @@ It writes compact CSV/JSON/README outputs for candidate comparison.
 | `data/sampling_layouts/cst_level1_center_source_check/` | Single equivalent source at `(0, 0, 4 m)` | Level 1 sanity check. Correlation and main-lobe location are good, showing the CST export and comparison chain are broadly consistent. |
 | `data/sampling_layouts/cst_level1_source_model_sweep/` | Multiple Level 1 source supports and Tikhonov regularization values | Full-grid model-calibration sweep. Use it to choose the next baseline before judging lower-count layouts. |
 | `data/sampling_layouts/spherical_nf_ff_baseline/` | Tangential spherical-harmonic NF-FF sanity baseline | Independent angle/polarization/far-field comparison check. It is not a full vector SWE proof, but it supports the current data-path conventions. |
+| `data/sampling_layouts/cst_level1_huygens_baseline/` | Huygens-style electric/magnetic surface-source approximation | Runnable physical-prior smoke test. Current status is diagnostic only and should not support reduced-layout claims yet. |
 
 ## Current Reading
 
@@ -70,6 +71,15 @@ modes per component, reaching `strict_pass`: min correlation `0.9990`, max NMSE
 `2.58e-02`. This supports the coordinate, polarization, and far-field
 comparison chain. It does not by itself validate reduced 120/81/48/32 layouts.
 
+`code/run_cst_huygens_baseline.py` turns the Huygens surface-prior workpack into
+a runnable Level 1 measurement matrix. The first implementation uses a compact
+electric/magnetic dipole-sheet approximation and tests `electric_sheet_only`,
+`huygens_em_plus`, and `huygens_em_minus`. The current best setting is
+`diagnostic_only`: min correlation about `0.778`, max NMSE about `0.264`, mean
+near-field residual about `0.619`, and large main-lobe error. This is useful
+model-calibration evidence, but it is not yet a physical baseline for
+reduced-layout claims.
+
 The current Level 1 near-field table is explicitly derived from CST FarfieldPlot
 list evaluation at the measurement directions. It is therefore a solver-safe
 angular sample, not a full-wave near-field monitor export. That boundary should
@@ -83,7 +93,8 @@ repo now supports a clearer next step:
 1. Lock down the Level 1 source prior and phase convention.
 2. Use the spherical baseline as a data-path sanity check, while keeping its
    scalar-harmonic limitation explicit.
-3. Calibrate the equivalent-source grid, regularization, and source sparsity.
+3. Calibrate the equivalent-source grid, regularization, source sparsity, and
+   Huygens surface-current operator.
 4. Re-run the same tradeoff script after the full 162-point baseline meets the
    chosen acceptance metric.
 5. Only then use the lower-count layouts as report-level evidence.

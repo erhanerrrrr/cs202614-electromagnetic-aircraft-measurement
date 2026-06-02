@@ -171,3 +171,44 @@ Huygens baseline 必须先在 full-grid 162 点上过关，再比较 120/81/48/3
 > Huygens 面源模型已经证明 48 点或 32 点采样满足最终精度。
 
 除非后续 `cst_level1_huygens_baseline/` 的 full-grid 和 reduced-layout 结果都已达到验收门槛。
+
+## 9. 2026-06-02 runnable baseline update
+
+The first matrix prototype is now implemented in:
+
+```powershell
+python code\run_cst_huygens_baseline.py
+```
+
+Generated result directory:
+
+```text
+data/sampling_layouts/cst_level1_huygens_baseline/
+```
+
+Current best setting on the Level 1 export is:
+
+| Field | Value |
+|---|---|
+| Prior | `level1_local_sphere_r0p35` |
+| Variant | `huygens_em_minus` |
+| Candidate | `full_grid_162` |
+| Lambda | `1e-2` |
+| Status | `diagnostic_only` |
+| Min Corr | `0.7781` |
+| Max NMSE | `2.6423e-01` |
+| Max main-lobe error / deg | `166.71` |
+| Mean relative residual | `6.1942e-01` |
+
+Interpretation: Phase 1 is complete as a software interface and smoke test, but
+Phase 2 is not physically sufficient yet. The simplified electric/magnetic
+dipole-sheet approximation does not recover the current CST Level 1 far-field
+baseline well enough to support reduced-layout sampling claims.
+
+Immediate follow-up:
+
+1. Run the same baseline after true near-field monitor CSV data is available.
+2. Upgrade the operator from the simplified dipole-sheet approximation toward a
+   fuller electric/magnetic Huygens surface-current Green function.
+3. Add surface smoothness or node-group regularization once the full-grid
+   physical convention is stable.

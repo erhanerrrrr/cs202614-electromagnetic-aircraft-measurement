@@ -19,3 +19,13 @@
 ```powershell
 python code\prepare_huygens_surface_prior.py
 ```
+
+## 当前 baseline 入口
+
+```powershell
+python code\run_cst_huygens_baseline.py
+```
+
+该脚本读取 `huygens_surface/level1_local_sphere_r0p35_nodes.csv` 并输出
+`data/sampling_layouts/cst_level1_huygens_baseline/`。当前结果仍为
+`diagnostic_only`，所以它是面源矩阵调试证据，不是最终少测点采样证明。
