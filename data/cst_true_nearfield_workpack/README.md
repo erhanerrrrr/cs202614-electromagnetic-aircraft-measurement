@@ -85,6 +85,18 @@ full-grid CSV file list, exact row counts, gate status, and post-export
 algorithm commands. This is the preferred team-facing entry when assigning the
 next CST monitor export task.
 
+After CST files are dropped into `data/cst_exports/level1_true_nearfield/`,
+run the dropzone preflight before the comparison gate:
+
+```powershell
+python code\check_true_nearfield_dropzone.py --required-only --full-grid-only
+```
+
+It writes `outputs/cst_true_nearfield_dropzone_check/` and checks the CSV
+contract columns, row count, `Ex/Ey/Ez` components, frequency, sample id, and
+sensor subset. Use `--strict` when the script should fail the command unless
+every selected row is `ready_for_gate`.
+
 This is still a queue, not final evidence. The 32-point result came from the
 scalar spherical NF-FF angular diagnostic and must be rerun against true CST
 near-field monitor data before it is used as a competition claim.

@@ -726,3 +726,4 @@ python code\run_cst_recognition_ablation.py --nearfield outputs\synthetic_cst_da
 7. 运行 `build_submission_draft.py` 重新生成最终草稿包，再按审核结果导出正式提交件。
 8. 运行 `python code\build_g3_model_dashboard.py` 刷新 `outputs/g3_model_dashboard/`，用 `model_comparison.md` 和 `g3_next_actions.csv` 统一 G3 源模型、SWE、Huygens 与真近场 monitor gate 的当前结论和队友分工。
 9. 运行 `python code\build_true_nearfield_handoff.py` 刷新 `outputs/cst_true_nearfield_handoff/`，把 CST 真近场 monitor 的两个 required full-grid CSV、486 行验收标准和后续算法命令交给 CST 主责执行。
+10. CST 文件回填后，先运行 `python code\check_true_nearfield_dropzone.py --required-only --full-grid-only` 预检列名、行数、组件和 sensor 子集，再运行 `run_true_nearfield_gate.py`。

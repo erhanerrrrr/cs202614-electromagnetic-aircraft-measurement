@@ -196,7 +196,7 @@ def operator_action(kind: str, row: Any) -> str:
 
 def post_export_command(kind: str, row: Any) -> str:
     if kind == "export_full_grid_in_cst":
-        return "python code\\run_true_nearfield_gate.py --required-only"
+        return "python code\\check_true_nearfield_dropzone.py --required-only --full-grid-only"
     if kind == "derive_after_full_grid_export":
         return f"python code\\derive_true_nearfield_layout_exports.py --sample-id {row.sample_id}"
     return "python code\\run_true_nearfield_gate.py"
@@ -231,41 +231,47 @@ def build_algorithm_commands(action_sheet: pd.DataFrame) -> pd.DataFrame:
         {
             "order": 1,
             "gate": "after_full_grid_exports",
+            "command": "python code\\check_true_nearfield_dropzone.py --required-only --full-grid-only",
+            "purpose": "Preflight the required true-monitor CSV contract, row counts, components, and sensor subsets.",
+        },
+        {
+            "order": 2,
+            "gate": "after_full_grid_exports",
             "command": "python code\\run_true_nearfield_gate.py --required-only",
             "purpose": "Confirm required full-grid true-monitor files are no longer pending_source.",
         },
         {
-            "order": 2,
+            "order": 3,
             "gate": "after_required_full_grid_passes_file_count",
             "command": "python code\\derive_true_nearfield_layout_exports.py --sample-id L1_short_dipole_z_1p2G",
             "purpose": "Derive queued 32/120 layouts for the first required case from the full-grid monitor CSV.",
         },
         {
-            "order": 3,
+            "order": 4,
             "gate": "after_required_full_grid_passes_file_count",
             "command": "python code\\derive_true_nearfield_layout_exports.py --sample-id L1_halfwave_dipole_z_1p2G",
             "purpose": "Derive queued 32/120 layouts for the second required case from the full-grid monitor CSV.",
         },
         {
-            "order": 4,
+            "order": 5,
             "gate": "after_derivation",
             "command": "python code\\run_true_nearfield_gate.py --required-only",
             "purpose": "Compare full/reduced required layouts and decide reference_match versus needs_physical_rerun.",
         },
         {
-            "order": 5,
+            "order": 6,
             "gate": "if_needs_physical_rerun",
             "command": "python code\\run_cst_source_model_sweep.py",
             "purpose": "Rerun source-model support calibration on authoritative monitor data.",
         },
         {
-            "order": 6,
+            "order": 7,
             "gate": "if_needs_physical_rerun",
             "command": "python code\\run_spherical_nf_ff_baseline.py",
             "purpose": "Rerun the scalar SWE sanity baseline before any reduced-layout claim.",
         },
         {
-            "order": 7,
+            "order": 8,
             "gate": "if_needs_physical_rerun",
             "command": "python code\\run_cst_huygens_baseline.py",
             "purpose": "Rerun the Huygens diagnostic and keep it separate from report-safe proof until it passes.",

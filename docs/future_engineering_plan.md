@@ -306,3 +306,16 @@ Current handoff result: two required full-grid CSVs are still pending, both with
 
 This narrows the external CST task to two exact required files before the
 algorithm side derives 32/120 layouts or reruns physical G3 baselines.
+
+The dropzone preflight is now:
+
+```powershell
+python code\check_true_nearfield_dropzone.py --required-only --full-grid-only
+```
+
+It writes `outputs/cst_true_nearfield_dropzone_check/` and validates the CST
+CSV contract, expected 486 rows per required full-grid case, `Ex/Ey/Ez`
+component coverage, frequency, sample id, and sensor subset before the
+comparison gate is run. Current default status is `missing_file` for all 18
+queued rows, which correctly reflects that no true-monitor CSV has been dropped
+yet.

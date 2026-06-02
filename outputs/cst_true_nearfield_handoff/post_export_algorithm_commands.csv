@@ -1,9 +1,10 @@
 ﻿order,gate,command,purpose
 0,current_state,CST export required before algorithm rerun.,All queued true-monitor source files are still absent.
-1,after_full_grid_exports,python code\run_true_nearfield_gate.py --required-only,Confirm required full-grid true-monitor files are no longer pending_source.
-2,after_required_full_grid_passes_file_count,python code\derive_true_nearfield_layout_exports.py --sample-id L1_short_dipole_z_1p2G,Derive queued 32/120 layouts for the first required case from the full-grid monitor CSV.
-3,after_required_full_grid_passes_file_count,python code\derive_true_nearfield_layout_exports.py --sample-id L1_halfwave_dipole_z_1p2G,Derive queued 32/120 layouts for the second required case from the full-grid monitor CSV.
-4,after_derivation,python code\run_true_nearfield_gate.py --required-only,Compare full/reduced required layouts and decide reference_match versus needs_physical_rerun.
-5,if_needs_physical_rerun,python code\run_cst_source_model_sweep.py,Rerun source-model support calibration on authoritative monitor data.
-6,if_needs_physical_rerun,python code\run_spherical_nf_ff_baseline.py,Rerun the scalar SWE sanity baseline before any reduced-layout claim.
-7,if_needs_physical_rerun,python code\run_cst_huygens_baseline.py,Rerun the Huygens diagnostic and keep it separate from report-safe proof until it passes.
+1,after_full_grid_exports,python code\check_true_nearfield_dropzone.py --required-only --full-grid-only,"Preflight the required true-monitor CSV contract, row counts, components, and sensor subsets."
+2,after_full_grid_exports,python code\run_true_nearfield_gate.py --required-only,Confirm required full-grid true-monitor files are no longer pending_source.
+3,after_required_full_grid_passes_file_count,python code\derive_true_nearfield_layout_exports.py --sample-id L1_short_dipole_z_1p2G,Derive queued 32/120 layouts for the first required case from the full-grid monitor CSV.
+4,after_required_full_grid_passes_file_count,python code\derive_true_nearfield_layout_exports.py --sample-id L1_halfwave_dipole_z_1p2G,Derive queued 32/120 layouts for the second required case from the full-grid monitor CSV.
+5,after_derivation,python code\run_true_nearfield_gate.py --required-only,Compare full/reduced required layouts and decide reference_match versus needs_physical_rerun.
+6,if_needs_physical_rerun,python code\run_cst_source_model_sweep.py,Rerun source-model support calibration on authoritative monitor data.
+7,if_needs_physical_rerun,python code\run_spherical_nf_ff_baseline.py,Rerun the scalar SWE sanity baseline before any reduced-layout claim.
+8,if_needs_physical_rerun,python code\run_cst_huygens_baseline.py,Rerun the Huygens diagnostic and keep it separate from report-safe proof until it passes.

@@ -313,3 +313,14 @@ python code\build_true_nearfield_handoff.py
 This writes `outputs/cst_true_nearfield_handoff/` with the exact required
 full-grid CSV filenames, 486-row checks, current gate status, and post-export
 algorithm commands.
+
+After CST export, preflight the dropzone with:
+
+```powershell
+python code\check_true_nearfield_dropzone.py --required-only --full-grid-only
+```
+
+Only when the selected rows are `ready_for_gate` should the team run
+`python code\run_true_nearfield_gate.py --required-only` and then decide
+whether G3 can keep the current FarfieldPlot-derived calibration or must rerun
+on authoritative monitor data.

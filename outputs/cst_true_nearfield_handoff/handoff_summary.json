@@ -17,5 +17,5 @@
     "expected_files": "outputs\\cst_true_nearfield_handoff\\expected_true_monitor_files.csv",
     "algorithm_commands": "outputs\\cst_true_nearfield_handoff\\post_export_algorithm_commands.csv"
   },
-  "algorithm_command_count": 8
+  "algorithm_command_count": 9
 }

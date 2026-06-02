@@ -1,0 +1,17 @@
+{
+  "generated_by": "code/check_true_nearfield_dropzone.py",
+  "checked_rows": 18,
+  "status_counts": {
+    "missing_file": 18
+  },
+  "ready_for_gate_count": 0,
+  "missing_file_count": 18,
+  "invalid_or_read_error_count": 0,
+  "required_full_grid_count": 2,
+  "required_full_grid_ready_count": 0,
+  "next_command": "export the missing required full_grid_162 true-monitor CSV files",
+  "output_files": {
+    "status": "outputs\\cst_true_nearfield_dropzone_check\\true_nearfield_dropzone_status.csv",
+    "summary": "outputs\\cst_true_nearfield_dropzone_check\\true_nearfield_dropzone_summary.json"
+  }
+}
