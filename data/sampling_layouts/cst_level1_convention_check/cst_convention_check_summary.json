@@ -1,0 +1,77 @@
+{
+  "generated_by": "code/run_cst_level1_convention_check.py",
+  "nearfield": "data\\cst_exports\\level1\\all_nearfield.csv",
+  "farfield": "data\\cst_exports\\level1\\all_farfield.csv",
+  "layouts": "data\\sampling_layouts\\hemisphere_sampling_candidates.csv",
+  "out_dir": "data\\sampling_layouts\\cst_level1_convention_check",
+  "pair_count": 2,
+  "candidate_count": 1,
+  "source_model_count": 2,
+  "convention_count": 8,
+  "best_setting": {
+    "source_model": "single_center",
+    "candidate": "full_grid_162",
+    "lambda_reg": 0.0001,
+    "convention_id": "current_phi_sign_flip",
+    "measurement_transform": "phi_sign_flip",
+    "near_phase_sign": -1,
+    "far_phase_sign": 1,
+    "status": "corr_pass_nmse_near",
+    "min_correlation": 0.9926081196115002,
+    "max_nmse": 0.017784451900722396,
+    "max_main_lobe_error_deg": 0.0,
+    "mean_nearfield_relative_residual": 0.988250631022096,
+    "mean_nearfield_power_nmse": 0.31106714496511817
+  },
+  "best_current_direct": {
+    "source_model": "single_center",
+    "candidate": "full_grid_162",
+    "lambda_reg": 0.0001,
+    "convention_id": "current_direct",
+    "measurement_transform": "direct",
+    "near_phase_sign": -1,
+    "far_phase_sign": 1,
+    "status": "corr_pass_nmse_near",
+    "min_correlation": 0.9926081196114998,
+    "max_nmse": 0.01778445165053833,
+    "max_main_lobe_error_deg": 0.0,
+    "mean_nearfield_relative_residual": 0.9882506310220955,
+    "mean_nearfield_power_nmse": 0.31106712389328783
+  },
+  "best_default_cube": {
+    "source_model": "default_cube_5x3x3",
+    "candidate": "full_grid_162",
+    "lambda_reg": 1e-05,
+    "convention_id": "current_phi_sign_flip",
+    "measurement_transform": "phi_sign_flip",
+    "near_phase_sign": -1,
+    "far_phase_sign": 1,
+    "status": "diagnostic_only",
+    "min_correlation": 0.7940780754690656,
+    "max_nmse": 0.31842504622046325,
+    "max_main_lobe_error_deg": 59.95970153020868,
+    "mean_nearfield_relative_residual": 0.555794300185119,
+    "mean_nearfield_power_nmse": 0.2237911687590185
+  },
+  "best_default_cube_current_direct": {
+    "source_model": "default_cube_5x3x3",
+    "candidate": "full_grid_162",
+    "lambda_reg": 1e-05,
+    "convention_id": "current_direct",
+    "measurement_transform": "direct",
+    "near_phase_sign": -1,
+    "far_phase_sign": 1,
+    "status": "diagnostic_only",
+    "min_correlation": 0.7940780752731348,
+    "max_nmse": 0.3184250043667315,
+    "max_main_lobe_error_deg": 109.90036842753926,
+    "mean_nearfield_relative_residual": 0.5557943144702244,
+    "mean_nearfield_power_nmse": 0.22379118747544222
+  },
+  "nearfield_extraction_methods": [
+    "FarfieldPlot linear E-field, spherical-to-Cartesian at measurement radius"
+  ],
+  "farfield_extraction_methods": [
+    "FarfieldPlot linear E-field list evaluation"
+  ]
+}

@@ -1,22 +1,30 @@
 # data 目录说明
 
-本目录存放真实或当前主线 CST 导出数据，以及可进入 GitHub 的小型算法输入表。它是 Python 重建、识别和校验脚本的主要输入区。
+本目录存放真实或主线 CST 导出数据，以及适合进入 GitHub 的小型算法输入表和诊断结果。大体量 CST 导出 CSV 默认由 `.gitignore` 排除，仓库中保留可复现脚本、索引、摘要和小型结果表。
 
 ## 子目录
 
 | 子目录 | 说明 |
 |---|---|
-| `cst_exports/level1/` | Level 1 标准源 nearfield/farfield CSV、合并结果与 dropzone 说明。大型 CSV 默认不进入普通 Git。 |
-| `cst_exports/level2/` | Level 2 多源多状态样本 nearfield/farfield CSV、合并结果与 dropzone 说明。大型 CSV 默认不进入普通 Git。 |
-| `sampling_layouts/` | 162/120/81/48/32 点半球采样候选表、代理验证指标和当前 CST Level 1 采样诊断结果。 |
+| `cst_exports/level1/` | Level 1 标准源 nearfield/farfield CSV、合并结果和 dropzone 说明。真实大 CSV 本地保留，默认不进入普通 Git。 |
+| `cst_exports/level2/` | Level 2 多源、多状态样本 nearfield/farfield CSV、合并结果和 dropzone 说明。 |
+| `sampling_layouts/` | 162/120/81/48/32 点半球采样候选表、代理指标和当前 CST Level 1 诊断结果。 |
+
+## 主要生成物
+
+| 路径 | 生成命令 | 作用 |
+|---|---|---|
+| `sampling_layouts/hemisphere_sampling_candidates.csv` | `python code\optimize_sampling_layout.py` | 候选测点布局。 |
+| `sampling_layouts/sampling_layout_summary.csv` | `python code\optimize_sampling_layout.py` | 候选布局代理指标摘要。 |
+| `sampling_layouts/cst_level1_tradeoff/` | `python code\run_cst_sampling_tradeoff.py` | 通用等效源网格下的 CST Level 1 采样诊断。 |
+| `sampling_layouts/cst_level1_center_source_check/` | `python code\run_cst_sampling_tradeoff.py --level1-center-source-grid --out-dir data\sampling_layouts\cst_level1_center_source_check` | 已知中心源先验下的数据路径 sanity check。 |
+| `sampling_layouts/cst_level1_source_model_sweep/` | `python code\run_cst_source_model_sweep.py` | 等效源支撑和 Tikhonov 正则化扫描。 |
+| `sampling_layouts/cst_level1_sparse_calibration/` | `python code\run_cst_sparse_reconstruction.py` | group-sparse 等效源校准结果。 |
+| `sampling_layouts/cst_level1_convention_check/` | `python code\run_cst_level1_convention_check.py` | 相位、复共轭和极化约定诊断。 |
 
 ## 使用约定
 
 - 真实 CST 导出优先放在 `data/cst_exports/`，不要混入临时仿真缓存。
-- 合成数据和中间结果优先由脚本生成到 `outputs/`。
-- 少测点采样候选由 `python code\optimize_sampling_layout.py` 生成到 `data/sampling_layouts/`。
-- CST 采样诊断由 `python code\run_cst_sampling_tradeoff.py` 生成到 `data/sampling_layouts/cst_level1_tradeoff/`。
-- Level 1 标准源校准检查由 `python code\run_cst_sampling_tradeoff.py --level1-center-source-grid --out-dir data\sampling_layouts\cst_level1_center_source_check` 生成。
-- Level 1 等效源模型扫描由 `python code\run_cst_source_model_sweep.py` 生成到 `data/sampling_layouts/cst_level1_source_model_sweep/`。
-- Level 1 组稀疏等效源校准由 `python code\run_cst_sparse_reconstruction.py` 生成到 `data/sampling_layouts/cst_level1_sparse_calibration/`。
-- 大体量数据如需长期协作，建议后续启用 Git LFS 或发布到 Release/网盘，只在仓库保留索引和校验摘要。
+- 合成数据和大体量中间结果优先由脚本生成到 `outputs/`。
+- 可协作的小型 CSV/JSON/README 摘要放入 `data/sampling_layouts/` 并进入 Git。
+- 如后续需要长期共享大 CST 文件，建议启用 Git LFS、GitHub Release 或网盘；仓库中只保留索引、校验摘要和复现命令。

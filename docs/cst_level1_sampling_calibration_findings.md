@@ -51,6 +51,20 @@ the active source count to about `2`. The main-lobe error remains large, so the
 result confirms that sparsity helps but does not replace source-prior and
 phase/amplitude calibration.
 
+`code/run_cst_level1_convention_check.py` now checks whether this bottleneck is
+caused by a simple global convention mismatch. It compares the current
+near/far propagation phase signs with a reciprocal time-sign flip, and tests
+direct fields, complex conjugation, phi sign flip, and theta/phi channel swap.
+The result does not rescue the generic grid: the best generic-grid setting
+keeps `Corr` near `0.794` and `NMSE` near `0.318`, although some sign-equivalent
+settings change the selected main-lobe location. This argues against treating
+the problem as a simple phase-sign or polarization-label bug.
+
+The current Level 1 near-field table is explicitly derived from CST FarfieldPlot
+list evaluation at the measurement directions. It is therefore a solver-safe
+angular sample, not a full-wave near-field monitor export. That boundary should
+be stated whenever these diagnostics are used in reports.
+
 ## Engineering Implication
 
 Do not claim that the 120-point or 81-point CST sampling plan is final. The

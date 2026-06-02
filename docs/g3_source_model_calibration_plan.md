@@ -67,6 +67,7 @@ Use this sequence for the next round:
 | Upgrade | Purpose | Suggested artifact |
 |---|---|---|
 | Sparse / ElasticNet equivalent sources | Reduce over-free source grids and suppress nonphysical energy leakage. | `code/run_cst_sparse_reconstruction.py` |
+| Phase / polarization convention check | Test whether phase sign, complex conjugation, or theta/phi labeling explains the Level 1 bottleneck. | `code/run_cst_level1_convention_check.py` |
 | Group sparsity across frequencies | Share source support for multi-frequency samples. | `outputs/model_comparison/reconstruction_metrics.csv` |
 | Huygens-surface source prior | Move from point-source grids toward structure-aware equivalent currents. | `docs/huygens_surface_model_note.md` |
 | Spherical NF-FF sanity check | Detect coordinate, phase, and polarization convention errors independently of equivalent sources. | `code/run_spherical_nf_ff_baseline.py` |
@@ -102,3 +103,25 @@ the mean active source count drops to `2`. However, the max main-lobe error is
 still about `153 deg` and center energy share is `0`, so sparsity alone is not
 enough. The next step should be phase/amplitude convention checks and a more
 physical source prior, not just stronger L1 regularization.
+
+## Convention Check Entry Point
+
+Run:
+
+```powershell
+python code\run_cst_level1_convention_check.py
+```
+
+This writes `data/sampling_layouts/cst_level1_convention_check/`. The script
+crosses the current near/far propagation phase signs with a reciprocal time-sign
+flip, then tests direct samples, complex conjugation, phi sign flip, and
+theta/phi channel swap.
+
+The current result is a diagnostic rather than a fix. The center-source prior
+still reaches `corr_pass_nmse_near`, and several sign-equivalent settings tie
+in far-field power metrics. For the generic `default_cube_5x3x3` grid, however,
+the best convention still stays near `Corr = 0.794` and `NMSE = 0.318`; it does
+not become a valid reduced-sampling baseline. This argues against a simple
+global phase-sign or polarization-label error. The next real model upgrade is a
+more physical source prior: Huygens surface, spherical-wave sanity baseline, or
+known-source/structure-aware constraints.
