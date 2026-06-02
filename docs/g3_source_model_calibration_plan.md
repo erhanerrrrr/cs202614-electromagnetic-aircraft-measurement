@@ -236,6 +236,13 @@ fit relative error about `1.49e-02`). This is a good next CST true-monitor
 priority, especially alongside one conservative 120-point layout and the full
 162-point reference.
 
+The true-monitor workpack has now encoded that rerun order in
+`data/cst_true_nearfield_workpack/true_nearfield_priority_layout_queue.csv`:
+`full_grid_162` first, then `geometric_farthest_32`, then the conservative
+`fibonacci_snap_120` cross-check. Use
+`true_nearfield_priority_sensor_subsets.csv` to derive reduced-layout exports
+from the full 162-point monitor table when possible.
+
 Boundary: the result is still based on FarfieldPlot-derived angular samples and
 a scalar, not full vector, SWE approximation. It should not be written as final
 reduced-sampling proof until the true near-field monitor and physical Huygens

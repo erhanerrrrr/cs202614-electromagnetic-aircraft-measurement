@@ -1,7 +1,7 @@
 # 未来工程方案
 
-版本：v1.1
-更新依据：当前 GitHub 工程状态、CST Level 1 诊断结果、导师 DeepSeek 记录、文献矩阵和新增非冗余采样/反演校准脚本。
+版本：v1.2
+更新依据：当前 GitHub 工程状态、CST Level 1 诊断结果、导师 DeepSeek 记录、文献矩阵、新增非冗余采样/反演校准脚本和 true-monitor reduced-layout 复跑队列。
 
 ## 1. 当前工程判断
 
@@ -160,7 +160,7 @@ model_comparison.md
 
 按当前工程价值，建议下一轮按这个顺序推进：
 
-1. 已新增 CST true near-field monitor 导出工作包、宏骨架和对照脚本；下一步等待 CST 真 monitor 实测 CSV 回填。
+1. 已新增 CST true near-field monitor 导出工作包、宏骨架、对照脚本和三档复跑队列；下一步等待 CST 真 monitor 实测 CSV 回填。
 2. 已实现 `code/run_spherical_nf_ff_baseline.py` 的轻量球谐 NF-FF sanity check，当前 Level 1 两例达到 `strict_pass`。
 3. 已新增 `docs/huygens_surface_model_note.md` 和 `code/prepare_huygens_surface_prior.py`，明确面源模型、四复未知量、正则化、输出指标和先验节点工作包。
 4. 在当前 Level 1 两个标准源上复跑：center prior、generic grid、group-sparse、convention check、SWE sanity baseline。
@@ -213,8 +213,9 @@ Updated sprint order:
    Huygens baseline on that input.
 3. Improve the Huygens operator with fuller electric/magnetic surface-current
    Green functions and surface smoothness regularization.
-4. Prioritize `geometric_farthest_32`, one conservative 120-point layout, and
-   the full 162-point reference in the true-monitor rerun queue.
+4. Use the generated true-monitor rerun queue: `full_grid_162` first,
+   `geometric_farthest_32` second, and `fibonacci_snap_120` as the conservative
+   120-point cross-check.
 5. Only after a full-grid physical baseline reaches `strict_pass` or an
    approved near-pass, write the 120/81/48/32 sampling candidates as report-level
    reduced-layout evidence.

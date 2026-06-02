@@ -3,7 +3,9 @@
   "source_files": {
     "case_manifest": "outputs\\cst_level1_plan\\level1_case_manifest.csv",
     "source_manifest": "outputs\\cst_level1_plan\\level1_source_manifest.csv",
-    "sensor_layout": "outputs\\cst_templates\\sensor_layout_hemisphere_for_cst.csv"
+    "sensor_layout": "outputs\\cst_templates\\sensor_layout_hemisphere_for_cst.csv",
+    "layout_candidates": "data\\sampling_layouts\\hemisphere_sampling_candidates.csv",
+    "spherical_tradeoff_best": "data\\sampling_layouts\\spherical_nf_ff_tradeoff\\spherical_nf_ff_tradeoff_best_by_candidate.csv"
   },
   "output_dir": "data\\cst_true_nearfield_workpack",
   "case_count": 6,
@@ -23,6 +25,59 @@
     "Ez"
   ],
   "expected_rows_per_case": 486,
+  "priority_layout_count": 3,
+  "priority_layout_candidates": [
+    {
+      "priority_order": 1,
+      "candidate": "full_grid_162",
+      "layout_role": "full_grid_reference",
+      "candidate_method": "full_grid",
+      "sensor_count": 162,
+      "tradeoff_status": "",
+      "lmax": "",
+      "lambda_reg": "",
+      "min_correlation": "",
+      "max_nmse": "",
+      "max_main_lobe_error_deg": "",
+      "max_nearfield_fit_relative_error": "",
+      "max_basis_condition": "",
+      "role_reason": "First true near-field CST export should keep all 162 sensors as the monitor-confirmed reference."
+    },
+    {
+      "priority_order": 2,
+      "candidate": "geometric_farthest_32",
+      "layout_role": "smallest_strict_scalar_nf_ff",
+      "candidate_method": "geometric_farthest",
+      "sensor_count": 32,
+      "tradeoff_status": "strict_pass",
+      "lmax": 4,
+      "lambda_reg": 1e-10,
+      "min_correlation": 0.9991228831,
+      "max_nmse": 0.0009766966,
+      "max_main_lobe_error_deg": 0.0,
+      "max_nearfield_fit_relative_error": 0.0149105669,
+      "max_basis_condition": 73.9769425894,
+      "role_reason": "Smallest strict-pass reduced layout under the scalar spherical NF-FF angular diagnostic."
+    },
+    {
+      "priority_order": 3,
+      "candidate": "fibonacci_snap_120",
+      "layout_role": "conservative_120_crosscheck",
+      "candidate_method": "fibonacci_snap",
+      "sensor_count": 120,
+      "tradeoff_status": "strict_pass",
+      "lmax": 4,
+      "lambda_reg": 0.0,
+      "min_correlation": 0.9996015314,
+      "max_nmse": 0.0002706665,
+      "max_main_lobe_error_deg": 0.0,
+      "max_nearfield_fit_relative_error": 0.0133272685,
+      "max_basis_condition": 67.4490737393,
+      "role_reason": "Higher-density strict-pass layout for checking whether the 32-point result survives CST true-monitor data."
+    }
+  ],
+  "priority_layout_queue_rows": 18,
+  "priority_sensor_subset_rows": 314,
   "current_baseline_boundary": "Existing Level 1 samples are FarfieldPlot-derived angular samples, not true full-wave near-field monitor exports.",
   "next_algorithm_step": "After true monitor export, rerun Level 1 convention/source-model/sampling diagnostics before reduced-sampling claims.",
   "is_simulation_evidence": false

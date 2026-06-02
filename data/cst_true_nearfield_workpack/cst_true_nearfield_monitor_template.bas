@@ -8,10 +8,13 @@ Option Explicit
 
 Const CASE_CSV = "data\cst_true_nearfield_workpack\true_nearfield_monitor_cases.csv"
 Const SENSOR_SHELL_CSV = "data\cst_true_nearfield_workpack\true_nearfield_sensor_shell.csv"
+Const PRIORITY_QUEUE_CSV = "data\cst_true_nearfield_workpack\true_nearfield_priority_layout_queue.csv"
+Const PRIORITY_SUBSETS_CSV = "data\cst_true_nearfield_workpack\true_nearfield_priority_sensor_subsets.csv"
 Const EXPORT_CONTRACT_CSV = "data\cst_true_nearfield_workpack\true_nearfield_export_contract.csv"
 
 Sub Main()
     MsgBox "Use " & CASE_CSV & " and " & SENSOR_SHELL_CSV & " as the authoritative true near-field monitor workpack." & vbCrLf & _
+           "Use " & PRIORITY_QUEUE_CSV & " for full-grid and reduced-layout rerun order." & vbCrLf & _
            "Run required Level 1 z-dipole cases first, then compare against the FarfieldPlot-derived baseline."
 End Sub
 
@@ -23,5 +26,6 @@ Sub BuildTrueNearfieldMonitor(ByVal sampleId, ByVal freqHz, ByVal monitorName)
     ' 4. After solving, sample/interpolate the monitor at SENSOR_SHELL_CSV coordinates.
     ' 5. Export one row per sensor_id and Cartesian component Ex/Ey/Ez.
     ' 6. Keep the export columns listed in EXPORT_CONTRACT_CSV.
+    ' 7. Reduced layouts in PRIORITY_SUBSETS_CSV can be derived from the full-grid export.
     AddToHistory "CS202614_TrueNearfield_Metadata", "' sample_id=" & sampleId & ", frequency_hz=" & CStr(freqHz) & ", monitor=" & monitorName
 End Sub

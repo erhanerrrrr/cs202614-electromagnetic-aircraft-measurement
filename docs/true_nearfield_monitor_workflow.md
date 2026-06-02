@@ -30,6 +30,8 @@ Key files:
 |---|---|
 | `true_nearfield_monitor_cases.csv` | Level 1 CST case table, true-monitor export paths, and validation commands. |
 | `true_nearfield_sensor_shell.csv` | 162 sampling coordinates on the existing 2pi upper hemisphere. |
+| `true_nearfield_priority_layout_queue.csv` | Case-by-case queue for the full-grid reference plus reduced-layout reruns. |
+| `true_nearfield_priority_sensor_subsets.csv` | Sensor subsets for each queued layout. |
 | `true_nearfield_export_contract.csv` | Required columns for true monitor exports. |
 | `true_nearfield_vs_farfieldplot_checklist.csv` | CST/operator checklist for the monitor-vs-baseline comparison. |
 | `cst_true_nearfield_monitor_template.bas` | CST VBA skeleton that preserves the naming and export contract. |
@@ -43,6 +45,27 @@ L1_halfwave_dipole_z_1p2G
 
 Each true monitor export should contain 486 rows: 162 sensors times `Ex`, `Ey`,
 and `Ez`.
+
+## Priority Layout Queue
+
+The workpack now includes a direct rerun queue built from the scalar spherical
+NF-FF reduced-layout diagnostic:
+
+| Layout | Sensors | Role |
+|---|---:|---|
+| `full_grid_162` | 162 | First true-monitor reference export. |
+| `geometric_farthest_32` | 32 | Smallest strict-pass reduced candidate under the scalar angular NF-FF check. |
+| `fibonacci_snap_120` | 120 | Conservative higher-density cross-check layout. |
+
+Run or derive `full_grid_162` first. The reduced layouts can be filtered from
+the full 162-point export using `true_nearfield_priority_sensor_subsets.csv`, or
+exported directly from CST only if solver/export time is limited. These reduced
+layouts are still diagnostics until they pass on true CST monitor data and a
+physical Huygens/vector SWE baseline.
+
+For reduced layouts, `compare_true_nearfield_exports.py` computes metrics on
+the common sensor rows. Missing candidate rows are expected if the reference
+table is still the full 162-point FarfieldPlot-derived export.
 
 ## Comparison Gate
 

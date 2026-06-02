@@ -8,7 +8,7 @@
 |---|---|
 | `cst_exports/level1/` | Level 1 标准源 nearfield/farfield CSV、合并结果和 dropzone 说明。真实大 CSV 本地保留，默认不进入普通 Git。 |
 | `cst_exports/level2/` | Level 2 多源、多状态样本 nearfield/farfield CSV、合并结果和 dropzone 说明。 |
-| `cst_true_nearfield_workpack/` | CST 真近场 monitor 导出工作包、162 点采样壳层、宏骨架、对照清单和 reference self-check。 |
+| `cst_true_nearfield_workpack/` | CST 真近场 monitor 导出工作包、162 点采样壳层、reduced-layout 复跑队列、宏骨架、对照清单和 reference self-check。 |
 | `sampling_layouts/` | 162/120/81/48/32 点半球采样候选表、代理指标和当前 CST Level 1 诊断结果。 |
 | `source_priors/` | Huygens 面源等结构化反演先验的节点表、未知量合同和 README。 |
 
@@ -23,7 +23,7 @@
 | `sampling_layouts/cst_level1_source_model_sweep/` | `python code\run_cst_source_model_sweep.py` | 等效源支撑和 Tikhonov 正则化扫描。 |
 | `sampling_layouts/cst_level1_sparse_calibration/` | `python code\run_cst_sparse_reconstruction.py` | group-sparse 等效源校准结果。 |
 | `sampling_layouts/cst_level1_convention_check/` | `python code\run_cst_level1_convention_check.py` | 相位、复共轭和极化约定诊断。 |
-| `cst_true_nearfield_workpack/` | `python code\prepare_cst_true_nearfield_workpack.py` | 真近场 monitor 导出任务包和 FarfieldPlot-derived 基线对照入口。 |
+| `cst_true_nearfield_workpack/` | `python code\prepare_cst_true_nearfield_workpack.py` | 真近场 monitor 导出任务包、三档布局复跑队列和 FarfieldPlot-derived 基线对照入口。 |
 | `cst_true_nearfield_workpack/reference_self_check/` | `python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check` | 对照脚本自检结果，不是新增 CST 物理证据。 |
 | `source_priors/huygens_surface/` | `python code\prepare_huygens_surface_prior.py` | Huygens 面源节点、法向/切向基、面积权重和四复未知量合同。 |
 | `sampling_layouts/cst_level1_huygens_baseline/` | `python code\run_cst_huygens_baseline.py` | First Huygens-style surface-source reconstruction baseline; current result is diagnostic only. |
@@ -56,3 +56,7 @@ Current diagnostic result: `geometric_farthest_32` is the smallest reduced
 candidate with `strict_pass` (`lmax = 4`, `lambda = 1e-10`, max NMSE about
 `9.77e-04`). Use it to prioritize true CST near-field monitor reruns; do not
 treat it as final vector SWE or Huygens validation.
+
+`cst_true_nearfield_workpack/true_nearfield_priority_layout_queue.csv` now
+promotes this into a CST execution queue together with `full_grid_162` and the
+conservative `fibonacci_snap_120` cross-check layout.

@@ -120,6 +120,18 @@
 36. `outputs/cst_execution_dashboard/cst_execution_dashboard.md`
 37. `outputs/cst_execution_logs/README_cst_execution_logs.md`
 
+## 2026-06-02 true-monitor queue index
+
+`data/cst_true_nearfield_workpack/` now contains the CST true near-field monitor
+handoff package plus a reduced-layout rerun queue:
+
+| File | Meaning |
+|---|---|
+| `true_nearfield_monitor_cases.csv` | Six Level 1 cases and full-grid true-monitor export contracts. |
+| `true_nearfield_sensor_shell.csv` | Full 162-point upper-hemisphere shell. |
+| `true_nearfield_priority_layout_queue.csv` | Eighteen case-layout tasks: `full_grid_162`, `geometric_farthest_32`, and `fibonacci_snap_120` for each Level 1 case. |
+| `true_nearfield_priority_sensor_subsets.csv` | Sensor ids and coordinates needed to derive each queued layout from a full-grid export. |
+
 ## 当前不能声称完成的原因
 
 - 真实 Level 1 CST required 已完成求解、CSV 导出、严格审计、批量重建和 FarfieldPlot-derived 角域校准；Level 2 已完成 48/48 个 CST-derived element-library 样本、严格合并、识别、消融和简化结构遮挡对照，但复杂载体 full-wave airframe 对照仍未完成。

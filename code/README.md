@@ -33,7 +33,7 @@
 |---|---|
 | `prepare_cst_templates.py`、`prepare_cst_macro_templates.py` | 生成 CST 建模和导出宏模板。 |
 | `prepare_cst_level1_workpack.py`、`prepare_cst_level2_workpack.py` | 生成 Level 1/2 CST 执行任务包。 |
-| `prepare_cst_true_nearfield_workpack.py` | 生成 CST 真近场 monitor 导出工作包、采样壳层、宏骨架和对照清单。 |
+| `prepare_cst_true_nearfield_workpack.py` | 生成 CST 真近场 monitor 导出工作包、采样壳层、三档布局复跑队列、宏骨架和对照清单。 |
 | `merge_cst_level1_exports.py`、`merge_cst_level2_exports.py` | 合并 CST 导出的 near/far-field 数据。 |
 | `run_cst_solver_project.py`、`export_cst_farfield_results.py` | 本机 CST 求解和结果导出辅助入口。 |
 
@@ -76,6 +76,11 @@ layout that reaches `strict_pass` under this angular scalar check
 (`lmax = 4`, `lambda = 1e-10`, min corr about `0.9991`, max NMSE about
 `9.77e-04`, zero main-lobe error). Treat it as a priority layout for true CST
 near-field monitor reruns, not as final vector SWE or Huygens proof.
+
+`prepare_cst_true_nearfield_workpack.py` now consumes those results and writes
+`true_nearfield_priority_layout_queue.csv` plus
+`true_nearfield_priority_sensor_subsets.csv`, prioritizing `full_grid_162`,
+`geometric_farthest_32`, and `fibonacci_snap_120`.
 
 ## Huygens baseline addendum
 

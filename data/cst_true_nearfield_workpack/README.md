@@ -14,6 +14,8 @@ made in the report.
 |---|---|
 | `true_nearfield_monitor_cases.csv` | One row per Level 1 case with source coordinates, monitor name, export paths, and validation command. |
 | `true_nearfield_sensor_shell.csv` | The 162-point upper-hemisphere shell to sample from the true near-field monitor. |
+| `true_nearfield_priority_layout_queue.csv` | Case-by-case CST rerun queue for the full 162-point reference and reduced layouts. |
+| `true_nearfield_priority_sensor_subsets.csv` | Sensor subsets for the queued full/reduced layouts. |
 | `true_nearfield_export_contract.csv` | Required CSV columns for true near-field exports. |
 | `true_nearfield_vs_farfieldplot_checklist.csv` | Operator and algorithm checklist for the comparison run. |
 | `cst_true_nearfield_monitor_template.bas` | CST VBA skeleton for building/exporting the monitor. |
@@ -30,6 +32,29 @@ L1_short_dipole_z_1p2G, L1_halfwave_dipole_z_1p2G
 For each case, export `Ex`, `Ey`, and `Ez` as complex values at every sensor in
 `true_nearfield_sensor_shell.csv`. The expected row count per case is
 `486`.
+
+## Reduced-layout rerun queue
+
+The queue now carries three true-monitor layouts:
+
+- `full_grid_162` (162 sensors): full_grid_reference; First true near-field CST export should keep all 162 sensors as the monitor-confirmed reference.
+- `geometric_farthest_32` (32 sensors): smallest_strict_scalar_nf_ff; Smallest strict-pass reduced layout under the scalar spherical NF-FF angular diagnostic.
+- `fibonacci_snap_120` (120 sensors): conservative_120_crosscheck; Higher-density strict-pass layout for checking whether the 32-point result survives CST true-monitor data.
+
+Use `true_nearfield_priority_layout_queue.csv` as the CST/operator task list.
+Run or derive the full-grid `full_grid_162` reference first. The reduced
+layouts should be treated as follow-up diagnostics: they can be derived from the
+full 162-point export by filtering `true_nearfield_priority_sensor_subsets.csv`,
+or exported directly from CST only if solver/export time is tight.
+
+When a reduced-layout export is compared with the existing 162-point
+FarfieldPlot-derived reference, `compare_true_nearfield_exports.py` computes
+metrics on common sensor rows and reports the omitted full-grid rows as expected
+`missing_candidate_rows`.
+
+This is still a queue, not final evidence. The 32-point result came from the
+scalar spherical NF-FF angular diagnostic and must be rerun against true CST
+near-field monitor data before it is used as a competition claim.
 
 After export, compare the true near-field monitor table against the existing
 FarfieldPlot-derived table. The current FarfieldPlot-derived table is useful as
