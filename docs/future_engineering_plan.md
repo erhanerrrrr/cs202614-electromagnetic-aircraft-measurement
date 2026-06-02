@@ -488,3 +488,55 @@ recover above `0.85` or are explicitly documented as the operating boundary.
 This does not change the G3 reconstruction boundary: true CST monitor exports
 and physical/vector baselines are still required for reduced-layout
 reconstruction claims.
+
+## 15. 2026-06-02 G5 perturbation-aware training update
+
+The clean-train stress test exposed a useful but uncomfortable boundary: the
+current recognition feature/model stack handles single-factor measurement
+errors, but compound noise, phase jitter, and channel dropout can push every
+tested layout below the `0.85` accuracy threshold.
+
+The follow-up runner is now available:
+
+```powershell
+python code\run_cst_recognition_augmented_stress_test.py
+```
+
+It writes `data/recognition_stress_tests/level2_augmented_robustness/`:
+
+- `recognition_augmented_stress_metrics.csv`: one row per selected layout and
+  held-out stress case, with the clean-train baseline accuracy and the
+  augmented-training delta.
+- `recognition_augmented_stress_summary.json`: input references, augmentation
+  definitions, model reports, and worst-case summary.
+- `README.md`: short teammate-facing interpretation and claim boundary.
+
+Current result:
+
+- The same five layouts are tested: `full_grid_162`, `geometric_farthest_32`,
+  `fibonacci_snap_120`, `task_driven_32`, and `task_driven_48`.
+- The same eight held-out stress cases are used as the clean-train run.
+- Training is expanded with clean, noise, phase-jitter, dropout, and combined
+  perturbation profiles.
+- All 40 layout/stress rows recover to accuracy `1.000`; the mean accuracy
+  delta against the clean-train baseline is about `+0.060`.
+- The previously weak combined perturbation rows recover, including the
+  `noise10_phase15_dropout10` cases.
+
+Engineering interpretation: for the current Level 2 CST-derived
+element-library data, the recognition branch can absorb known measurement-error
+families through perturbation-aware training. This should be reported as a
+calibration/augmentation result, not as an unconditional robustness claim.
+
+Remaining G5 validation before final report-level confidence:
+
+1. Add a leave-one-stress-family-out check so the model is tested on an error
+   family it did not see during augmentation.
+2. Repeat the stress tests across several random seeds for dropout/noise
+   sampling and report confidence intervals, not only one split.
+3. When full-wave airframe or real measurement data arrives, rerun both
+   `run_cst_recognition_stress_test.py` and
+   `run_cst_recognition_augmented_stress_test.py` on that data.
+4. Keep the G3 boundary separate: this G5 result supports classification
+   robustness, while reduced-layout reconstruction still waits on true CST
+   near-field monitor CSVs and a physical/vector baseline gate.

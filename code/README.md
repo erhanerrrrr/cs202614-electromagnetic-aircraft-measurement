@@ -49,6 +49,7 @@
 |---|---|
 | `run_cst_recognition.py`、`run_cst_recognition_ablation.py` | 空域、频率、极化等特征提取与分类识别实验。 |
 | `run_cst_recognition_stress_test.py` | 对 G2 代表布局做 Level 2 clean-train/perturbed-test 鲁棒性验证，覆盖噪声、相位抖动和通道缺失。 |
+| `run_cst_recognition_augmented_stress_test.py` | 在同一 held-out 压力测试上加入扰动增强训练，对照 clean-train 边界能否被校准/增强恢复。 |
 | `run_cst_structure_comparison.py` | 结构/安装影响对比实验。 |
 | `build_g3_model_dashboard.py` | 汇总 G3 源模型、SWE、Huygens 和真近场 gate 证据，输出当前可汇报结论与下一步动作。 |
 | `build_*.py` | 报告、PPT、提交包、仪表盘和审查材料生成脚本。 |
@@ -78,6 +79,7 @@ python code\run_cst_huygens_baseline.py
 python code\check_cst_export.py --nearfield data\cst_exports\level1\all_nearfield.csv --farfield data\cst_exports\level1\all_farfield.csv
 python code\run_cst_recognition.py
 python code\run_cst_recognition_stress_test.py
+python code\run_cst_recognition_augmented_stress_test.py
 ```
 
 ## Spherical reduced-layout addendum
@@ -159,6 +161,19 @@ remain at accuracy `1.000`, but the combined `noise10_phase15_dropout10` case
 falls below the `0.85` threshold for all tested layouts. Treat this as a G5
 robustness boundary and as motivation for calibration/augmentation before
 claiming recognition generalization under compound measurement errors.
+
+`run_cst_recognition_augmented_stress_test.py` is the follow-up calibration
+experiment. It keeps the same layouts, held-out split, and stress cases, but
+expands the training set with the clean/noise/phase/dropout/combined
+perturbation profiles before evaluating the same held-out stress rows. It
+writes `data/recognition_stress_tests/level2_augmented_robustness/`.
+
+Current augmented-training result: all 40 layout/stress rows return to
+accuracy `1.000`, including the combined perturbation rows. Treat this as
+evidence that known measurement-error families can be absorbed by training
+augmentation on the current Level 2 CST-derived element-library data. It is not
+proof of robustness to unknown full-wave airframe scattering or unmeasured
+instrument errors.
 
 ## Huygens baseline addendum
 

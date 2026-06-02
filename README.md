@@ -80,6 +80,7 @@
 53. GitHub 协作入口：`.github/ISSUE_TEMPLATE/` 已补齐 CST、算法、文档和 bug 四类 issue 模板，`CONTRIBUTING.md` 明确了分支、提交、大文件、true-monitor 校验和结论口径规则，便于队友按统一格式推进任务。
 54. G2 采样候选决策矩阵：`code/build_sampling_decision_matrix.py` 输出 `data/sampling_layouts/sampling_decision_matrix/`，把 `full_grid_162` 定为物理参考锚点，`geometric_farthest_32` 定为第一 reduced-layout true-monitor 复跑优先项，`fibonacci_snap_120` 定为保守 120 点交叉验证，`task_driven_32/48` 定为分类压力测试探针。
 55. G5 识别鲁棒性压力测试：`code/run_cst_recognition_stress_test.py` 输出 `data/recognition_stress_tests/level2_robustness/`，在 clean-train/perturbed-test 设置下验证噪声、相位抖动和通道缺失；当前单因素扰动基本保持 `1.000`，但组合扰动会低于 `0.85`，需要作为分类泛化边界写入报告口径。
+56. G5 扰动增强训练对照：`code/run_cst_recognition_augmented_stress_test.py` 输出 `data/recognition_stress_tests/level2_augmented_robustness/`，在同一 held-out 压力测试上加入已知噪声、相位、缺测和组合扰动增强训练；当前 5 个布局 × 8 个压力场景共 40 行均恢复到 accuracy=`1.000`，可作为已知测量误差族可校准的证据，但不能替代 full-wave 复杂载体验证。
 
 ## 如何阅读本项目
 
@@ -112,6 +113,7 @@
 25. 若要判断是否能交付，查看 `outputs/completion_audit/completion_audit.md`。
 26. 若要推进真近场 monitor 复跑，先看 `docs/true_nearfield_monitor_workflow.md`，再运行 `python code\run_true_nearfield_gate.py` 查看 `data/cst_true_nearfield_workpack/gate_report/`。
 27. 若要判断 CST 真 monitor 回填后下一步，运行 `python code\run_true_nearfield_workflow_decision.py`，再看 `outputs/cst_true_nearfield_workflow_decision/true_nearfield_workflow_decision.md`。
+28. 若要查看 G5 分类鲁棒性边界和增强训练修复效果，依次看 `data/recognition_stress_tests/level2_robustness/` 与 `data/recognition_stress_tests/level2_augmented_robustness/`。
 
 ## Baseline 运行方式
 
@@ -735,3 +737,4 @@ python code\run_cst_recognition_ablation.py --nearfield outputs\synthetic_cst_da
 11. 运行 `python code\run_true_nearfield_workflow_decision.py` 刷新 `outputs/cst_true_nearfield_workflow_decision/`，用 `true_nearfield_workflow_decision.md` 判断下一步是继续等 CST、跑 required gate、复跑 G3 physical baseline，还是刷新报告口径。
 12. 运行 `python code\build_sampling_decision_matrix.py` 刷新 `data/sampling_layouts/sampling_decision_matrix/`，用矩阵安排 reduced-layout 真 monitor 复跑和分类压力测试；该矩阵仍是计划依据，不是 final vector/Huygens 证明。
 13. 运行 `python code\run_cst_recognition_stress_test.py` 刷新 `data/recognition_stress_tests/level2_robustness/`，若组合扰动仍低于 `0.85`，下一步应加入噪声/相位/缺测增强训练或 error-aware 特征，而不是直接宣称复杂误差下识别稳健。
+14. 运行 `python code\run_cst_recognition_augmented_stress_test.py` 刷新 `data/recognition_stress_tests/level2_augmented_robustness/`；若扰动 profile、随机种子或 Level 2 样本库变化，应同时复跑 clean-train 与 augmented 两个脚本，并在最终报告中区分“已知扰动增强有效”和“未知误差仍需外推验证”。

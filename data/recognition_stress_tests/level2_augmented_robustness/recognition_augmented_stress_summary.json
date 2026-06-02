@@ -1,0 +1,5348 @@
+{
+  "generated_by": "code/run_cst_recognition_augmented_stress_test.py",
+  "purpose": "G5 perturbation-aware training follow-up for Level 2 recognition robustness.",
+  "inputs": {
+    "nearfield": "data\\cst_exports\\level2\\all_nearfield.csv",
+    "labels": "outputs\\cst_level2_plan\\level2_labels.csv",
+    "layouts": "data\\sampling_layouts\\hemisphere_sampling_candidates.csv",
+    "decision_matrix": "data\\sampling_layouts\\sampling_decision_matrix\\sampling_decision_matrix.csv",
+    "clean_baseline": "data\\recognition_stress_tests\\level2_robustness\\recognition_stress_metrics.csv"
+  },
+  "nearfield_validation": {
+    "ok": true,
+    "warnings": [
+      "nearfield uses Ex/Ey/Ez; Python can convert to theta/phi if coordinates are correct"
+    ],
+    "summary": {
+      "nearfield_rows": 116640,
+      "sample_count": 48,
+      "samples": [
+        "L2_comm_pair_000",
+        "L2_comm_pair_001",
+        "L2_comm_pair_002",
+        "L2_comm_pair_003",
+        "L2_comm_pair_004",
+        "L2_comm_pair_005",
+        "L2_comm_pair_006",
+        "L2_comm_pair_007",
+        "L2_comm_pair_008",
+        "L2_comm_pair_009"
+      ],
+      "frequency_count": 5,
+      "frequencies_hz": [
+        900000000.0,
+        1050000000.0,
+        1200000000.0,
+        1350000000.0,
+        1500000000.0
+      ],
+      "sensor_count": 162,
+      "polarizations": [
+        "Ex",
+        "Ey",
+        "Ez"
+      ],
+      "radius_min_m": 12.999999999999996,
+      "radius_max_m": 13.000000000000005,
+      "reconstruction_ready": true
+    }
+  },
+  "augmentation_cases": [
+    {
+      "stress_case": "clean",
+      "noise_snr_db": null,
+      "phase_jitter_deg": 0.0,
+      "dropout_fraction": 0.0,
+      "description": "Clean held-out test set."
+    },
+    {
+      "stress_case": "noise_20db",
+      "noise_snr_db": 20.0,
+      "phase_jitter_deg": 0.0,
+      "dropout_fraction": 0.0,
+      "description": "Complex additive channel noise at 20 dB SNR."
+    },
+    {
+      "stress_case": "noise_10db",
+      "noise_snr_db": 10.0,
+      "phase_jitter_deg": 0.0,
+      "dropout_fraction": 0.0,
+      "description": "Complex additive channel noise at 10 dB SNR."
+    },
+    {
+      "stress_case": "phase_15deg",
+      "noise_snr_db": null,
+      "phase_jitter_deg": 15.0,
+      "dropout_fraction": 0.0,
+      "description": "Independent complex phase jitter with 15 deg standard deviation."
+    },
+    {
+      "stress_case": "phase_45deg",
+      "noise_snr_db": null,
+      "phase_jitter_deg": 45.0,
+      "dropout_fraction": 0.0,
+      "description": "Independent complex phase jitter with 45 deg standard deviation."
+    },
+    {
+      "stress_case": "dropout_10pct",
+      "noise_snr_db": null,
+      "phase_jitter_deg": 0.0,
+      "dropout_fraction": 0.1,
+      "description": "Random theta/phi channel dropout with zero-fill at 10 percent."
+    },
+    {
+      "stress_case": "dropout_25pct",
+      "noise_snr_db": null,
+      "phase_jitter_deg": 0.0,
+      "dropout_fraction": 0.25,
+      "description": "Random theta/phi channel dropout with zero-fill at 25 percent."
+    },
+    {
+      "stress_case": "noise10_phase15_dropout10",
+      "noise_snr_db": 10.0,
+      "phase_jitter_deg": 15.0,
+      "dropout_fraction": 0.1,
+      "description": "Combined 10 dB noise, 15 deg phase jitter, and 10 percent channel dropout."
+    }
+  ],
+  "stress_cases": [
+    {
+      "stress_case": "clean",
+      "noise_snr_db": null,
+      "phase_jitter_deg": 0.0,
+      "dropout_fraction": 0.0,
+      "description": "Clean held-out test set."
+    },
+    {
+      "stress_case": "noise_20db",
+      "noise_snr_db": 20.0,
+      "phase_jitter_deg": 0.0,
+      "dropout_fraction": 0.0,
+      "description": "Complex additive channel noise at 20 dB SNR."
+    },
+    {
+      "stress_case": "noise_10db",
+      "noise_snr_db": 10.0,
+      "phase_jitter_deg": 0.0,
+      "dropout_fraction": 0.0,
+      "description": "Complex additive channel noise at 10 dB SNR."
+    },
+    {
+      "stress_case": "phase_15deg",
+      "noise_snr_db": null,
+      "phase_jitter_deg": 15.0,
+      "dropout_fraction": 0.0,
+      "description": "Independent complex phase jitter with 15 deg standard deviation."
+    },
+    {
+      "stress_case": "phase_45deg",
+      "noise_snr_db": null,
+      "phase_jitter_deg": 45.0,
+      "dropout_fraction": 0.0,
+      "description": "Independent complex phase jitter with 45 deg standard deviation."
+    },
+    {
+      "stress_case": "dropout_10pct",
+      "noise_snr_db": null,
+      "phase_jitter_deg": 0.0,
+      "dropout_fraction": 0.1,
+      "description": "Random theta/phi channel dropout with zero-fill at 10 percent."
+    },
+    {
+      "stress_case": "dropout_25pct",
+      "noise_snr_db": null,
+      "phase_jitter_deg": 0.0,
+      "dropout_fraction": 0.25,
+      "description": "Random theta/phi channel dropout with zero-fill at 25 percent."
+    },
+    {
+      "stress_case": "noise10_phase15_dropout10",
+      "noise_snr_db": 10.0,
+      "phase_jitter_deg": 15.0,
+      "dropout_fraction": 0.1,
+      "description": "Combined 10 dB noise, 15 deg phase jitter, and 10 percent channel dropout."
+    }
+  ],
+  "summary": {
+    "layout_count": 5,
+    "stress_case_count": 8,
+    "row_count": 40,
+    "all_rows_pass_085": true,
+    "worst_case": {
+      "candidate": "full_grid_162",
+      "stress_case": "clean",
+      "best_accuracy": 1.0,
+      "best_macro_f1": 1.0
+    },
+    "layouts": [
+      {
+        "candidate": "full_grid_162",
+        "sensor_count": 162,
+        "recommendation": "reference_anchor",
+        "clean_accuracy": 1.0,
+        "worst_accuracy": 1.0,
+        "worst_case": "clean",
+        "all_cases_pass_085": true
+      },
+      {
+        "candidate": "geometric_farthest_32",
+        "sensor_count": 32,
+        "recommendation": "reconstruction_priority",
+        "clean_accuracy": 1.0,
+        "worst_accuracy": 1.0,
+        "worst_case": "clean",
+        "all_cases_pass_085": true
+      },
+      {
+        "candidate": "fibonacci_snap_120",
+        "sensor_count": 120,
+        "recommendation": "conservative_cross_check",
+        "clean_accuracy": 1.0,
+        "worst_accuracy": 1.0,
+        "worst_case": "clean",
+        "all_cases_pass_085": true
+      },
+      {
+        "candidate": "task_driven_32",
+        "sensor_count": 32,
+        "recommendation": "classification_probe",
+        "clean_accuracy": 1.0,
+        "worst_accuracy": 1.0,
+        "worst_case": "clean",
+        "all_cases_pass_085": true
+      },
+      {
+        "candidate": "task_driven_48",
+        "sensor_count": 48,
+        "recommendation": "classification_probe",
+        "clean_accuracy": 1.0,
+        "worst_accuracy": 1.0,
+        "worst_case": "clean",
+        "all_cases_pass_085": true
+      }
+    ]
+  },
+  "details": {
+    "full_grid_162": {
+      "class_names": [
+        "comm_pair",
+        "mixed_avionics",
+        "multi_state_on",
+        "radar_top"
+      ],
+      "sample_ids": [
+        "L2_comm_pair_000",
+        "L2_comm_pair_001",
+        "L2_comm_pair_002",
+        "L2_comm_pair_003",
+        "L2_comm_pair_004",
+        "L2_comm_pair_005",
+        "L2_comm_pair_006",
+        "L2_comm_pair_007",
+        "L2_comm_pair_008",
+        "L2_comm_pair_009",
+        "L2_comm_pair_010",
+        "L2_comm_pair_011",
+        "L2_radar_top_000",
+        "L2_radar_top_001",
+        "L2_radar_top_002",
+        "L2_radar_top_003",
+        "L2_radar_top_004",
+        "L2_radar_top_005",
+        "L2_radar_top_006",
+        "L2_radar_top_007",
+        "L2_radar_top_008",
+        "L2_radar_top_009",
+        "L2_radar_top_010",
+        "L2_radar_top_011",
+        "L2_mixed_avionics_000",
+        "L2_mixed_avionics_001",
+        "L2_mixed_avionics_002",
+        "L2_mixed_avionics_003",
+        "L2_mixed_avionics_004",
+        "L2_mixed_avionics_005",
+        "L2_mixed_avionics_006",
+        "L2_mixed_avionics_007",
+        "L2_mixed_avionics_008",
+        "L2_mixed_avionics_009",
+        "L2_mixed_avionics_010",
+        "L2_mixed_avionics_011",
+        "L2_multi_state_on_000",
+        "L2_multi_state_on_001",
+        "L2_multi_state_on_002",
+        "L2_multi_state_on_003",
+        "L2_multi_state_on_004",
+        "L2_multi_state_on_005",
+        "L2_multi_state_on_006",
+        "L2_multi_state_on_007",
+        "L2_multi_state_on_008",
+        "L2_multi_state_on_009",
+        "L2_multi_state_on_010",
+        "L2_multi_state_on_011"
+      ],
+      "clean_feature_metadata": {
+        "sample_count": 48,
+        "skipped_samples": [],
+        "skipped_sample_count": 0,
+        "frequency_hz": [
+          900000000.0,
+          1050000000.0,
+          1200000000.0,
+          1350000000.0,
+          1500000000.0
+        ],
+        "sensor_count": 162,
+        "feature_count": 4965,
+        "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+      },
+      "augmentation_manifest": [
+        {
+          "augmentation_case": "clean",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 4965
+        },
+        {
+          "augmentation_case": "noise_20db",
+          "noise_snr_db": 20.0,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 4965
+        },
+        {
+          "augmentation_case": "noise_10db",
+          "noise_snr_db": 10.0,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 4965
+        },
+        {
+          "augmentation_case": "phase_15deg",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 15.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 4965
+        },
+        {
+          "augmentation_case": "phase_45deg",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 45.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 4965
+        },
+        {
+          "augmentation_case": "dropout_10pct",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.1,
+          "train_rows_added": 33,
+          "feature_count": 4965
+        },
+        {
+          "augmentation_case": "dropout_25pct",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.25,
+          "train_rows_added": 33,
+          "feature_count": 4965
+        },
+        {
+          "augmentation_case": "noise10_phase15_dropout10",
+          "noise_snr_db": 10.0,
+          "phase_jitter_deg": 15.0,
+          "dropout_fraction": 0.1,
+          "train_rows_added": 33,
+          "feature_count": 4965
+        }
+      ],
+      "base_train_sample_count": 33,
+      "augmented_train_sample_count": 264,
+      "test_sample_count": 15,
+      "stress_cases": {
+        "clean": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 162,
+            "feature_count": 4965,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise_20db": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 162,
+            "feature_count": 4965,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise_10db": {
+          "best": {
+            "model": "random_forest",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 0.9333333333333333,
+              "macro_f1": 0.9222222222222223,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 0.8,
+                  "recall": 1.0,
+                  "f1-score": 0.8888888888888888,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 0.6666666666666666,
+                  "f1-score": 0.8,
+                  "support": 3.0
+                },
+                "accuracy": 0.9333333333333333,
+                "macro avg": {
+                  "precision": 0.95,
+                  "recall": 0.9166666666666666,
+                  "f1-score": 0.9222222222222223,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 0.9466666666666667,
+                  "recall": 0.9333333333333333,
+                  "f1-score": 0.9303703703703704,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 162,
+            "feature_count": 4965,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "phase_15deg": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 162,
+            "feature_count": 4965,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "phase_45deg": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 162,
+            "feature_count": 4965,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "dropout_10pct": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 162,
+            "feature_count": 4965,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "dropout_25pct": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 162,
+            "feature_count": 4965,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise10_phase15_dropout10": {
+          "best": {
+            "model": "random_forest",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 0.9333333333333333,
+              "macro_f1": 0.9365079365079365,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 0.8,
+                  "recall": 1.0,
+                  "f1-score": 0.8888888888888888,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 0.75,
+                  "f1-score": 0.8571428571428571,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 0.9333333333333333,
+                "macro avg": {
+                  "precision": 0.95,
+                  "recall": 0.9375,
+                  "f1-score": 0.9365079365079365,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 0.9466666666666667,
+                  "recall": 0.9333333333333333,
+                  "f1-score": 0.9322751322751323,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 162,
+            "feature_count": 4965,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        }
+      }
+    },
+    "geometric_farthest_32": {
+      "class_names": [
+        "comm_pair",
+        "mixed_avionics",
+        "multi_state_on",
+        "radar_top"
+      ],
+      "sample_ids": [
+        "L2_comm_pair_000",
+        "L2_comm_pair_001",
+        "L2_comm_pair_002",
+        "L2_comm_pair_003",
+        "L2_comm_pair_004",
+        "L2_comm_pair_005",
+        "L2_comm_pair_006",
+        "L2_comm_pair_007",
+        "L2_comm_pair_008",
+        "L2_comm_pair_009",
+        "L2_comm_pair_010",
+        "L2_comm_pair_011",
+        "L2_radar_top_000",
+        "L2_radar_top_001",
+        "L2_radar_top_002",
+        "L2_radar_top_003",
+        "L2_radar_top_004",
+        "L2_radar_top_005",
+        "L2_radar_top_006",
+        "L2_radar_top_007",
+        "L2_radar_top_008",
+        "L2_radar_top_009",
+        "L2_radar_top_010",
+        "L2_radar_top_011",
+        "L2_mixed_avionics_000",
+        "L2_mixed_avionics_001",
+        "L2_mixed_avionics_002",
+        "L2_mixed_avionics_003",
+        "L2_mixed_avionics_004",
+        "L2_mixed_avionics_005",
+        "L2_mixed_avionics_006",
+        "L2_mixed_avionics_007",
+        "L2_mixed_avionics_008",
+        "L2_mixed_avionics_009",
+        "L2_mixed_avionics_010",
+        "L2_mixed_avionics_011",
+        "L2_multi_state_on_000",
+        "L2_multi_state_on_001",
+        "L2_multi_state_on_002",
+        "L2_multi_state_on_003",
+        "L2_multi_state_on_004",
+        "L2_multi_state_on_005",
+        "L2_multi_state_on_006",
+        "L2_multi_state_on_007",
+        "L2_multi_state_on_008",
+        "L2_multi_state_on_009",
+        "L2_multi_state_on_010",
+        "L2_multi_state_on_011"
+      ],
+      "clean_feature_metadata": {
+        "sample_count": 48,
+        "skipped_samples": [],
+        "skipped_sample_count": 0,
+        "frequency_hz": [
+          900000000.0,
+          1050000000.0,
+          1200000000.0,
+          1350000000.0,
+          1500000000.0
+        ],
+        "sensor_count": 32,
+        "feature_count": 1065,
+        "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+      },
+      "augmentation_manifest": [
+        {
+          "augmentation_case": "clean",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "noise_20db",
+          "noise_snr_db": 20.0,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "noise_10db",
+          "noise_snr_db": 10.0,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "phase_15deg",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 15.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "phase_45deg",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 45.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "dropout_10pct",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.1,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "dropout_25pct",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.25,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "noise10_phase15_dropout10",
+          "noise_snr_db": 10.0,
+          "phase_jitter_deg": 15.0,
+          "dropout_fraction": 0.1,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        }
+      ],
+      "base_train_sample_count": 33,
+      "augmented_train_sample_count": 264,
+      "test_sample_count": 15,
+      "stress_cases": {
+        "clean": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise_20db": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise_10db": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "phase_15deg": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "phase_45deg": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "dropout_10pct": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "dropout_25pct": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise10_phase15_dropout10": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        }
+      }
+    },
+    "fibonacci_snap_120": {
+      "class_names": [
+        "comm_pair",
+        "mixed_avionics",
+        "multi_state_on",
+        "radar_top"
+      ],
+      "sample_ids": [
+        "L2_comm_pair_000",
+        "L2_comm_pair_001",
+        "L2_comm_pair_002",
+        "L2_comm_pair_003",
+        "L2_comm_pair_004",
+        "L2_comm_pair_005",
+        "L2_comm_pair_006",
+        "L2_comm_pair_007",
+        "L2_comm_pair_008",
+        "L2_comm_pair_009",
+        "L2_comm_pair_010",
+        "L2_comm_pair_011",
+        "L2_radar_top_000",
+        "L2_radar_top_001",
+        "L2_radar_top_002",
+        "L2_radar_top_003",
+        "L2_radar_top_004",
+        "L2_radar_top_005",
+        "L2_radar_top_006",
+        "L2_radar_top_007",
+        "L2_radar_top_008",
+        "L2_radar_top_009",
+        "L2_radar_top_010",
+        "L2_radar_top_011",
+        "L2_mixed_avionics_000",
+        "L2_mixed_avionics_001",
+        "L2_mixed_avionics_002",
+        "L2_mixed_avionics_003",
+        "L2_mixed_avionics_004",
+        "L2_mixed_avionics_005",
+        "L2_mixed_avionics_006",
+        "L2_mixed_avionics_007",
+        "L2_mixed_avionics_008",
+        "L2_mixed_avionics_009",
+        "L2_mixed_avionics_010",
+        "L2_mixed_avionics_011",
+        "L2_multi_state_on_000",
+        "L2_multi_state_on_001",
+        "L2_multi_state_on_002",
+        "L2_multi_state_on_003",
+        "L2_multi_state_on_004",
+        "L2_multi_state_on_005",
+        "L2_multi_state_on_006",
+        "L2_multi_state_on_007",
+        "L2_multi_state_on_008",
+        "L2_multi_state_on_009",
+        "L2_multi_state_on_010",
+        "L2_multi_state_on_011"
+      ],
+      "clean_feature_metadata": {
+        "sample_count": 48,
+        "skipped_samples": [],
+        "skipped_sample_count": 0,
+        "frequency_hz": [
+          900000000.0,
+          1050000000.0,
+          1200000000.0,
+          1350000000.0,
+          1500000000.0
+        ],
+        "sensor_count": 120,
+        "feature_count": 3705,
+        "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+      },
+      "augmentation_manifest": [
+        {
+          "augmentation_case": "clean",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 3705
+        },
+        {
+          "augmentation_case": "noise_20db",
+          "noise_snr_db": 20.0,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 3705
+        },
+        {
+          "augmentation_case": "noise_10db",
+          "noise_snr_db": 10.0,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 3705
+        },
+        {
+          "augmentation_case": "phase_15deg",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 15.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 3705
+        },
+        {
+          "augmentation_case": "phase_45deg",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 45.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 3705
+        },
+        {
+          "augmentation_case": "dropout_10pct",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.1,
+          "train_rows_added": 33,
+          "feature_count": 3705
+        },
+        {
+          "augmentation_case": "dropout_25pct",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.25,
+          "train_rows_added": 33,
+          "feature_count": 3705
+        },
+        {
+          "augmentation_case": "noise10_phase15_dropout10",
+          "noise_snr_db": 10.0,
+          "phase_jitter_deg": 15.0,
+          "dropout_fraction": 0.1,
+          "train_rows_added": 33,
+          "feature_count": 3705
+        }
+      ],
+      "base_train_sample_count": 33,
+      "augmented_train_sample_count": 264,
+      "test_sample_count": 15,
+      "stress_cases": {
+        "clean": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 120,
+            "feature_count": 3705,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise_20db": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 120,
+            "feature_count": 3705,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise_10db": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 120,
+            "feature_count": 3705,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "phase_15deg": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 120,
+            "feature_count": 3705,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "phase_45deg": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 120,
+            "feature_count": 3705,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "dropout_10pct": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 120,
+            "feature_count": 3705,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "dropout_25pct": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 120,
+            "feature_count": 3705,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise10_phase15_dropout10": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 120,
+            "feature_count": 3705,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        }
+      }
+    },
+    "task_driven_32": {
+      "class_names": [
+        "comm_pair",
+        "mixed_avionics",
+        "multi_state_on",
+        "radar_top"
+      ],
+      "sample_ids": [
+        "L2_comm_pair_000",
+        "L2_comm_pair_001",
+        "L2_comm_pair_002",
+        "L2_comm_pair_003",
+        "L2_comm_pair_004",
+        "L2_comm_pair_005",
+        "L2_comm_pair_006",
+        "L2_comm_pair_007",
+        "L2_comm_pair_008",
+        "L2_comm_pair_009",
+        "L2_comm_pair_010",
+        "L2_comm_pair_011",
+        "L2_radar_top_000",
+        "L2_radar_top_001",
+        "L2_radar_top_002",
+        "L2_radar_top_003",
+        "L2_radar_top_004",
+        "L2_radar_top_005",
+        "L2_radar_top_006",
+        "L2_radar_top_007",
+        "L2_radar_top_008",
+        "L2_radar_top_009",
+        "L2_radar_top_010",
+        "L2_radar_top_011",
+        "L2_mixed_avionics_000",
+        "L2_mixed_avionics_001",
+        "L2_mixed_avionics_002",
+        "L2_mixed_avionics_003",
+        "L2_mixed_avionics_004",
+        "L2_mixed_avionics_005",
+        "L2_mixed_avionics_006",
+        "L2_mixed_avionics_007",
+        "L2_mixed_avionics_008",
+        "L2_mixed_avionics_009",
+        "L2_mixed_avionics_010",
+        "L2_mixed_avionics_011",
+        "L2_multi_state_on_000",
+        "L2_multi_state_on_001",
+        "L2_multi_state_on_002",
+        "L2_multi_state_on_003",
+        "L2_multi_state_on_004",
+        "L2_multi_state_on_005",
+        "L2_multi_state_on_006",
+        "L2_multi_state_on_007",
+        "L2_multi_state_on_008",
+        "L2_multi_state_on_009",
+        "L2_multi_state_on_010",
+        "L2_multi_state_on_011"
+      ],
+      "clean_feature_metadata": {
+        "sample_count": 48,
+        "skipped_samples": [],
+        "skipped_sample_count": 0,
+        "frequency_hz": [
+          900000000.0,
+          1050000000.0,
+          1200000000.0,
+          1350000000.0,
+          1500000000.0
+        ],
+        "sensor_count": 32,
+        "feature_count": 1065,
+        "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+      },
+      "augmentation_manifest": [
+        {
+          "augmentation_case": "clean",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "noise_20db",
+          "noise_snr_db": 20.0,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "noise_10db",
+          "noise_snr_db": 10.0,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "phase_15deg",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 15.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "phase_45deg",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 45.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "dropout_10pct",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.1,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "dropout_25pct",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.25,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        },
+        {
+          "augmentation_case": "noise10_phase15_dropout10",
+          "noise_snr_db": 10.0,
+          "phase_jitter_deg": 15.0,
+          "dropout_fraction": 0.1,
+          "train_rows_added": 33,
+          "feature_count": 1065
+        }
+      ],
+      "base_train_sample_count": 33,
+      "augmented_train_sample_count": 264,
+      "test_sample_count": 15,
+      "stress_cases": {
+        "clean": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise_20db": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise_10db": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "phase_15deg": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "phase_45deg": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "dropout_10pct": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "dropout_25pct": {
+          "best": {
+            "model": "random_forest",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 0.9333333333333333,
+              "macro_f1": 0.9285714285714286,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 0.75,
+                  "f1-score": 0.8571428571428571,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 0.75,
+                  "recall": 1.0,
+                  "f1-score": 0.8571428571428571,
+                  "support": 3.0
+                },
+                "accuracy": 0.9333333333333333,
+                "macro avg": {
+                  "precision": 0.9375,
+                  "recall": 0.9375,
+                  "f1-score": 0.9285714285714286,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 0.95,
+                  "recall": 0.9333333333333333,
+                  "f1-score": 0.9333333333333333,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise10_phase15_dropout10": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 32,
+            "feature_count": 1065,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        }
+      }
+    },
+    "task_driven_48": {
+      "class_names": [
+        "comm_pair",
+        "mixed_avionics",
+        "multi_state_on",
+        "radar_top"
+      ],
+      "sample_ids": [
+        "L2_comm_pair_000",
+        "L2_comm_pair_001",
+        "L2_comm_pair_002",
+        "L2_comm_pair_003",
+        "L2_comm_pair_004",
+        "L2_comm_pair_005",
+        "L2_comm_pair_006",
+        "L2_comm_pair_007",
+        "L2_comm_pair_008",
+        "L2_comm_pair_009",
+        "L2_comm_pair_010",
+        "L2_comm_pair_011",
+        "L2_radar_top_000",
+        "L2_radar_top_001",
+        "L2_radar_top_002",
+        "L2_radar_top_003",
+        "L2_radar_top_004",
+        "L2_radar_top_005",
+        "L2_radar_top_006",
+        "L2_radar_top_007",
+        "L2_radar_top_008",
+        "L2_radar_top_009",
+        "L2_radar_top_010",
+        "L2_radar_top_011",
+        "L2_mixed_avionics_000",
+        "L2_mixed_avionics_001",
+        "L2_mixed_avionics_002",
+        "L2_mixed_avionics_003",
+        "L2_mixed_avionics_004",
+        "L2_mixed_avionics_005",
+        "L2_mixed_avionics_006",
+        "L2_mixed_avionics_007",
+        "L2_mixed_avionics_008",
+        "L2_mixed_avionics_009",
+        "L2_mixed_avionics_010",
+        "L2_mixed_avionics_011",
+        "L2_multi_state_on_000",
+        "L2_multi_state_on_001",
+        "L2_multi_state_on_002",
+        "L2_multi_state_on_003",
+        "L2_multi_state_on_004",
+        "L2_multi_state_on_005",
+        "L2_multi_state_on_006",
+        "L2_multi_state_on_007",
+        "L2_multi_state_on_008",
+        "L2_multi_state_on_009",
+        "L2_multi_state_on_010",
+        "L2_multi_state_on_011"
+      ],
+      "clean_feature_metadata": {
+        "sample_count": 48,
+        "skipped_samples": [],
+        "skipped_sample_count": 0,
+        "frequency_hz": [
+          900000000.0,
+          1050000000.0,
+          1200000000.0,
+          1350000000.0,
+          1500000000.0
+        ],
+        "sensor_count": 48,
+        "feature_count": 1545,
+        "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+      },
+      "augmentation_manifest": [
+        {
+          "augmentation_case": "clean",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1545
+        },
+        {
+          "augmentation_case": "noise_20db",
+          "noise_snr_db": 20.0,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1545
+        },
+        {
+          "augmentation_case": "noise_10db",
+          "noise_snr_db": 10.0,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1545
+        },
+        {
+          "augmentation_case": "phase_15deg",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 15.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1545
+        },
+        {
+          "augmentation_case": "phase_45deg",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 45.0,
+          "dropout_fraction": 0.0,
+          "train_rows_added": 33,
+          "feature_count": 1545
+        },
+        {
+          "augmentation_case": "dropout_10pct",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.1,
+          "train_rows_added": 33,
+          "feature_count": 1545
+        },
+        {
+          "augmentation_case": "dropout_25pct",
+          "noise_snr_db": null,
+          "phase_jitter_deg": 0.0,
+          "dropout_fraction": 0.25,
+          "train_rows_added": 33,
+          "feature_count": 1545
+        },
+        {
+          "augmentation_case": "noise10_phase15_dropout10",
+          "noise_snr_db": 10.0,
+          "phase_jitter_deg": 15.0,
+          "dropout_fraction": 0.1,
+          "train_rows_added": 33,
+          "feature_count": 1545
+        }
+      ],
+      "base_train_sample_count": 33,
+      "augmented_train_sample_count": 264,
+      "test_sample_count": 15,
+      "stress_cases": {
+        "clean": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 48,
+            "feature_count": 1545,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise_20db": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 48,
+            "feature_count": 1545,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise_10db": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 48,
+            "feature_count": 1545,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "phase_15deg": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 48,
+            "feature_count": 1545,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "phase_45deg": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 48,
+            "feature_count": 1545,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "dropout_10pct": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 48,
+            "feature_count": 1545,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "dropout_25pct": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 48,
+            "feature_count": 1545,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        },
+        "noise10_phase15_dropout10": {
+          "best": {
+            "model": "svm_rbf",
+            "accuracy": 1.0,
+            "macro_f1": 1.0
+          },
+          "models": {
+            "svm_rbf": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            },
+            "random_forest": {
+              "accuracy": 1.0,
+              "macro_f1": 1.0,
+              "classification_report": {
+                "comm_pair": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "mixed_avionics": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "multi_state_on": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 4.0
+                },
+                "radar_top": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 3.0
+                },
+                "accuracy": 1.0,
+                "macro avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                },
+                "weighted avg": {
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1-score": 1.0,
+                  "support": 15.0
+                }
+              }
+            }
+          },
+          "feature_metadata": {
+            "sample_count": 48,
+            "skipped_samples": [],
+            "skipped_sample_count": 0,
+            "frequency_hz": [
+              900000000.0,
+              1050000000.0,
+              1200000000.0,
+              1350000000.0,
+              1500000000.0
+            ],
+            "sensor_count": 48,
+            "feature_count": 1545,
+            "feature_blocks_per_frequency": "normalized log magnitude, relative phase cosine/sine, power/polarization summary, spatial power summary"
+          }
+        }
+      }
+    }
+  },
+  "boundary": "Level 2 CST-derived element-library augmentation evidence only. It does not replace true-monitor reconstruction gates or full-wave complex-airframe validation."
+}
