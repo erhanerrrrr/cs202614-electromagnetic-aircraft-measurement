@@ -444,3 +444,47 @@ use `task_driven_32`/`task_driven_48` for recognition stress tests. G3 keeps
 `full_grid_162` as the physical/vector baseline gate. The boundary is unchanged:
 the matrix is a planning artifact, not final reduced-sampling proof, until true
 CST monitor exports and the physical/vector baseline pass.
+
+## 14. 2026-06-02 G5 recognition robustness update
+
+The classification branch now has a clean-train/perturbed-test robustness
+runner:
+
+```powershell
+python code\run_cst_recognition_stress_test.py
+```
+
+It writes `data/recognition_stress_tests/level2_robustness/`:
+
+- `recognition_stress_metrics.csv`: one row per G2 representative layout and
+  perturbation case, including SVM/RF accuracy and macro-F1.
+- `recognition_stress_summary.json`: machine-readable worst-case summary,
+  input references, stress definitions, and detailed model reports.
+- `README.md`: human-facing interpretation and claim boundary.
+
+The runner trains recognition models on clean Level 2 CST-derived samples and
+evaluates the held-out samples under:
+
+- clean reference,
+- additive complex noise at 20 dB and 10 dB SNR,
+- independent phase jitter at 15 deg and 45 deg,
+- random theta/phi channel dropout at 10 percent and 25 percent,
+- combined 10 dB noise + 15 deg phase jitter + 10 percent dropout.
+
+Current result:
+
+- `full_grid_162`, `geometric_farthest_32`, `fibonacci_snap_120`,
+  `task_driven_32`, and `task_driven_48` all keep accuracy `1.000` for clean,
+  single-noise, single-phase, and 10 percent dropout cases.
+- The combined perturbation case falls below the `0.85` threshold for all
+  tested layouts; the worst row is `full_grid_162` with accuracy about `0.467`.
+- `dropout_25pct` is also a weak point for the task-driven 32/48 layouts.
+
+Engineering interpretation: the current feature and model stack is strong for
+single-factor disturbances but should not be claimed robust under compound
+measurement errors. The next G5 step is to add perturbation-aware training or
+calibration, then rerun the same script until the combined stress rows either
+recover above `0.85` or are explicitly documented as the operating boundary.
+This does not change the G3 reconstruction boundary: true CST monitor exports
+and physical/vector baselines are still required for reduced-layout
+reconstruction claims.

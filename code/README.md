@@ -48,6 +48,7 @@
 | 文件 | 作用 |
 |---|---|
 | `run_cst_recognition.py`、`run_cst_recognition_ablation.py` | 空域、频率、极化等特征提取与分类识别实验。 |
+| `run_cst_recognition_stress_test.py` | 对 G2 代表布局做 Level 2 clean-train/perturbed-test 鲁棒性验证，覆盖噪声、相位抖动和通道缺失。 |
 | `run_cst_structure_comparison.py` | 结构/安装影响对比实验。 |
 | `build_g3_model_dashboard.py` | 汇总 G3 源模型、SWE、Huygens 和真近场 gate 证据，输出当前可汇报结论与下一步动作。 |
 | `build_*.py` | 报告、PPT、提交包、仪表盘和审查材料生成脚本。 |
@@ -76,6 +77,7 @@ python code\prepare_huygens_surface_prior.py
 python code\run_cst_huygens_baseline.py
 python code\check_cst_export.py --nearfield data\cst_exports\level1\all_nearfield.csv --farfield data\cst_exports\level1\all_farfield.csv
 python code\run_cst_recognition.py
+python code\run_cst_recognition_stress_test.py
 ```
 
 ## Spherical reduced-layout addendum
@@ -142,6 +144,21 @@ monitor data must be exported first. The scalar spherical NF-FF 32-point result
 is a true-monitor rerun priority with both power-pattern and complex-component
 sanity metrics, while Huygens and generic source-grid rows remain
 `diagnostic_only`.
+
+## Recognition stress-test addendum
+
+`run_cst_recognition_stress_test.py` writes
+`data/recognition_stress_tests/level2_robustness/`. It trains SVM/RF models on
+clean Level 2 samples, then evaluates the held-out samples under clean, noise,
+phase-jitter, dropout, and combined perturbation cases for `full_grid_162`,
+`geometric_farthest_32`, `fibonacci_snap_120`, `task_driven_32`, and
+`task_driven_48`.
+
+Current result: clean, single-noise, single-phase, and 10 percent dropout cases
+remain at accuracy `1.000`, but the combined `noise10_phase15_dropout10` case
+falls below the `0.85` threshold for all tested layouts. Treat this as a G5
+robustness boundary and as motivation for calibration/augmentation before
+claiming recognition generalization under compound measurement errors.
 
 ## Huygens baseline addendum
 
