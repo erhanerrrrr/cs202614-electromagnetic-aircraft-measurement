@@ -13,6 +13,7 @@ from huygens_core import (
     HuygensSurface,
     build_huygens_farfield_matrix,
     build_huygens_measurement_matrix,
+    build_surface_smoothness_matrix,
     load_huygens_surface,
     surface_basis_count,
     surface_unknown_count,
@@ -29,13 +30,14 @@ from run_cst_sampling_tradeoff import (
     subset_nearfield,
     validate_inputs,
 )
-from em_core import pattern_metrics, solve_tikhonov
+from em_core import pattern_metrics
 
 
 DEFAULT_SURFACE = ROOT / "data" / "source_priors" / "huygens_surface" / "level1_local_sphere_r0p35_nodes.csv"
 DEFAULT_OUT_DIR = ROOT / "data" / "sampling_layouts" / "cst_level1_huygens_baseline"
 DEFAULT_CANDIDATES = ("full_grid_162",)
 DEFAULT_LAMBDAS = (1e-10, 1e-8, 1e-6, 1e-4, 1e-2)
+DEFAULT_SMOOTH_LAMBDAS = (0.0, 1e-6, 1e-4, 1e-2)
 MODEL_VARIANTS = {
     "electric_sheet_only": {"include_magnetic": False, "magnetic_sign": 0.0},
     "huygens_em_plus": {"include_magnetic": True, "magnetic_sign": 1.0},
@@ -77,6 +79,28 @@ def predicted_power_from_solution(
     predicted = far_matrix @ solution
     n_angles = theta.size
     return np.abs(predicted[:n_angles]) ** 2 + np.abs(predicted[n_angles:]) ** 2
+
+
+def solve_huygens_regularized(
+    matrix: np.ndarray,
+    values: np.ndarray,
+    lambda_reg: float,
+    smooth_lambda: float,
+    smoothness_matrix: np.ndarray,
+) -> np.ndarray:
+    if lambda_reg < 0.0:
+        raise ValueError("lambda_reg must be non-negative")
+    if smooth_lambda < 0.0:
+        raise ValueError("smooth_lambda must be non-negative")
+    blocks = [matrix, np.sqrt(lambda_reg) * np.eye(matrix.shape[1], dtype=np.complex128)]
+    rhs_blocks = [values, np.zeros(matrix.shape[1], dtype=np.complex128)]
+    if smooth_lambda > 0.0 and smoothness_matrix.size:
+        blocks.append(np.sqrt(smooth_lambda) * smoothness_matrix)
+        rhs_blocks.append(np.zeros(smoothness_matrix.shape[0], dtype=np.complex128))
+    lhs = np.vstack(blocks)
+    rhs = np.concatenate(rhs_blocks)
+    solution, *_ = np.linalg.lstsq(lhs, rhs, rcond=None)
+    return solution
 
 
 def surface_solution_metrics(surface: HuygensSurface, solution: np.ndarray, include_magnetic: bool) -> dict[str, float | int]:
@@ -124,6 +148,9 @@ def solve_case(
     surface_path: Path,
     model_variant: str,
     lambda_reg: float,
+    smooth_lambda: float,
+    smoothness_matrix: np.ndarray,
+    smoothness_neighbor_count: int,
     weight_mode: str,
 ) -> tuple[dict[str, object], np.ndarray]:
     variant = MODEL_VARIANTS[model_variant]
@@ -142,8 +169,9 @@ def solve_case(
         magnetic_sign=magnetic_sign,
         weight_mode=weight_mode,
     )
-    solution = solve_tikhonov(matrix, measurement, lam=lambda_reg)
+    solution = solve_huygens_regularized(matrix, measurement, lambda_reg, smooth_lambda, smoothness_matrix)
     residual = matrix @ solution - measurement
+    smoothness_residual = smoothness_matrix @ solution if smoothness_matrix.size else np.zeros(0, dtype=np.complex128)
     theta, phi, true_power, _ = farfield_power_from_table(farfield, sample_id, frequency_hz)
     rec_power = predicted_power_from_solution(
         surface,
@@ -174,7 +202,11 @@ def solve_case(
         "unknown_count": int(surface_unknown_count(surface, include_magnetic)),
         "channel_unknown_ratio": float(measurement.size / matrix.shape[1]),
         "lambda_reg": float(lambda_reg),
+        "smooth_lambda": float(smooth_lambda),
+        "smoothness_neighbor_count": int(smoothness_neighbor_count),
+        "smoothness_rows": int(smoothness_matrix.shape[0]),
         "relative_residual": float(np.linalg.norm(residual) / max(np.linalg.norm(measurement), 1e-15)),
+        "smoothness_relative_jump": float(np.linalg.norm(smoothness_residual) / max(np.linalg.norm(solution), 1e-15)),
     }
     row.update(matrix_health(matrix))
     row.update(surface_solution_metrics(surface, solution, include_magnetic))
@@ -212,6 +244,7 @@ def solution_records(
     candidate: str,
     model_variant: str,
     lambda_reg: float,
+    smooth_lambda: float,
     weight_mode: str,
 ) -> list[dict[str, object]]:
     include_magnetic = bool(MODEL_VARIANTS[model_variant]["include_magnetic"])
@@ -230,6 +263,7 @@ def solution_records(
                 "candidate": candidate,
                 "model_variant": model_variant,
                 "lambda_reg": float(lambda_reg),
+                "smooth_lambda": float(smooth_lambda),
                 "weight_mode": weight_mode,
                 "prior_id": surface.prior_id,
                 "node_index": int(node_idx),
@@ -264,36 +298,50 @@ def run_sweep(args: argparse.Namespace) -> tuple[pd.DataFrame, list[dict[str, ob
     surface_paths = args.surfaces or [DEFAULT_SURFACE]
     model_variants = args.model_variants or list(MODEL_VARIANTS)
     lambda_values = args.lambdas or list(DEFAULT_LAMBDAS)
+    smooth_lambda_values = args.smooth_lambdas or list(DEFAULT_SMOOTH_LAMBDAS)
 
     rows: list[dict[str, object]] = []
     solutions: list[dict[str, object]] = []
     for surface_path in surface_paths:
         surface = load_huygens_surface(Path(surface_path))
+        smoothness_cache: dict[bool, np.ndarray] = {}
         for sample_id, frequency_hz in pairs:
             for candidate_name, candidate_group in layouts.items():
                 for model_variant in model_variants:
-                    for lambda_reg in lambda_values:
-                        row, solution = solve_case(
-                            nearfield,
-                            farfield,
-                            candidate_name,
-                            candidate_group,
-                            sample_id,
-                            frequency_hz,
+                    include_magnetic = bool(MODEL_VARIANTS[model_variant]["include_magnetic"])
+                    if include_magnetic not in smoothness_cache:
+                        smoothness_cache[include_magnetic] = build_surface_smoothness_matrix(
                             surface,
-                            Path(surface_path),
-                            model_variant,
-                            float(lambda_reg),
-                            args.weight_mode,
+                            include_magnetic,
+                            int(args.smooth_neighbors),
                         )
-                        rows.append(row)
-                        solutions.append(
-                            {
-                                "row": row,
-                                "surface": surface,
-                                "solution": solution,
-                            }
-                        )
+                    smoothness_matrix = smoothness_cache[include_magnetic]
+                    for lambda_reg in lambda_values:
+                        for smooth_lambda in smooth_lambda_values:
+                            row, solution = solve_case(
+                                nearfield,
+                                farfield,
+                                candidate_name,
+                                candidate_group,
+                                sample_id,
+                                frequency_hz,
+                                surface,
+                                Path(surface_path),
+                                model_variant,
+                                float(lambda_reg),
+                                float(smooth_lambda),
+                                smoothness_matrix,
+                                int(args.smooth_neighbors),
+                                args.weight_mode,
+                            )
+                            rows.append(row)
+                            solutions.append(
+                                {
+                                    "row": row,
+                                    "surface": surface,
+                                    "solution": solution,
+                                }
+                            )
     return pd.DataFrame(rows), solutions
 
 
@@ -311,6 +359,9 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
                 "candidate",
                 "candidate_method",
                 "lambda_reg",
+                "smooth_lambda",
+                "smoothness_neighbor_count",
+                "smoothness_rows",
                 "surface_nodes",
                 "unknown_count",
                 "sensor_count",
@@ -326,6 +377,8 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
             max_main_lobe_error_deg=("main_lobe_error_deg", "max"),
             mean_relative_residual=("relative_residual", "mean"),
             max_relative_residual=("relative_residual", "max"),
+            mean_smoothness_relative_jump=("smoothness_relative_jump", "mean"),
+            max_smoothness_relative_jump=("smoothness_relative_jump", "max"),
             mean_active_nodes=("active_nodes", "mean"),
             mean_top10_node_energy_share=("top10_node_energy_share", "mean"),
             mean_stable_condition=("stable_condition", "mean"),
@@ -354,6 +407,8 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
         & (results["weight_mode"] == best["weight_mode"])
         & (results["candidate"] == best["candidate"])
         & np.isclose(results["lambda_reg"], float(best["lambda_reg"]))
+        & np.isclose(results["smooth_lambda"], float(best["smooth_lambda"]))
+        & (results["smoothness_neighbor_count"] == best["smoothness_neighbor_count"])
     )
     best_cases = results.loc[best_mask].sort_values(["sample_id", "frequency_hz"])
     best_cases.to_csv(out_dir / "huygens_reconstruction_best_cases.csv", index=False, encoding="utf-8-sig")
@@ -368,6 +423,8 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
             and row["weight_mode"] == best["weight_mode"]
             and row["candidate"] == best["candidate"]
             and math.isclose(float(row["lambda_reg"]), float(best["lambda_reg"]), rel_tol=1e-12, abs_tol=0.0)
+            and math.isclose(float(row["smooth_lambda"]), float(best["smooth_lambda"]), rel_tol=1e-12, abs_tol=0.0)
+            and row["smoothness_neighbor_count"] == best["smoothness_neighbor_count"]
         ):
             best_solution_rows.extend(
                 solution_records(
@@ -378,6 +435,7 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
                     str(row["candidate"]),
                     str(row["model_variant"]),
                     float(row["lambda_reg"]),
+                    float(row["smooth_lambda"]),
                     str(row["weight_mode"]),
                 )
             )
@@ -393,17 +451,21 @@ def summarize(results: pd.DataFrame, solutions: list[dict[str, object]], out_dir
         "pair_count": int(results[["sample_id", "frequency_hz"]].drop_duplicates().shape[0]),
         "candidate_count": int(results["candidate"].nunique()),
         "model_variant_count": int(results["model_variant"].nunique()),
+        "smooth_lambda_count": int(results["smooth_lambda"].nunique()),
         "weight_mode": args.weight_mode,
         "best_setting": {
             "prior_id": str(best["prior_id"]),
             "model_variant": str(best["model_variant"]),
             "candidate": str(best["candidate"]),
             "lambda_reg": float(best["lambda_reg"]),
+            "smooth_lambda": float(best["smooth_lambda"]),
+            "smoothness_neighbor_count": int(best["smoothness_neighbor_count"]),
             "status": str(best["status"]),
             "min_correlation": float(best["min_correlation"]),
             "max_nmse": float(best["max_nmse"]),
             "max_main_lobe_error_deg": float(best["max_main_lobe_error_deg"]),
             "mean_relative_residual": float(best["mean_relative_residual"]),
+            "mean_smoothness_relative_jump": float(best["mean_smoothness_relative_jump"]),
             "mean_active_nodes": float(best["mean_active_nodes"]),
             "mean_top10_node_energy_share": float(best["mean_top10_node_energy_share"]),
         },
@@ -417,9 +479,10 @@ def write_markdown_summary(out_dir: Path, by_setting: pd.DataFrame, best_cases: 
     rows = []
     for row in by_setting.itertuples(index=False):
         rows.append(
-            f"| {row.prior_id} | {row.model_variant} | {row.candidate} | {row.lambda_reg:.0e} | "
+            f"| {row.prior_id} | {row.model_variant} | {row.candidate} | {row.lambda_reg:.0e} | {row.smooth_lambda:.0e} | "
             f"{row.status} | {row.min_correlation:.4f} | {row.max_nmse:.4e} | "
-            f"{row.max_main_lobe_error_deg:.2f} | {row.mean_relative_residual:.4e} | {row.mean_active_nodes:.1f} |"
+            f"{row.max_main_lobe_error_deg:.2f} | {row.mean_relative_residual:.4e} | "
+            f"{row.mean_smoothness_relative_jump:.4e} | {row.mean_active_nodes:.1f} |"
         )
 
     case_rows = []
@@ -439,6 +502,7 @@ def write_markdown_summary(out_dir: Path, by_setting: pd.DataFrame, best_cases: 
 - This is useful as a physical-prior prototype and a bridge toward true monitor data, not yet the final sampling proof."""
     else:
         reading = """- The Huygens-style surface prior is still diagnostic on the current CST export.
+- The surface smoothness sweep is useful for regularization diagnostics, but it does not close the current Level 1 physics gate.
 - Treat the result as a measurement-matrix smoke test. The next physics step is true near-field monitor data and a fuller electric/magnetic surface Green-function convention check."""
 
     content = f"""# CST Level 1 Huygens Surface Baseline
@@ -447,8 +511,9 @@ This directory evaluates the first Huygens-style surface-source prior against
 the current Level 1 CST near/far-field export. The implementation uses a compact
 electric/magnetic dipole-sheet approximation: each surface node has two
 tangential electric-current coefficients and, for the Huygens variants, two
-tangential magnetic-current coefficients. It is a runnable diagnostic baseline,
-not a final Stratton-Chu/Huygens integral solver.
+tangential magnetic-current coefficients. The runner also sweeps a local
+surface smoothness penalty through `--smooth-lambda`. It is a runnable
+diagnostic baseline, not a final Stratton-Chu/Huygens integral solver.
 
 ## Inputs
 
@@ -466,11 +531,14 @@ not a final Stratton-Chu/Huygens integral solver.
 | Model variant | `{best['model_variant']}` |
 | Candidate | `{best['candidate']}` |
 | Lambda | `{best['lambda_reg']:.0e}` |
+| Smooth lambda | `{best['smooth_lambda']:.0e}` |
+| Smooth neighbors | `{best['smoothness_neighbor_count']}` |
 | Status | `{best['status']}` |
 | Min Corr | `{best['min_correlation']:.4f}` |
 | Max NMSE | `{best['max_nmse']:.4e}` |
 | Max main-lobe error / deg | `{best['max_main_lobe_error_deg']:.2f}` |
 | Mean relative residual | `{best['mean_relative_residual']:.4e}` |
+| Mean smoothness relative jump | `{best['mean_smoothness_relative_jump']:.4e}` |
 | Mean active nodes | `{best['mean_active_nodes']:.1f}` |
 | Mean top-10 node energy share | `{best['mean_top10_node_energy_share']:.3f}` |
 
@@ -482,8 +550,8 @@ not a final Stratton-Chu/Huygens integral solver.
 
 ## Setting Ranking
 
-| Prior | Variant | Candidate | Lambda | Status | Min Corr | Max NMSE | Max lobe / deg | Mean residual | Mean active nodes |
-|---|---|---|---:|---|---:|---:|---:|---:|---:|
+| Prior | Variant | Candidate | Lambda | Smooth lambda | Status | Min Corr | Max NMSE | Max lobe / deg | Mean residual | Mean smooth jump | Mean active nodes |
+|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|
 {chr(10).join(rows)}
 
 ## Reading
@@ -495,7 +563,7 @@ not a final Stratton-Chu/Huygens integral solver.
 | File | Role |
 |---|---|
 | `huygens_reconstruction_results.csv` | Per sample/frequency/model/lambda reconstruction metrics. |
-| `huygens_reconstruction_by_setting.csv` | Aggregated setting ranking. |
+| `huygens_reconstruction_by_setting.csv` | Aggregated setting ranking, including the surface smoothness sweep. |
 | `huygens_reconstruction_best_cases.csv` | Per-case rows for the best setting. |
 | `huygens_surface_solution_best_setting.csv` | Best-setting node coefficients for later visualization and support analysis. |
 | `huygens_reconstruction_summary.json` | Script-friendly summary. |
@@ -521,6 +589,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sample", dest="samples", action="append")
     parser.add_argument("--frequency-hz", dest="frequencies_hz", action="append", type=float)
     parser.add_argument("--lambda-reg", dest="lambdas", action="append", type=float)
+    parser.add_argument("--smooth-lambda", dest="smooth_lambdas", action="append", type=float)
+    parser.add_argument("--smooth-neighbors", type=int, default=6)
     parser.add_argument("--model-variant", dest="model_variants", choices=sorted(MODEL_VARIANTS), action="append")
     parser.add_argument("--weight-mode", choices=("sqrt_area", "area", "none"), default="sqrt_area")
     return parser.parse_args()

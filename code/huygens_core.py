@@ -61,6 +61,46 @@ def surface_unknown_count(surface: HuygensSurface, include_magnetic: bool) -> in
     return int(surface.positions.shape[0] * surface_basis_count(include_magnetic))
 
 
+def build_surface_smoothness_matrix(
+    surface: HuygensSurface,
+    include_magnetic: bool,
+    neighbor_count: int = 6,
+) -> np.ndarray:
+    """Return a k-nearest-neighbor coefficient-difference regularizer.
+
+    Rows penalize local coefficient jumps between neighboring surface nodes.
+    This is a coordinate-basis smoothness prototype; it does not parallel
+    transport vector currents between tangent frames.
+    """
+    node_count = int(surface.positions.shape[0])
+    basis_per_node = surface_basis_count(include_magnetic)
+    if node_count <= 1 or neighbor_count <= 0:
+        return np.zeros((0, node_count * basis_per_node), dtype=np.complex128)
+
+    k_neighbors = min(int(neighbor_count), node_count - 1)
+    deltas = surface.positions[:, None, :] - surface.positions[None, :, :]
+    distances = np.linalg.norm(deltas, axis=2)
+    np.fill_diagonal(distances, np.inf)
+
+    edges: set[tuple[int, int]] = set()
+    for node_idx in range(node_count):
+        nearest = np.argsort(distances[node_idx])[:k_neighbors]
+        for neighbor_idx in nearest:
+            a = int(min(node_idx, neighbor_idx))
+            b = int(max(node_idx, neighbor_idx))
+            if a != b:
+                edges.add((a, b))
+
+    ordered_edges = sorted(edges)
+    matrix = np.zeros((len(ordered_edges) * basis_per_node, node_count * basis_per_node), dtype=np.complex128)
+    for edge_idx, (node_a, node_b) in enumerate(ordered_edges):
+        for basis_idx in range(basis_per_node):
+            row = edge_idx * basis_per_node + basis_idx
+            matrix[row, node_a * basis_per_node + basis_idx] = 1.0
+            matrix[row, node_b * basis_per_node + basis_idx] = -1.0
+    return matrix
+
+
 def column_weight_factors(surface: HuygensSurface, weight_mode: str) -> np.ndarray:
     if weight_mode == "sqrt_area":
         node_weights = np.sqrt(np.maximum(surface.weights_m2, 0.0))

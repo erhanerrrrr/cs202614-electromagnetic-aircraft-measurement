@@ -103,7 +103,14 @@ the FarfieldPlot-derived reference, and writes
 far-field matrices. `run_cst_huygens_baseline.py` runs the Level 1 full-grid
 diagnostic using `data/source_priors/huygens_surface/level1_local_sphere_r0p35_nodes.csv`.
 
-The current best setting is still `diagnostic_only`, so this script is a
+The runner now includes a surface smoothness sweep through `--smooth-lambda`
+(default `0`, `1e-6`, `1e-4`, `1e-2`) and reports the coefficient jump metric
+in `data/sampling_layouts/cst_level1_huygens_baseline/`.
+
+The current best setting is still `diagnostic_only`: `huygens_em_minus`,
+`lambda = 1e-2`, `smooth_lambda = 0`, min corr about `0.778`, max NMSE about
+`0.264`, and a large main-lobe error. A small smoothness penalty slightly
+reduces NMSE/jump but does not close the gate, so this script remains a
 measurement-matrix smoke test and a physics-prior development entry point. Do
 not use it as a final reduced-sampling proof until the full-grid Huygens
 baseline reaches the same acceptance gate used by the source-model diagnostics.

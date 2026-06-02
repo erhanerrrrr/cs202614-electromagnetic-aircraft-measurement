@@ -42,9 +42,12 @@
 
 `sampling_layouts/cst_level1_huygens_baseline/` is generated from the local
 Level 1 CST export and the `source_priors/huygens_surface/` geometry contract.
-It records a runnable electric/magnetic dipole-sheet approximation, but the
-best setting is still `diagnostic_only` (`min_corr ~= 0.778`, `max_nmse ~= 0.264`).
-Keep it as model-calibration evidence, not as reduced-sampling validation.
+It records a runnable electric/magnetic dipole-sheet approximation plus a
+surface smoothness sweep (`smooth_lambda = 0`, `1e-6`, `1e-4`, `1e-2`). The
+best setting is still `diagnostic_only` (`min_corr ~= 0.778`,
+`max_nmse ~= 0.264`, best `smooth_lambda = 0`). A small smoothness penalty
+slightly lowers NMSE/jump but does not pass the physics gate. Keep it as
+model-calibration evidence, not as reduced-sampling validation.
 
 ## Spherical reduced-layout note
 
