@@ -1,0 +1,88 @@
+{
+  "generated_by": "code/build_sampling_decision_matrix.py",
+  "purpose": "G2 reduced-sampling decision surface for CST rerun planning and report wording boundaries.",
+  "inputs": {
+    "layout_summary": "data\\sampling_layouts\\sampling_layout_summary.csv",
+    "swe_best": "data\\sampling_layouts\\spherical_nf_ff_tradeoff\\spherical_nf_ff_tradeoff_best_by_candidate.csv",
+    "true_monitor_queue": "data\\cst_true_nearfield_workpack\\true_nearfield_priority_layout_queue.csv"
+  },
+  "output_files": {
+    "matrix": "data\\sampling_layouts\\sampling_decision_matrix\\sampling_decision_matrix.csv",
+    "summary": "data\\sampling_layouts\\sampling_decision_matrix\\sampling_decision_summary.json",
+    "readme": "data\\sampling_layouts\\sampling_decision_matrix\\README.md"
+  },
+  "candidate_count": 17,
+  "recommendation_counts": {
+    "secondary_reconstruction_candidate": 7,
+    "alternate_reconstruction_candidate": 3,
+    "classification_probe": 2,
+    "diagnostic_only": 2,
+    "conservative_cross_check": 1,
+    "reference_anchor": 1,
+    "reconstruction_priority": 1
+  },
+  "reference_anchor": {
+    "candidate": "full_grid_162",
+    "sensor_count": 162,
+    "evidence_role": "physical_reference",
+    "reconstruction_priority_score": 0.9577,
+    "classification_priority_score": 0.6092,
+    "status": "strict_pass",
+    "claim_boundary": "reference only; reduced-layout proof still requires physical/vector baseline",
+    "next_action": "Keep as full-grid reference; do not replace it with a reduced layout before the physical/vector baseline passes."
+  },
+  "reconstruction_priority": {
+    "candidate": "geometric_farthest_32",
+    "sensor_count": 32,
+    "evidence_role": "queued_true_monitor_rerun",
+    "reconstruction_priority_score": 0.954,
+    "classification_priority_score": 0.7579,
+    "status": "strict_pass",
+    "claim_boundary": "rerun priority; not final vector SWE/Huygens proof",
+    "next_action": "Use as the first reduced-layout true-monitor rerun after the required full-grid CSVs arrive."
+  },
+  "conservative_cross_check": {
+    "candidate": "fibonacci_snap_120",
+    "sensor_count": 120,
+    "evidence_role": "queued_true_monitor_rerun",
+    "reconstruction_priority_score": 0.9558,
+    "classification_priority_score": 0.6749,
+    "status": "strict_pass",
+    "claim_boundary": "rerun priority; not final vector SWE/Huygens proof",
+    "next_action": "Use as the 120-point conservative cross-check against the 32-point reduced candidate."
+  },
+  "classification_probes": [
+    {
+      "candidate": "task_driven_32",
+      "sensor_count": 32,
+      "classification_priority_score": 0.7677,
+      "claim_boundary": "classification probe; needs reduced-layout recognition validation"
+    },
+    {
+      "candidate": "task_driven_48",
+      "sensor_count": 48,
+      "classification_priority_score": 0.7705,
+      "claim_boundary": "classification probe; needs reduced-layout recognition validation"
+    }
+  ],
+  "recognition_context": {
+    "available": true,
+    "path": "outputs\\cst_recognition_level2_ablation\\recognition_ablation_summary.json",
+    "case_count": 8,
+    "best_low_sensor_case": {
+      "case": "farthest_5freq_25",
+      "sensor_count": 40,
+      "sensor_fraction": 0.24691358024691357,
+      "frequency_count": 5,
+      "frequency_hz": "900000000;1050000000;1200000000;1350000000;1500000000",
+      "measurement_channels_per_sample": 400,
+      "feature_count": 1305,
+      "sample_count": 48,
+      "best_model": "svm_rbf",
+      "best_accuracy": 1.0,
+      "best_macro_f1": 1.0
+    },
+    "boundary": "This ablation uses Level 2 recognition features and farthest-style sensor fractions; it supports classification stress-test planning but does not validate the exact G2 candidate layouts."
+  },
+  "boundary": "Planning artifact only. Use this matrix to choose CST true-monitor reruns and classification stress tests; do not use it as final reduced-sampling proof before true-monitor and physical/vector gates pass."
+}

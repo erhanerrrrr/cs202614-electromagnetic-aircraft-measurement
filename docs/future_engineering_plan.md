@@ -408,3 +408,39 @@ true-monitor validation commands, G3 dashboard refresh commands, and conclusion
 wording boundaries. This closes the first G1 follow-up from the future plan:
 teammates can now open structured issues for CST export, algorithm reruns,
 documentation updates, and bugs instead of relying on oral task assignment.
+
+## 13. 2026-06-02 G2 sampling decision matrix update
+
+The reduced-sampling evidence is now consolidated into a collaboration-facing
+decision matrix:
+
+```powershell
+python code\build_sampling_decision_matrix.py
+```
+
+It writes `data/sampling_layouts/sampling_decision_matrix/`:
+
+- `sampling_decision_matrix.csv`: one row per candidate with proxy metrics,
+  scalar SWE reduced-layout evidence, true-monitor queue role, recommendation,
+  claim boundary, and next action.
+- `sampling_decision_summary.json`: machine-readable summary of the current
+  G2 decision.
+- `README.md`: short human-facing handoff note for teammates.
+
+Current decision:
+
+- `full_grid_162` remains the physical reference anchor.
+- `geometric_farthest_32` is the first reduced-layout true-monitor rerun
+  priority because it is the smallest scalar SWE `strict_pass` candidate and is
+  already queued by the true-monitor workpack.
+- `fibonacci_snap_120` is the conservative 120-point cross-check against the
+  32-point result.
+- `task_driven_32` and `task_driven_48` are classification-focused probes.
+
+This separates the next engineering actions more cleanly than a single
+"best layout" label. G2 uses `geometric_farthest_32`/`fibonacci_snap_120` for
+reconstruction evidence after the full-grid true-monitor CSVs arrive. G4 can
+use `task_driven_32`/`task_driven_48` for recognition stress tests. G3 keeps
+`full_grid_162` as the physical/vector baseline gate. The boundary is unchanged:
+the matrix is a planning artifact, not final reduced-sampling proof, until true
+CST monitor exports and the physical/vector baseline pass.

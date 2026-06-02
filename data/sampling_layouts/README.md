@@ -21,6 +21,7 @@ python code\optimize_sampling_layout.py
 | `cst_level1_convention_check/` | Level 1 phase, conjugation, and polarization convention diagnostic. |
 | `spherical_nf_ff_baseline/` | Lightweight spherical-harmonic NF-FF sanity baseline independent of equivalent-source grids. |
 | `spherical_nf_ff_tradeoff/` | Reduced-layout extension of the spherical NF-FF sanity baseline for candidate prioritization. |
+| `sampling_decision_matrix/` | G2 decision matrix that separates the full-grid reference, reduced-layout CST rerun priority, conservative cross-check, and classification probes. |
 | `cst_level1_huygens_baseline/` | First Huygens-style electric/magnetic surface-source baseline; currently a diagnostic smoke test. |
 
 ## Current Candidate Summary
@@ -69,3 +70,12 @@ The spherical reduced-layout tradeoff currently ranks `geometric_farthest_32`
 as the smallest `strict_pass` candidate under the scalar angular NF-FF check
 (`lmax = 4`, `lambda = 1e-10`, max NMSE about `9.77e-04`). This is a useful
 CST rerun priority, not final vector SWE or physical Huygens evidence.
+
+`sampling_decision_matrix/` is the current G2 handoff view for collaborators.
+It combines the proxy layout summary, scalar SWE tradeoff, true-monitor rerun
+queue, and recognition ablation context. Current decision: keep
+`full_grid_162` as the physical reference, rerun `geometric_farthest_32` first
+as the smallest strict reduced reconstruction candidate, use
+`fibonacci_snap_120` as the conservative cross-check, and keep
+`task_driven_32`/`task_driven_48` as classification stress-test probes. The
+matrix is a planning artifact and does not replace the true CST monitor gate.

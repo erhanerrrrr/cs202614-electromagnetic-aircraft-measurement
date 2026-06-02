@@ -78,6 +78,7 @@
 51. Huygens 面源 field-model/平滑正则诊断：`code/run_cst_huygens_baseline.py` 现在对比 `radiating_dipole` 与 `current_green`，并默认扫描 `smooth_lambda = 0, 1e-6, 1e-4, 1e-2`，结果写入 `data/sampling_layouts/cst_level1_huygens_baseline/`；当前最佳仍为 `diagnostic_only`，不能作为少测点最终证明。
 52. CST 真近场 post-export 决策入口：`code/run_true_nearfield_workflow_decision.py` 汇总 handoff、dropzone、gate 和 G3 dashboard，输出 `outputs/cst_true_nearfield_workflow_decision/`；当前决策是等待两个 required `full_grid_162` 真 monitor CSV，再跑 required gate。
 53. GitHub 协作入口：`.github/ISSUE_TEMPLATE/` 已补齐 CST、算法、文档和 bug 四类 issue 模板，`CONTRIBUTING.md` 明确了分支、提交、大文件、true-monitor 校验和结论口径规则，便于队友按统一格式推进任务。
+54. G2 采样候选决策矩阵：`code/build_sampling_decision_matrix.py` 输出 `data/sampling_layouts/sampling_decision_matrix/`，把 `full_grid_162` 定为物理参考锚点，`geometric_farthest_32` 定为第一 reduced-layout true-monitor 复跑优先项，`fibonacci_snap_120` 定为保守 120 点交叉验证，`task_driven_32/48` 定为分类压力测试探针。
 
 ## 如何阅读本项目
 
@@ -731,3 +732,4 @@ python code\run_cst_recognition_ablation.py --nearfield outputs\synthetic_cst_da
 9. 运行 `python code\build_true_nearfield_handoff.py` 刷新 `outputs/cst_true_nearfield_handoff/`，把 CST 真近场 monitor 的两个 required full-grid CSV、486 行验收标准和后续算法命令交给 CST 主责执行。
 10. CST 文件回填后，先运行 `python code\check_true_nearfield_dropzone.py --required-only --full-grid-only` 预检列名、行数、组件和 sensor 子集，再运行 `run_true_nearfield_gate.py`。
 11. 运行 `python code\run_true_nearfield_workflow_decision.py` 刷新 `outputs/cst_true_nearfield_workflow_decision/`，用 `true_nearfield_workflow_decision.md` 判断下一步是继续等 CST、跑 required gate、复跑 G3 physical baseline，还是刷新报告口径。
+12. 运行 `python code\build_sampling_decision_matrix.py` 刷新 `data/sampling_layouts/sampling_decision_matrix/`，用矩阵安排 reduced-layout 真 monitor 复跑和分类压力测试；该矩阵仍是计划依据，不是 final vector/Huygens 证明。

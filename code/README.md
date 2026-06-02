@@ -25,6 +25,7 @@
 | `run_true_nearfield_gate.py` | Runs the true-monitor queue gate: source availability, optional 32/120 derivation, row-count checks, and FarfieldPlot-derived reference comparison. |
 | `run_true_nearfield_workflow_decision.py` | Reads the true-monitor handoff, dropzone preflight, gate report, and G3 dashboard, then writes the next executable decision for CST export, gate rerun, physical G3 rerun, or report refresh. |
 | `run_spherical_nf_ff_baseline.py` | 用切向球谐拟合建立轻量 NF-FF/SWE sanity baseline，独立检查角度、极化和远场比较链路。 |
+| `build_sampling_decision_matrix.py` | 汇总采样代理指标、球谐 NF-FF 少测点结果、真近场复跑队列和识别消融上下文，输出 G2 采样决策矩阵。 |
 | `prepare_huygens_surface_prior.py` | 生成 Huygens 面源先验节点、法向/切向基和四复未知量合同，供后续物理面源反演使用。 |
 | `run_cst_huygens_baseline.py` | 用 Huygens-style 电/磁面源近似构造 Level 1 full-grid 诊断矩阵，并对比 `radiating_dipole` 与 `current_green` 两类 field model。 |
 | `run_cst_reconstruction.py` | CST 数据等效源反演与远场外推入口。 |
@@ -70,6 +71,7 @@ python code\build_g3_model_dashboard.py
 python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check
 python code\run_spherical_nf_ff_baseline.py
 python code\run_spherical_nf_ff_tradeoff.py
+python code\build_sampling_decision_matrix.py
 python code\prepare_huygens_surface_prior.py
 python code\run_cst_huygens_baseline.py
 python code\check_cst_export.py --nearfield data\cst_exports\level1\all_nearfield.csv --farfield data\cst_exports\level1\all_farfield.csv
@@ -99,6 +101,14 @@ reruns, not as final vector SWE or Huygens proof.
 Once the full-grid true-monitor CSV exists,
 `derive_true_nearfield_layout_exports.py` filters it through that subset table
 and writes the queued 32/120 reduced-layout CSVs for follow-up comparison.
+
+`build_sampling_decision_matrix.py` converts the same evidence into a
+collaboration-facing decision table under
+`data/sampling_layouts/sampling_decision_matrix/`. Current committed decision:
+`full_grid_162` is the physical reference, `geometric_farthest_32` is the first
+reduced-layout true-monitor rerun, `fibonacci_snap_120` is the conservative
+cross-check, and `task_driven_32`/`task_driven_48` are classification probes
+that still need validation before report-level claims.
 
 `run_true_nearfield_gate.py` wraps the same queue into a post-export workflow
 gate. It records whether each `full_grid_162`, `geometric_farthest_32`, and
