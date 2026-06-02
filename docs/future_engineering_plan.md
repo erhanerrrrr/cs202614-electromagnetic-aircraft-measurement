@@ -319,3 +319,36 @@ component coverage, frequency, sample id, and sensor subset before the
 comparison gate is run. Current default status is `missing_file` for all 18
 queued rows, which correctly reflects that no true-monitor CSV has been dropped
 yet.
+
+## 10. 2026-06-02 true-monitor workflow decision update
+
+The handoff, dropzone preflight, true-monitor gate, and G3 dashboard are now
+connected by a post-export decision entry:
+
+```powershell
+python code\run_true_nearfield_workflow_decision.py
+```
+
+It writes `outputs/cst_true_nearfield_workflow_decision/`:
+
+- `true_nearfield_workflow_decision.md`: human-facing current decision,
+  required file list, next commands, and claim boundary.
+- `workflow_decision_summary.json`: machine-readable decision id, blocker,
+  readiness counts, and input/output references.
+- `workflow_next_commands.csv`: ordered CST/algorithm/report action list.
+- `required_full_grid_status.csv`: two required full-grid rows with dropzone
+  and gate status.
+
+Current committed decision:
+
+- `decision_id = await_required_full_grid_exports`
+- required full-grid readiness is `0/2`
+- blocker: the two required `full_grid_162` true-monitor CSVs are still missing
+- next commands: export the two CST monitor CSVs, run
+  `check_true_nearfield_dropzone.py --required-only --full-grid-only`, then run
+  `run_true_nearfield_gate.py --required-only`
+
+Use this script as the sprint decision entrance after every CST file drop. It
+keeps the project from accidentally advancing to reduced-layout or report
+claims before the authoritative monitor data and physical/vector baseline have
+passed the gate.

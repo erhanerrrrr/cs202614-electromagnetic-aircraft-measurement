@@ -1,0 +1,95 @@
+{
+  "generated_by": "code/run_true_nearfield_workflow_decision.py",
+  "decision_id": "await_required_full_grid_exports",
+  "decision_label": "Await required full-grid true-monitor exports",
+  "blocker": "2 required full-grid CST true-monitor CSV files are missing.",
+  "confidence": "high",
+  "required_full_grid_ready": 0,
+  "required_full_grid_count": 2,
+  "dropzone_status_counts": {
+    "missing_file": 18
+  },
+  "gate_status_counts": {
+    "pending_source": 18
+  },
+  "g3_true_monitor_status": "pending_source",
+  "inputs": {
+    "dropzone_summary": "outputs\\cst_true_nearfield_dropzone_check\\true_nearfield_dropzone_summary.json",
+    "dropzone_status": "outputs\\cst_true_nearfield_dropzone_check\\true_nearfield_dropzone_status.csv",
+    "gate_summary": "data\\cst_true_nearfield_workpack\\gate_report\\true_nearfield_gate_summary.json",
+    "gate_status": "data\\cst_true_nearfield_workpack\\gate_report\\true_nearfield_gate_status.csv",
+    "handoff_summary": "outputs\\cst_true_nearfield_handoff\\handoff_summary.json",
+    "expected_files": "outputs\\cst_true_nearfield_handoff\\expected_true_monitor_files.csv",
+    "g3_summary": "outputs\\g3_model_dashboard\\g3_dashboard_summary.json"
+  },
+  "output_files": {
+    "decision_markdown": "outputs\\cst_true_nearfield_workflow_decision\\true_nearfield_workflow_decision.md",
+    "summary": "outputs\\cst_true_nearfield_workflow_decision\\workflow_decision_summary.json",
+    "next_commands": "outputs\\cst_true_nearfield_workflow_decision\\workflow_next_commands.csv",
+    "required_status": "outputs\\cst_true_nearfield_workflow_decision\\required_full_grid_status.csv"
+  },
+  "required_status_records": [
+    {
+      "sample_id": "L1_halfwave_dipole_z_1p2G",
+      "case_priority": "required",
+      "candidate": "full_grid_162",
+      "target_export_path": "data\\cst_exports\\level1_true_nearfield\\L1_halfwave_dipole_z_1p2G_true_nearfield.csv",
+      "expected_export_rows": 486,
+      "target_export_exists": false,
+      "dropzone_status": "missing_file",
+      "dropzone_errors": "file is missing",
+      "gate_status": "pending_source",
+      "gate_source_status": "missing_candidate_export",
+      "gate_row_count": 0,
+      "gate_comparison_status": "not_run"
+    },
+    {
+      "sample_id": "L1_short_dipole_z_1p2G",
+      "case_priority": "required",
+      "candidate": "full_grid_162",
+      "target_export_path": "data\\cst_exports\\level1_true_nearfield\\L1_short_dipole_z_1p2G_true_nearfield.csv",
+      "expected_export_rows": 486,
+      "target_export_exists": false,
+      "dropzone_status": "missing_file",
+      "dropzone_errors": "file is missing",
+      "gate_status": "pending_source",
+      "gate_source_status": "missing_candidate_export",
+      "gate_row_count": 0,
+      "gate_comparison_status": "not_run"
+    }
+  ],
+  "next_command_records": [
+    {
+      "priority": 1,
+      "owner": "CST operator",
+      "stage": "manual_cst_export",
+      "command": "export the two required full_grid_162 true-monitor CSV files listed in this report",
+      "expected_result": "The required target CSV paths exist with 486 rows each and Ex/Ey/Ez component rows.",
+      "blocked_by": "CST true near-field monitor export"
+    },
+    {
+      "priority": 2,
+      "owner": "Algorithm operator",
+      "stage": "dropzone_preflight",
+      "command": "python code\\check_true_nearfield_dropzone.py --required-only --full-grid-only",
+      "expected_result": "Required full-grid rows become ready_for_gate.",
+      "blocked_by": "required true-monitor CSV files"
+    },
+    {
+      "priority": 3,
+      "owner": "Algorithm operator",
+      "stage": "required_gate",
+      "command": "python code\\run_true_nearfield_gate.py --required-only",
+      "expected_result": "Required rows leave pending_source and produce comparison status.",
+      "blocked_by": "ready_for_gate dropzone status"
+    },
+    {
+      "priority": 99,
+      "owner": "Algorithm operator",
+      "stage": "decision_refresh",
+      "command": "python code\\run_true_nearfield_workflow_decision.py",
+      "expected_result": "Refresh this decision report after the upstream action finishes.",
+      "blocked_by": ""
+    }
+  ]
+}

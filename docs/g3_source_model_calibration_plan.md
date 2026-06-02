@@ -324,3 +324,25 @@ Only when the selected rows are `ready_for_gate` should the team run
 `python code\run_true_nearfield_gate.py --required-only` and then decide
 whether G3 can keep the current FarfieldPlot-derived calibration or must rerun
 on authoritative monitor data.
+
+## True-Monitor Workflow Decision
+
+Run:
+
+```powershell
+python code\run_true_nearfield_workflow_decision.py
+```
+
+This writes `outputs/cst_true_nearfield_workflow_decision/` and converts the
+handoff/dropzone/gate/dashboard status into the next executable action. It is
+the recommended first command after every CST file drop, because it separates
+four cases:
+
+- keep waiting for required `full_grid_162` monitor CSVs
+- run or rerun the required true-monitor gate
+- fix CST export or gate input contract issues
+- rerun physical G3 baselines before refreshing report wording
+
+Current status is `await_required_full_grid_exports`: both required
+`full_grid_162` true-monitor CSVs are missing, so the physical G3 rerun and any
+reduced-layout claim remain blocked.

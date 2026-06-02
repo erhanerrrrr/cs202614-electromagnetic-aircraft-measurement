@@ -23,6 +23,7 @@
 | `compare_true_nearfield_exports.py` | 对比 CST 真近场 monitor 导出与当前 FarfieldPlot-derived nearfield 基线。 |
 | `derive_true_nearfield_layout_exports.py` | 从 162 点 CST 真近场 monitor 导出自动派生 queued 32/120 reduced-layout CSV。 |
 | `run_true_nearfield_gate.py` | Runs the true-monitor queue gate: source availability, optional 32/120 derivation, row-count checks, and FarfieldPlot-derived reference comparison. |
+| `run_true_nearfield_workflow_decision.py` | Reads the true-monitor handoff, dropzone preflight, gate report, and G3 dashboard, then writes the next executable decision for CST export, gate rerun, physical G3 rerun, or report refresh. |
 | `run_spherical_nf_ff_baseline.py` | 用切向球谐拟合建立轻量 NF-FF/SWE sanity baseline，独立检查角度、极化和远场比较链路。 |
 | `prepare_huygens_surface_prior.py` | 生成 Huygens 面源先验节点、法向/切向基和四复未知量合同，供后续物理面源反演使用。 |
 | `run_cst_huygens_baseline.py` | 用 Huygens-style 电/磁面源近似构造 Level 1 full-grid 诊断矩阵，并对比 `radiating_dipole` 与 `current_green` 两类 field model。 |
@@ -62,6 +63,7 @@ python code\run_cst_level1_convention_check.py
 python code\prepare_cst_true_nearfield_workpack.py
 python code\derive_true_nearfield_layout_exports.py --sample-id L1_short_dipole_z_1p2G
 python code\run_true_nearfield_gate.py
+python code\run_true_nearfield_workflow_decision.py
 python code\build_true_nearfield_handoff.py
 python code\check_true_nearfield_dropzone.py
 python code\build_g3_model_dashboard.py
@@ -102,6 +104,13 @@ gate. It records whether each `full_grid_162`, `geometric_farthest_32`, and
 from a full-grid monitor export when possible, compares available rows against
 the FarfieldPlot-derived reference, and writes
 `data/cst_true_nearfield_workpack/gate_report/`.
+
+`run_true_nearfield_workflow_decision.py` is the decision entrance after the
+handoff/dropzone/gate reports exist. It writes
+`outputs/cst_true_nearfield_workflow_decision/` with the current decision,
+required full-grid file status, and the next command list. Current committed
+decision: wait for the two required `full_grid_162` true-monitor CSVs before
+running the required gate.
 
 ## G3 model dashboard addendum
 

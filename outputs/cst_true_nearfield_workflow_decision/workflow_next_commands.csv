@@ -1,0 +1,5 @@
+﻿priority,owner,stage,command,expected_result,blocked_by
+1,CST operator,manual_cst_export,export the two required full_grid_162 true-monitor CSV files listed in this report,The required target CSV paths exist with 486 rows each and Ex/Ey/Ez component rows.,CST true near-field monitor export
+2,Algorithm operator,dropzone_preflight,python code\check_true_nearfield_dropzone.py --required-only --full-grid-only,Required full-grid rows become ready_for_gate.,required true-monitor CSV files
+3,Algorithm operator,required_gate,python code\run_true_nearfield_gate.py --required-only,Required rows leave pending_source and produce comparison status.,ready_for_gate dropzone status
+99,Algorithm operator,decision_refresh,python code\run_true_nearfield_workflow_decision.py,Refresh this decision report after the upstream action finishes.,
