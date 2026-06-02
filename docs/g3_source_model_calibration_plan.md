@@ -147,3 +147,25 @@ This is now the immediate data-boundary gate before SWE/Huygens work. If true
 monitor exports differ materially from the FarfieldPlot-derived baseline, rerun
 the Level 1 source-model, sparse, convention, and sampling diagnostics on the
 true-monitor table before making any reduced-sampling claim.
+
+## Spherical NF-FF Sanity Baseline
+
+Run:
+
+```powershell
+python code\run_spherical_nf_ff_baseline.py
+```
+
+This writes `data/sampling_layouts/spherical_nf_ff_baseline/`. The current
+implementation is intentionally lightweight: it fits `Etheta` and `Ephi` with
+independent scalar spherical-harmonic expansions and compares the predicted
+angular power against the CST far-field table. It is not a full vector SWE
+implementation.
+
+The stable best setting is `lmax = 4`, `lambda = 0`, with 24 modes per
+component. On the two current Level 1 z-dipole cases it reaches `strict_pass`:
+min correlation `0.9990`, max NMSE `9.2604e-04`, zero main-lobe error, and max
+near-field fit relative error about `2.58e-02`. This strengthens the data-path
+argument: the angular, polarization, and far-field comparison conventions are
+internally consistent. It does not remove the need for true near-field monitor
+exports or a more physical Huygens/source-prior model.

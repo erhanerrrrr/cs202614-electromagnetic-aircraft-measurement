@@ -1,0 +1,38 @@
+{
+  "generated_by": "code/run_spherical_nf_ff_baseline.py",
+  "nearfield": "data\\cst_exports\\level1\\all_nearfield.csv",
+  "farfield": "data\\cst_exports\\level1\\all_farfield.csv",
+  "out_dir": "data\\sampling_layouts\\spherical_nf_ff_baseline",
+  "basis": "independent scalar spherical-harmonic fit for tangential Etheta/Ephi components",
+  "is_full_vector_swe": false,
+  "purpose": "NF-FF/SWE sanity baseline for angle, phase, and polarization consistency before reduced sampling claims.",
+  "sample_frequency_pair_count": 2,
+  "lmax_values": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    10
+  ],
+  "lambda_regs": [
+    0.0,
+    1e-10,
+    1e-08,
+    1e-06
+  ],
+  "include_l0": false,
+  "best_setting": {
+    "lmax": 4,
+    "lambda_reg": 0.0,
+    "include_l0": false,
+    "mode_count": 24,
+    "status": "strict_pass",
+    "min_correlation": 0.9990092548096616,
+    "max_nmse": 0.0009260393811542808,
+    "max_main_lobe_error_deg": 0.0,
+    "max_nearfield_fit_relative_error": 0.02576559279771885,
+    "max_basis_condition": 105.11189274628238
+  }
+}

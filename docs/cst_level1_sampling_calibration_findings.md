@@ -21,6 +21,7 @@ It writes compact CSV/JSON/README outputs for candidate comparison.
 | `data/sampling_layouts/cst_level1_tradeoff/` | 5 x 3 x 3 equivalent-source grid around `(0, 0, 4 m)` | Calibration diagnostic. Full 162-point reconstruction is not yet strong enough, so this cannot support final sampling claims. |
 | `data/sampling_layouts/cst_level1_center_source_check/` | Single equivalent source at `(0, 0, 4 m)` | Level 1 sanity check. Correlation and main-lobe location are good, showing the CST export and comparison chain are broadly consistent. |
 | `data/sampling_layouts/cst_level1_source_model_sweep/` | Multiple Level 1 source supports and Tikhonov regularization values | Full-grid model-calibration sweep. Use it to choose the next baseline before judging lower-count layouts. |
+| `data/sampling_layouts/spherical_nf_ff_baseline/` | Tangential spherical-harmonic NF-FF sanity baseline | Independent angle/polarization/far-field comparison check. It is not a full vector SWE proof, but it supports the current data-path conventions. |
 
 ## Current Reading
 
@@ -60,6 +61,15 @@ keeps `Corr` near `0.794` and `NMSE` near `0.318`, although some sign-equivalent
 settings change the selected main-lobe location. This argues against treating
 the problem as a simple phase-sign or polarization-label bug.
 
+`code/run_spherical_nf_ff_baseline.py` adds an independent angular baseline
+without using the equivalent-source grid. It fits the current tangential
+near-field samples with scalar spherical harmonics and evaluates the fitted
+field on the far-field grid. The stable best setting is `lmax = 4` with 24
+modes per component, reaching `strict_pass`: min correlation `0.9990`, max NMSE
+`9.2604e-04`, zero main-lobe error, and max near-field fit relative error about
+`2.58e-02`. This supports the coordinate, polarization, and far-field
+comparison chain. It does not by itself validate reduced 120/81/48/32 layouts.
+
 The current Level 1 near-field table is explicitly derived from CST FarfieldPlot
 list evaluation at the measurement directions. It is therefore a solver-safe
 angular sample, not a full-wave near-field monitor export. That boundary should
@@ -71,10 +81,12 @@ Do not claim that the 120-point or 81-point CST sampling plan is final. The
 repo now supports a clearer next step:
 
 1. Lock down the Level 1 source prior and phase convention.
-2. Calibrate the equivalent-source grid, regularization, and source sparsity.
-3. Re-run the same tradeoff script after the full 162-point baseline meets the
+2. Use the spherical baseline as a data-path sanity check, while keeping its
+   scalar-harmonic limitation explicit.
+3. Calibrate the equivalent-source grid, regularization, and source sparsity.
+4. Re-run the same tradeoff script after the full 162-point baseline meets the
    chosen acceptance metric.
-4. Only then use the lower-count layouts as report-level evidence.
+5. Only then use the lower-count layouts as report-level evidence.
 
 This is still useful GitHub material because it gives teammates a reproducible
 script, compact result tables, and a precise diagnosis of what remains open.
