@@ -1,0 +1,29 @@
+{
+  "purpose": "CST true near-field monitor export workpack for Level 1 validation",
+  "source_files": {
+    "case_manifest": "outputs\\cst_level1_plan\\level1_case_manifest.csv",
+    "source_manifest": "outputs\\cst_level1_plan\\level1_source_manifest.csv",
+    "sensor_layout": "outputs\\cst_templates\\sensor_layout_hemisphere_for_cst.csv"
+  },
+  "output_dir": "data\\cst_true_nearfield_workpack",
+  "case_count": 6,
+  "priority_counts": {
+    "required": 2,
+    "recommended": 2,
+    "optional": 2
+  },
+  "required_cases": [
+    "L1_short_dipole_z_1p2G",
+    "L1_halfwave_dipole_z_1p2G"
+  ],
+  "sensor_count": 162,
+  "field_components": [
+    "Ex",
+    "Ey",
+    "Ez"
+  ],
+  "expected_rows_per_case": 486,
+  "current_baseline_boundary": "Existing Level 1 samples are FarfieldPlot-derived angular samples, not true full-wave near-field monitor exports.",
+  "next_algorithm_step": "After true monitor export, rerun Level 1 convention/source-model/sampling diagnostics before reduced-sampling claims.",
+  "is_simulation_evidence": false
+}

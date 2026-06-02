@@ -1,0 +1,99 @@
+# CST True Near-Field Monitor Workflow
+
+## Purpose
+
+The current Level 1 CST samples in `data/cst_exports/level1/all_nearfield.csv`
+are FarfieldPlot-derived angular samples. They are useful for a solver-safe
+calibration baseline, but they are not yet full-wave near-field monitor exports.
+
+This workflow prepares the next CST gate: export true near-field monitor samples
+on the same 162-point upper-hemisphere shell, compare them against the current
+FarfieldPlot-derived baseline, and only then rerun reduced-sampling claims.
+
+## Generated Workpack
+
+Run:
+
+```powershell
+python code\prepare_cst_true_nearfield_workpack.py
+```
+
+The script writes:
+
+```text
+data/cst_true_nearfield_workpack/
+```
+
+Key files:
+
+| File | Role |
+|---|---|
+| `true_nearfield_monitor_cases.csv` | Level 1 CST case table, true-monitor export paths, and validation commands. |
+| `true_nearfield_sensor_shell.csv` | 162 sampling coordinates on the existing 2pi upper hemisphere. |
+| `true_nearfield_export_contract.csv` | Required columns for true monitor exports. |
+| `true_nearfield_vs_farfieldplot_checklist.csv` | CST/operator checklist for the monitor-vs-baseline comparison. |
+| `cst_true_nearfield_monitor_template.bas` | CST VBA skeleton that preserves the naming and export contract. |
+
+The first gate is still the two required z-oriented Level 1 sources:
+
+```text
+L1_short_dipole_z_1p2G
+L1_halfwave_dipole_z_1p2G
+```
+
+Each true monitor export should contain 486 rows: 162 sensors times `Ex`, `Ey`,
+and `Ez`.
+
+## Comparison Gate
+
+After CST export, compare each true-monitor table with the corresponding
+FarfieldPlot-derived table:
+
+```powershell
+python code\compare_true_nearfield_exports.py --true-nearfield <true-monitor-csv> --reference-nearfield <farfieldplot-derived-csv> --out-dir data\cst_true_nearfield_workpack\comparison\<sample-id>
+```
+
+The comparison script reports:
+
+| Metric | Meaning |
+|---|---|
+| `complex_correlation_abs` | Complex vector agreement after aligning rows by sample, frequency, sensor, and component. |
+| `relative_l2_error` | Direct relative vector error. |
+| `scaled_relative_l2_error` | Residual after the best complex scalar normalization. |
+| `amplitude_ratio_db` | Whether the true monitor differs mainly by amplitude scale. |
+| `phase_offset_deg` | Global phase offset between the two exports. |
+
+The repository also includes a reference self-check:
+
+```text
+data/cst_true_nearfield_workpack/reference_self_check/
+```
+
+That self-check compares the current FarfieldPlot table with itself. It is only
+a script sanity check, not new CST evidence.
+
+## Decision Logic
+
+If the true near-field monitor closely matches the current FarfieldPlot-derived
+baseline, keep the current Level 1 diagnostics and upgrade the wording to a
+monitor-confirmed baseline.
+
+If the difference is mostly amplitude scale, add a normalization step before
+rerunning `run_cst_source_model_sweep.py`, `run_cst_sparse_reconstruction.py`,
+and `run_cst_sampling_tradeoff.py`.
+
+If the difference involves phase, polarization, or main-lobe direction, treat
+the true-monitor export as the authoritative Level 1 input and rerun the full
+G3 calibration chain before making any 120/81/48/32 reduced-sampling claim.
+
+## Link To Future G3 Work
+
+This workflow clears the data boundary needed before implementing a stronger
+SWE/NF-FF sanity baseline or Huygens-surface source prior. The order should be:
+
+1. True near-field monitor export.
+2. Monitor-vs-FarfieldPlot comparison.
+3. Level 1 source-model and convention rerun on the authoritative table.
+4. Spherical NF-FF/SWE sanity baseline.
+5. Reduced sampling tradeoff rerun only after the full 162-point baseline is
+   stable under the chosen physical model.

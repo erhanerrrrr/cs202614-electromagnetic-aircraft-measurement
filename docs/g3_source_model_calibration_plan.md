@@ -68,6 +68,7 @@ Use this sequence for the next round:
 |---|---|---|
 | Sparse / ElasticNet equivalent sources | Reduce over-free source grids and suppress nonphysical energy leakage. | `code/run_cst_sparse_reconstruction.py` |
 | Phase / polarization convention check | Test whether phase sign, complex conjugation, or theta/phi labeling explains the Level 1 bottleneck. | `code/run_cst_level1_convention_check.py` |
+| True near-field monitor workpack | Separate real CST near-field monitor evidence from the current FarfieldPlot-derived angular baseline. | `code/prepare_cst_true_nearfield_workpack.py` |
 | Group sparsity across frequencies | Share source support for multi-frequency samples. | `outputs/model_comparison/reconstruction_metrics.csv` |
 | Huygens-surface source prior | Move from point-source grids toward structure-aware equivalent currents. | `docs/huygens_surface_model_note.md` |
 | Spherical NF-FF sanity check | Detect coordinate, phase, and polarization convention errors independently of equivalent sources. | `code/run_spherical_nf_ff_baseline.py` |
@@ -125,3 +126,24 @@ not become a valid reduced-sampling baseline. This argues against a simple
 global phase-sign or polarization-label error. The next real model upgrade is a
 more physical source prior: Huygens surface, spherical-wave sanity baseline, or
 known-source/structure-aware constraints.
+
+## True Near-Field Monitor Gate
+
+Run:
+
+```powershell
+python code\prepare_cst_true_nearfield_workpack.py
+```
+
+This writes `data/cst_true_nearfield_workpack/`, including the 162-point
+spherical shell, CST monitor export contract, macro skeleton, and comparison
+checklist. The paired comparison script is:
+
+```powershell
+python code\compare_true_nearfield_exports.py --true-nearfield <true-monitor-csv> --reference-nearfield <farfieldplot-derived-csv> --out-dir data\cst_true_nearfield_workpack\comparison\<sample-id>
+```
+
+This is now the immediate data-boundary gate before SWE/Huygens work. If true
+monitor exports differ materially from the FarfieldPlot-derived baseline, rerun
+the Level 1 source-model, sparse, convention, and sampling diagnostics on the
+true-monitor table before making any reduced-sampling claim.

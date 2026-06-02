@@ -1,0 +1,17 @@
+{
+  "candidate_nearfield": "data\\cst_exports\\level1\\all_nearfield.csv",
+  "reference_nearfield": "data\\cst_exports\\level1\\all_nearfield.csv",
+  "case_table": "data\\cst_true_nearfield_workpack\\true_nearfield_monitor_cases.csv",
+  "output_dir": "data\\cst_true_nearfield_workpack\\reference_self_check",
+  "comparison_boundary": "FarfieldPlot-derived samples are a reference baseline; true near-field monitor samples become authoritative once exported.",
+  "sample_count": 2,
+  "frequency_count": 2,
+  "common_row_count": 972,
+  "missing_candidate_rows": 0,
+  "missing_reference_rows": 0,
+  "min_all_complex_correlation_abs": 0.9999999999999997,
+  "max_all_relative_l2_error": 0.0,
+  "max_all_scaled_relative_l2_error": 0.0,
+  "max_abs_amplitude_ratio_db": 0.0,
+  "max_abs_phase_offset_deg": 0.0
+}

@@ -1,0 +1,31 @@
+﻿phase,sample_id,owner,action,evidence,status
+required_true_nf_gate,L1_short_dipole_z_1p2G,CST_operator,Create or update the Level 1 CST source project.,CST_L1_short_dipole_z_1p2G.cst,todo
+required_true_nf_gate,L1_short_dipole_z_1p2G,CST_operator,Add true near-field monitor or field export at the listed frequency.,true_nf_shell_1200MHz,todo
+required_true_nf_gate,L1_short_dipole_z_1p2G,CST_operator,Interpolate/export Ex/Ey/Ez on the spherical shell coordinates.,data/cst_exports/level1_true_nearfield/L1_short_dipole_z_1p2G_true_nearfield.csv,todo
+required_true_nf_gate,L1_short_dipole_z_1p2G,Algorithm_operator,"Validate row count, components, units, and paired far-field table.",python code\check_cst_export.py --nearfield data/cst_exports/level1_true_nearfield/L1_short_dipole_z_1p2G_true_nearfield.csv --farfield data/cst_exports/level1/L1_short_dipole_z_1p2G_farfield.csv,todo
+required_true_nf_gate,L1_short_dipole_z_1p2G,Algorithm_operator,Compare true near-field monitor samples with FarfieldPlot-derived samples.,data/cst_exports/level1/L1_short_dipole_z_1p2G_nearfield.csv,todo
+required_true_nf_gate,L1_halfwave_dipole_z_1p2G,CST_operator,Create or update the Level 1 CST source project.,CST_L1_halfwave_dipole_z_1p2G.cst,todo
+required_true_nf_gate,L1_halfwave_dipole_z_1p2G,CST_operator,Add true near-field monitor or field export at the listed frequency.,true_nf_shell_1200MHz,todo
+required_true_nf_gate,L1_halfwave_dipole_z_1p2G,CST_operator,Interpolate/export Ex/Ey/Ez on the spherical shell coordinates.,data/cst_exports/level1_true_nearfield/L1_halfwave_dipole_z_1p2G_true_nearfield.csv,todo
+required_true_nf_gate,L1_halfwave_dipole_z_1p2G,Algorithm_operator,"Validate row count, components, units, and paired far-field table.",python code\check_cst_export.py --nearfield data/cst_exports/level1_true_nearfield/L1_halfwave_dipole_z_1p2G_true_nearfield.csv --farfield data/cst_exports/level1/L1_halfwave_dipole_z_1p2G_farfield.csv,todo
+required_true_nf_gate,L1_halfwave_dipole_z_1p2G,Algorithm_operator,Compare true near-field monitor samples with FarfieldPlot-derived samples.,data/cst_exports/level1/L1_halfwave_dipole_z_1p2G_nearfield.csv,todo
+true_nf_extension,L1_short_dipole_x_1p2G,CST_operator,Create or update the Level 1 CST source project.,CST_L1_short_dipole_x_1p2G.cst,todo
+true_nf_extension,L1_short_dipole_x_1p2G,CST_operator,Add true near-field monitor or field export at the listed frequency.,true_nf_shell_1200MHz,todo
+true_nf_extension,L1_short_dipole_x_1p2G,CST_operator,Interpolate/export Ex/Ey/Ez on the spherical shell coordinates.,data/cst_exports/level1_true_nearfield/L1_short_dipole_x_1p2G_true_nearfield.csv,todo
+true_nf_extension,L1_short_dipole_x_1p2G,Algorithm_operator,"Validate row count, components, units, and paired far-field table.",python code\check_cst_export.py --nearfield data/cst_exports/level1_true_nearfield/L1_short_dipole_x_1p2G_true_nearfield.csv --farfield data/cst_exports/level1/L1_short_dipole_x_1p2G_farfield.csv,todo
+true_nf_extension,L1_short_dipole_x_1p2G,Algorithm_operator,Compare true near-field monitor samples with FarfieldPlot-derived samples.,data/cst_exports/level1/L1_short_dipole_x_1p2G_nearfield.csv,todo
+true_nf_extension,L1_short_dipole_y_1p2G,CST_operator,Create or update the Level 1 CST source project.,CST_L1_short_dipole_y_1p2G.cst,todo
+true_nf_extension,L1_short_dipole_y_1p2G,CST_operator,Add true near-field monitor or field export at the listed frequency.,true_nf_shell_1200MHz,todo
+true_nf_extension,L1_short_dipole_y_1p2G,CST_operator,Interpolate/export Ex/Ey/Ez on the spherical shell coordinates.,data/cst_exports/level1_true_nearfield/L1_short_dipole_y_1p2G_true_nearfield.csv,todo
+true_nf_extension,L1_short_dipole_y_1p2G,Algorithm_operator,"Validate row count, components, units, and paired far-field table.",python code\check_cst_export.py --nearfield data/cst_exports/level1_true_nearfield/L1_short_dipole_y_1p2G_true_nearfield.csv --farfield data/cst_exports/level1/L1_short_dipole_y_1p2G_farfield.csv,todo
+true_nf_extension,L1_short_dipole_y_1p2G,Algorithm_operator,Compare true near-field monitor samples with FarfieldPlot-derived samples.,data/cst_exports/level1/L1_short_dipole_y_1p2G_nearfield.csv,todo
+true_nf_extension,L1_halfwave_dipole_x_1p2G,CST_operator,Create or update the Level 1 CST source project.,CST_L1_halfwave_dipole_x_1p2G.cst,todo
+true_nf_extension,L1_halfwave_dipole_x_1p2G,CST_operator,Add true near-field monitor or field export at the listed frequency.,true_nf_shell_1200MHz,todo
+true_nf_extension,L1_halfwave_dipole_x_1p2G,CST_operator,Interpolate/export Ex/Ey/Ez on the spherical shell coordinates.,data/cst_exports/level1_true_nearfield/L1_halfwave_dipole_x_1p2G_true_nearfield.csv,todo
+true_nf_extension,L1_halfwave_dipole_x_1p2G,Algorithm_operator,"Validate row count, components, units, and paired far-field table.",python code\check_cst_export.py --nearfield data/cst_exports/level1_true_nearfield/L1_halfwave_dipole_x_1p2G_true_nearfield.csv --farfield data/cst_exports/level1/L1_halfwave_dipole_x_1p2G_farfield.csv,todo
+true_nf_extension,L1_halfwave_dipole_x_1p2G,Algorithm_operator,Compare true near-field monitor samples with FarfieldPlot-derived samples.,data/cst_exports/level1/L1_halfwave_dipole_x_1p2G_nearfield.csv,todo
+true_nf_extension,L1_halfwave_dipole_y_1p2G,CST_operator,Create or update the Level 1 CST source project.,CST_L1_halfwave_dipole_y_1p2G.cst,todo
+true_nf_extension,L1_halfwave_dipole_y_1p2G,CST_operator,Add true near-field monitor or field export at the listed frequency.,true_nf_shell_1200MHz,todo
+true_nf_extension,L1_halfwave_dipole_y_1p2G,CST_operator,Interpolate/export Ex/Ey/Ez on the spherical shell coordinates.,data/cst_exports/level1_true_nearfield/L1_halfwave_dipole_y_1p2G_true_nearfield.csv,todo
+true_nf_extension,L1_halfwave_dipole_y_1p2G,Algorithm_operator,"Validate row count, components, units, and paired far-field table.",python code\check_cst_export.py --nearfield data/cst_exports/level1_true_nearfield/L1_halfwave_dipole_y_1p2G_true_nearfield.csv --farfield data/cst_exports/level1/L1_halfwave_dipole_y_1p2G_farfield.csv,todo
+true_nf_extension,L1_halfwave_dipole_y_1p2G,Algorithm_operator,Compare true near-field monitor samples with FarfieldPlot-derived samples.,data/cst_exports/level1/L1_halfwave_dipole_y_1p2G_nearfield.csv,todo

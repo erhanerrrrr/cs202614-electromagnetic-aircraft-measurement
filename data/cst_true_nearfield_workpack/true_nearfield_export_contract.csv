@@ -1,0 +1,16 @@
+﻿column_name,type,meaning
+sample_id,string,"Level 1 case id, identical to the manifest sample_id."
+frequency_hz,integer,Solved monitor frequency in Hz.
+sensor_id,integer,Sensor id from true_nearfield_sensor_shell.csv.
+x_m,float,Probe/interpolation x coordinate in meters.
+y_m,float,Probe/interpolation y coordinate in meters.
+z_m,float,Probe/interpolation z coordinate in meters.
+theta_deg,float,"Polar angle of the same coordinate, degrees."
+phi_deg,float,"Azimuth angle of the same coordinate, degrees."
+radius_m,float,Sampling radius in meters.
+polarization,string,"One of Ex, Ey, Ez. Keep Cartesian fields for audit."
+e_real,float,Real part of the complex electric field component.
+e_imag,float,Imaginary part of the complex electric field component.
+cst_project,string,CST project that produced the row.
+cst_monitor_item,string,CST tree item or result path for the true near-field monitor.
+extraction_method,string,Use 'CST true near-field monitor interpolated on spherical shell'.

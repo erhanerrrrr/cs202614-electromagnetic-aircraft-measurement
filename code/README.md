@@ -20,6 +20,7 @@
 | `run_cst_source_model_sweep.py` | 扫描 Level 1 等效源支撑和 Tikhonov 正则化，定位源模型校准瓶颈。 |
 | `run_cst_sparse_reconstruction.py` | 用 group-sparse FISTA/ElasticNet 思路检查通用等效源网格的能量泄漏问题。 |
 | `run_cst_level1_convention_check.py` | 诊断相位符号、复共轭、theta/phi 极化约定是否造成 Level 1 反演瓶颈。 |
+| `compare_true_nearfield_exports.py` | 对比 CST 真近场 monitor 导出与当前 FarfieldPlot-derived nearfield 基线。 |
 | `run_cst_reconstruction.py` | CST 数据等效源反演与远场外推入口。 |
 | `run_reconstruction_robustness.py` | 重建鲁棒性实验。 |
 
@@ -29,6 +30,7 @@
 |---|---|
 | `prepare_cst_templates.py`、`prepare_cst_macro_templates.py` | 生成 CST 建模和导出宏模板。 |
 | `prepare_cst_level1_workpack.py`、`prepare_cst_level2_workpack.py` | 生成 Level 1/2 CST 执行任务包。 |
+| `prepare_cst_true_nearfield_workpack.py` | 生成 CST 真近场 monitor 导出工作包、采样壳层、宏骨架和对照清单。 |
 | `merge_cst_level1_exports.py`、`merge_cst_level2_exports.py` | 合并 CST 导出的 near/far-field 数据。 |
 | `run_cst_solver_project.py`、`export_cst_farfield_results.py` | 本机 CST 求解和结果导出辅助入口。 |
 
@@ -49,10 +51,12 @@ python code\run_cst_sampling_tradeoff.py --level1-center-source-grid --out-dir d
 python code\run_cst_source_model_sweep.py
 python code\run_cst_sparse_reconstruction.py
 python code\run_cst_level1_convention_check.py
+python code\prepare_cst_true_nearfield_workpack.py
+python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check
 python code\check_cst_export.py --nearfield data\cst_exports\level1\all_nearfield.csv --farfield data\cst_exports\level1\all_farfield.csv
 python code\run_cst_recognition.py
 ```
 
 ## 当前重点
 
-G2 已生成非冗余半球采样候选。G3 正在校准真实 CST Level 1 数据链：中心源先验证明数据路径可信，通用等效源网格仍未达到最终采样证明要求；下一步应围绕相位/极化约定、源先验和更物理的 Huygens/SWE 基线继续推进。
+G2 已生成非冗余半球采样候选。G3 正在校准真实 CST Level 1 数据链：中心源先验证明数据路径可信，通用等效源网格仍未达到最终采样证明要求；下一步应先补 CST 真近场 monitor 与当前 FarfieldPlot-derived 样本的对照，再围绕源先验和更物理的 Huygens/SWE 基线继续推进。
