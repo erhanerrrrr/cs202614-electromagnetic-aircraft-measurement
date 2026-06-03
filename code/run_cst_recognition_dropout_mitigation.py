@@ -351,19 +351,22 @@ def write_readme(
     by_case: pd.DataFrame,
     inputs: dict[str, str],
     zero_tolerance: float,
+    regenerate_command: str,
 ) -> None:
     lines = [
         "# Level 2 Dropout Mitigation Check",
         "",
         "This directory stores the focused G5 follow-up for missing-channel",
         "recognition robustness. It keeps the leave-one-stress-family-out",
-        "protocol, focuses on held-out dropout cases, and compares zero-fill",
-        "against lightweight mask-feature and imputation strategies.",
+        "protocol, focuses on held-out dropout or dropout-bearing cases, and",
+        "compares zero-fill against lightweight mask-feature and imputation",
+        "strategies.",
         "",
         "## Current Result",
         "",
         f"- Seeds: {', '.join(str(seed) for seed in summary['seeds'])}.",
         f"- Layouts tested: {', '.join(summary['layouts'])}.",
+        f"- Held-out families tested: {', '.join(summary['held_out_families'])}.",
         f"- Strategies tested: {', '.join(summary['strategies'])}.",
         f"- Stress cases tested: {', '.join(summary['stress_cases'])}.",
         f"- Total rows: {summary['row_count']}.",
@@ -444,9 +447,9 @@ def write_readme(
             "",
             "| File | Purpose |",
             "|---|---|",
-            "| `recognition_dropout_mitigation_metrics.csv` | Per-seed/per-layout/per-strategy dropout accuracy and macro-F1. |",
+            "| `recognition_dropout_mitigation_metrics.csv` | Per-seed/per-layout/per-strategy stress accuracy and macro-F1. |",
             "| `recognition_dropout_mitigation_by_strategy.csv` | Aggregate comparison of zero-fill, mask features, and imputation. |",
-            "| `recognition_dropout_mitigation_by_case.csv` | Aggregate comparison by layout, dropout case, and strategy. |",
+            "| `recognition_dropout_mitigation_by_case.csv` | Aggregate comparison by layout, stress case, and strategy. |",
             "| `recognition_dropout_mitigation_by_layout.csv` | Aggregate comparison by layout and strategy. |",
             "| `recognition_dropout_mitigation_summary.json` | Machine-readable summary, inputs, strategy definitions, and aggregate tables. |",
             "| `README.md` | Human-facing interpretation and claim boundary. |",
@@ -454,15 +457,16 @@ def write_readme(
             "## Regenerate",
             "",
             "```powershell",
-            "python code\\run_cst_recognition_dropout_mitigation.py",
+            regenerate_command,
             "```",
             "",
             "## Boundary",
             "",
             "This is a focused Level 2 CST-derived element-library check. It compares",
             "test-time missing-channel handling strategies under internal stochastic",
-            "dropout perturbations. It does not replace real measurement calibration,",
-            "full-wave airframe validation, or the true CST near-field monitor gate.",
+            "dropout or dropout-bearing compound perturbations. It does not replace",
+            "real measurement calibration, full-wave airframe validation, or the true",
+            "CST near-field monitor gate.",
             "",
             f"Zero-valued channels are treated as missing with tolerance `{zero_tolerance:g}`.",
             "",
@@ -704,7 +708,15 @@ def main() -> None:
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-    write_readme(out_dir, summary, by_strategy, by_case, inputs, args.zero_tolerance)
+    regenerate_command = (
+        "python code\\run_cst_recognition_dropout_mitigation.py "
+        f"--layout-candidates {','.join(candidate_names)} "
+        f"--held-out-families {','.join(held_out_families)} "
+        f"--strategies {','.join(strategies)} "
+        f"--seeds {','.join(str(seed) for seed in seeds)} "
+        f"--out-dir {rel(out_dir)}"
+    )
+    write_readme(out_dir, summary, by_strategy, by_case, inputs, args.zero_tolerance, regenerate_command)
     print(f"dropout mitigation recognition check complete: {rel(out_dir)}")
 
 

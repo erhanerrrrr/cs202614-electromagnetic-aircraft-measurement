@@ -703,8 +703,61 @@ Next G5 actions:
 1. Use frequency/sensor median imputation as the default candidate when writing
    the missing-channel robustness section, while reporting zero-fill as the
    conservative baseline.
-2. If time allows, broaden this mitigation comparison to all five G2 layouts
-   and to compound perturbations that include dropout.
+2. See Section 19 for the completed five-layout and dropout-bearing compound
+   perturbation extension.
 3. Keep the boundary explicit: this is still internal stochastic dropout
    evidence, not real instrument calibration, arbitrary sensor-failure
    coverage, or full-wave complex-airframe validation.
+
+## 19. 2026-06-03 G5 dropout mitigation extended update
+
+The mitigation comparison has now been broadened with the same runner:
+
+```powershell
+python code\run_cst_recognition_dropout_mitigation.py --layout-candidates full_grid_162,geometric_farthest_32,fibonacci_snap_120,task_driven_32,task_driven_48 --held-out-families dropout,combined --out-dir data\recognition_stress_tests\level2_dropout_mitigation_extended
+```
+
+It writes `data/recognition_stress_tests/level2_dropout_mitigation_extended/`.
+
+Method:
+
+- Test all five G2 representative layouts: `full_grid_162`,
+  `geometric_farthest_32`, `fibonacci_snap_120`, `task_driven_32`, and
+  `task_driven_48`.
+- Withhold both `dropout` and `combined` families from augmentation.
+- Repeat seeds `202614`, `202615`, and `202616`.
+- Compare zero-fill, missing-mask features, frequency/sensor median imputation,
+  and imputation plus mask features.
+
+Current result:
+
+- Five layouts, two held-out families, three dropout-bearing stress cases, four
+  strategies, and three seeds give 180 rows.
+- All 180 rows pass the `0.85` threshold.
+- Zero-fill remains a workable conservative baseline: mean accuracy about
+  `0.991`, minimum accuracy about `0.867`.
+- Mask-only features are not dependable as the primary fix: mean accuracy is
+  about `0.993`, but the minimum is still `0.867`, and one
+  `full_grid_162/dropout_25pct` aggregate is about `-0.044` below zero-fill.
+- Frequency/sensor median imputation and imputation plus mask both reach
+  mean/min accuracy `1.000`.
+- The dropout-bearing compound case `noise10_phase15_dropout10` is recovered
+  to accuracy `1.000` across the tested layouts and strategies.
+
+Engineering interpretation: the simplest reportable G5 preprocessing candidate
+is frequency/sensor median imputation without extra mask features. Zero-fill
+should remain the conservative baseline, while mask-only features should not be
+presented as the preferred mitigation.
+
+Next G5 actions:
+
+1. In the report/PPT, describe imputation as a missing-channel preprocessing
+   candidate validated on internal Level 2 CST-derived stochastic dropout and
+   dropout-bearing compound perturbations.
+2. If time allows, test correlated sensor dropout, polarization-pair dropout,
+   and contiguous angular-sector dropout rather than only independent random
+   channel dropout.
+3. Rerun the same mitigation check after true CST monitor data or full-wave
+   airframe data becomes available.
+4. Keep G3 separate: this does not close the true near-field monitor gate or
+   the physical/vector reduced-layout reconstruction proof.

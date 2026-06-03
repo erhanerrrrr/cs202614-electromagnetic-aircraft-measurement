@@ -84,6 +84,7 @@
 57. G5 未见误差族外推验证：`code/run_cst_recognition_leave_one_family_out.py` 输出 `data/recognition_stress_tests/level2_leave_one_family_out/`，逐类留出 `noise/phase/dropout/combined` 扰动族后再测试；当前 35 行全部高于 `0.85`，但 held-out `dropout_25pct` 在 `geometric_farthest_32` 与 `task_driven_48` 上约为 `0.867`，说明缺测/掉通道仍是最窄裕度。
 58. G5 多随机种子稳定性验证：`code/run_cst_recognition_seed_stability.py` 输出 `data/recognition_stress_tests/level2_seed_stability/`，对 held-out `noise/dropout` 做 3 个随机种子重复；当前 60 行全部高于 `0.85`，最窄项仍是 `geometric_farthest_32/dropout/dropout_25pct`，mean accuracy 约 `0.933`、min accuracy 约 `0.867`、裁剪后近似 95% CI 为 `[0.768, 1.000]`。
 59. G5 缺测通道缓解验证：`code/run_cst_recognition_dropout_mitigation.py` 输出 `data/recognition_stress_tests/level2_dropout_mitigation/`，在两个最紧 dropout 布局上比较 zero-fill、mask 特征和 frequency/sensor median imputation；当前 48 行全部高于 `0.85`，插补策略将 `geometric_farthest_32/dropout_25pct` 聚合结果从 mean `0.956`、min `0.867` 提升到 mean/min `1.000`。
+60. G5 缺测通道扩展验证：同一脚本输出 `data/recognition_stress_tests/level2_dropout_mitigation_extended/`，把比较扩展到 5 个 G2 代表布局和 held-out `dropout/combined` 两类含缺测压力；当前 180 行全部高于 `0.85`，zero-fill 最小 `0.867`，mask-only 最小 `0.867` 且个别聚合行会弱于 zero-fill，frequency/sensor median imputation 与 imputation+mask 均达到 mean/min `1.000`。
 
 ## 如何阅读本项目
 
@@ -116,7 +117,7 @@
 25. 若要判断是否能交付，查看 `outputs/completion_audit/completion_audit.md`。
 26. 若要推进真近场 monitor 复跑，先看 `docs/true_nearfield_monitor_workflow.md`，再运行 `python code\run_true_nearfield_gate.py` 查看 `data/cst_true_nearfield_workpack/gate_report/`。
 27. 若要判断 CST 真 monitor 回填后下一步，运行 `python code\run_true_nearfield_workflow_decision.py`，再看 `outputs/cst_true_nearfield_workflow_decision/true_nearfield_workflow_decision.md`。
-28. 若要查看 G5 分类鲁棒性边界、增强训练修复效果、未见误差族外推能力、种子稳定性和缺测缓解策略，依次看 `data/recognition_stress_tests/level2_robustness/`、`data/recognition_stress_tests/level2_augmented_robustness/`、`data/recognition_stress_tests/level2_leave_one_family_out/`、`data/recognition_stress_tests/level2_seed_stability/` 与 `data/recognition_stress_tests/level2_dropout_mitigation/`。
+28. 若要查看 G5 分类鲁棒性边界、增强训练修复效果、未见误差族外推能力、种子稳定性和缺测缓解策略，依次看 `data/recognition_stress_tests/level2_robustness/`、`data/recognition_stress_tests/level2_augmented_robustness/`、`data/recognition_stress_tests/level2_leave_one_family_out/`、`data/recognition_stress_tests/level2_seed_stability/`、`data/recognition_stress_tests/level2_dropout_mitigation/` 与 `data/recognition_stress_tests/level2_dropout_mitigation_extended/`。
 
 ## Baseline 运行方式
 
@@ -743,4 +744,5 @@ python code\run_cst_recognition_ablation.py --nearfield outputs\synthetic_cst_da
 14. 运行 `python code\run_cst_recognition_augmented_stress_test.py` 刷新 `data/recognition_stress_tests/level2_augmented_robustness/`；若扰动 profile、随机种子或 Level 2 样本库变化，应同时复跑 clean-train 与 augmented 两个脚本，并在最终报告中区分“已知扰动增强有效”和“未知误差仍需外推验证”。
 15. 运行 `python code\run_cst_recognition_leave_one_family_out.py` 刷新 `data/recognition_stress_tests/level2_leave_one_family_out/`；若 held-out dropout 仍是最窄裕度，下一步可做多随机种子置信区间、dropout-aware 特征或传感器缺测插补策略。
 16. 运行 `python code\run_cst_recognition_seed_stability.py` 刷新 `data/recognition_stress_tests/level2_seed_stability/`；若 `geometric_farthest_32/dropout_25pct` 的下界仍偏窄，下一步优先做 dropout-aware 特征、缺测插补或测点冗余备份策略。
-17. 运行 `python code\run_cst_recognition_dropout_mitigation.py` 刷新 `data/recognition_stress_tests/level2_dropout_mitigation/`；若插补仍优于 zero-fill，可在 G5 报告中将 frequency/sensor median imputation 写成缺测通道预处理候选，并继续用真实 monitor 或 full-wave airframe 数据复核。
+17. 运行 `python code\run_cst_recognition_dropout_mitigation.py` 刷新 `data/recognition_stress_tests/level2_dropout_mitigation/`；若插补仍优于 zero-fill，可在 G5 报告中将 frequency/sensor median imputation 写成缺测通道预处理候选。
+18. 若要复核五布局和含缺测组合扰动，运行 `python code\run_cst_recognition_dropout_mitigation.py --layout-candidates full_grid_162,geometric_farthest_32,fibonacci_snap_120,task_driven_32,task_driven_48 --held-out-families dropout,combined --out-dir data\recognition_stress_tests\level2_dropout_mitigation_extended`；下一步仍应使用真实 monitor、相关传感器缺测或 full-wave airframe 数据复核该预处理策略。

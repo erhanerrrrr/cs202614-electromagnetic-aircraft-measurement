@@ -13,6 +13,7 @@ classification/recognition branch. Large CST near-field source tables remain in
 | `level2_leave_one_family_out/` | Leave-one-stress-family-out generalization check for unseen noise/phase/dropout/combined families. |
 | `level2_seed_stability/` | Repeated-seed stability check for focused leave-one-family noise/dropout perturbations. |
 | `level2_dropout_mitigation/` | Focused missing-channel strategy comparison for the tightest held-out dropout layouts. |
+| `level2_dropout_mitigation_extended/` | Extended missing-channel strategy comparison across all five G2 layouts and dropout-bearing stress families. |
 
 ## Regenerate
 
@@ -22,6 +23,7 @@ python code\run_cst_recognition_augmented_stress_test.py
 python code\run_cst_recognition_leave_one_family_out.py
 python code\run_cst_recognition_seed_stability.py
 python code\run_cst_recognition_dropout_mitigation.py
+python code\run_cst_recognition_dropout_mitigation.py --layout-candidates full_grid_162,geometric_farthest_32,fibonacci_snap_120,task_driven_32,task_driven_48 --held-out-families dropout,combined --out-dir data\recognition_stress_tests\level2_dropout_mitigation_extended
 ```
 
 `level2_robustness/` should be read first because it exposes the clean-train
@@ -40,6 +42,12 @@ frequency/sensor median imputation on the two tightest layouts. Current result:
 all 48 rows pass `0.85`; mask features alone match zero-fill, while median
 imputation raises the tightest `geometric_farthest_32/dropout_25pct` aggregate
 from mean accuracy about `0.956` and minimum `0.867` to mean/min `1.000`.
+`level2_dropout_mitigation_extended/` broadens the same strategy comparison to
+all five G2 representative layouts and to held-out `dropout` plus `combined`
+families. Current result: all 180 rows pass `0.85`; zero-fill and mask-only
+both bottom at `0.867`, mask-only can be worse than zero-fill on one
+`full_grid_162/dropout_25pct` aggregate, and both frequency/sensor median
+imputation variants reach mean/min accuracy `1.000`.
 
 ## Boundary
 
@@ -54,4 +62,6 @@ real instrument calibration. The seed-stability result reduces dependence on a
 single random split/draw, but it is still small-sample internal evidence. The
 dropout-mitigation result is a candidate preprocessing/calibration step for
 missing channels, not proof that arbitrary sensor failures or real instruments
-are covered.
+are covered. The extended mitigation result makes imputation-only the cleaner
+current candidate than mask-only features, but it is still bounded to internal
+stochastic/dropout-bearing perturbations.

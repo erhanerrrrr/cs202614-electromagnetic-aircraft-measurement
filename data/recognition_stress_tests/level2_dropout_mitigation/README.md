@@ -2,13 +2,15 @@
 
 This directory stores the focused G5 follow-up for missing-channel
 recognition robustness. It keeps the leave-one-stress-family-out
-protocol, focuses on held-out dropout cases, and compares zero-fill
-against lightweight mask-feature and imputation strategies.
+protocol, focuses on held-out dropout or dropout-bearing cases, and
+compares zero-fill against lightweight mask-feature and imputation
+strategies.
 
 ## Current Result
 
 - Seeds: 202614, 202615, 202616.
 - Layouts tested: geometric_farthest_32, task_driven_48.
+- Held-out families tested: dropout.
 - Strategies tested: zero_fill, mask_features, freq_sensor_median_impute, freq_sensor_median_impute_mask.
 - Stress cases tested: dropout_10pct, dropout_25pct.
 - Total rows: 48.
@@ -47,9 +49,9 @@ against lightweight mask-feature and imputation strategies.
 
 | File | Purpose |
 |---|---|
-| `recognition_dropout_mitigation_metrics.csv` | Per-seed/per-layout/per-strategy dropout accuracy and macro-F1. |
+| `recognition_dropout_mitigation_metrics.csv` | Per-seed/per-layout/per-strategy stress accuracy and macro-F1. |
 | `recognition_dropout_mitigation_by_strategy.csv` | Aggregate comparison of zero-fill, mask features, and imputation. |
-| `recognition_dropout_mitigation_by_case.csv` | Aggregate comparison by layout, dropout case, and strategy. |
+| `recognition_dropout_mitigation_by_case.csv` | Aggregate comparison by layout, stress case, and strategy. |
 | `recognition_dropout_mitigation_by_layout.csv` | Aggregate comparison by layout and strategy. |
 | `recognition_dropout_mitigation_summary.json` | Machine-readable summary, inputs, strategy definitions, and aggregate tables. |
 | `README.md` | Human-facing interpretation and claim boundary. |
@@ -57,15 +59,16 @@ against lightweight mask-feature and imputation strategies.
 ## Regenerate
 
 ```powershell
-python code\run_cst_recognition_dropout_mitigation.py
+python code\run_cst_recognition_dropout_mitigation.py --layout-candidates geometric_farthest_32,task_driven_48 --held-out-families dropout --strategies zero_fill,mask_features,freq_sensor_median_impute,freq_sensor_median_impute_mask --seeds 202614,202615,202616 --out-dir data\recognition_stress_tests\level2_dropout_mitigation
 ```
 
 ## Boundary
 
 This is a focused Level 2 CST-derived element-library check. It compares
 test-time missing-channel handling strategies under internal stochastic
-dropout perturbations. It does not replace real measurement calibration,
-full-wave airframe validation, or the true CST near-field monitor gate.
+dropout or dropout-bearing compound perturbations. It does not replace
+real measurement calibration, full-wave airframe validation, or the true
+CST near-field monitor gate.
 
 Zero-valued channels are treated as missing with tolerance `1e-30`.
 
