@@ -1,7 +1,7 @@
 ﻿# 最终提交材料清单与汇报叙事大纲
 
-版本：v0.4  
-用途：把报告、PPT、视频、代码、CST 工程和数据证据统一到最终提交包视角。当前 Level 1 required、Level 2 full48 与简化结构遮挡对照证据已接入，正式报告 DOCX/PDF、答辩 PPTX/PDF、演示视频 MP4 和最终 zip 已导出。当前 MP4 为 PowerPoint 自动计时静音版；正式报送前建议人工完整播放，并按竞赛要求决定是否替换为带讲解录屏版本。
+版本：v0.5
+用途：把报告、PPT、视频、代码、CST 工程和数据证据统一到最终提交包视角。当前 Level 1 required、Level 2 full48、简化结构遮挡对照与复合仪器误差/结构缺测压力测试证据已接入，正式报告 DOCX/PDF、答辩 PPTX/PDF、演示视频 MP4 和最终 zip 已导出。当前 MP4 为 PowerPoint 自动计时静音版；正式报送前建议人工完整播放，并按竞赛要求决定是否替换为带讲解录屏版本。
 
 ## 1. 最终提交包结构
 
@@ -60,6 +60,7 @@ CS-202614_submission/
       report_package/
       master_dashboard/
       cst_structure_comparison/
+      recognition_stress_tests/
       problem_requirements/
   07_appendix/
     literature_matrix.md
@@ -90,9 +91,9 @@ outputs/final_archive/
 | 4 传感布局 | 当前采用 2π 半球面、12m x 10m x 8m 包络 | `outputs/cst_templates/sensor_layout...` | CST 中半球面测点布局截图或测点表证据 |
 | 5 场重建 | 等效源模型、Tikhonov、NF-FF、角域校准 | `outputs/cst_reconstruction/L1_*`、`outputs/cst_level1_reconstruction_batch`、`outputs/cst_level1_angular_calibration` | 写清 Level 1 required 已完成、角域校准高一致性，以及 full-wave 近场模型边界 |
 | 6 少测点优化 | 100/75/50/25% 对比、λ 扫描 | `outputs/reconstruction_robustness` | 标注为算法鲁棒性参考，不外推为 Level 1 高精度证明 |
-| 7 特征识别 | 空-频-极化特征、SVM/RF、混淆矩阵、结构遮挡跨域识别 | `outputs/cst_recognition_level2`、`outputs/cst_recognition_level2_ablation`、`outputs/cst_structure_comparison` | 写清 Level 2 full48 accuracy=1.000、结构遮挡 cross-domain accuracy=1.000 与非 full-wave 边界 |
+| 7 特征识别 | 空-频-极化特征、SVM/RF、混淆矩阵、结构遮挡跨域识别、复合扰动插补缓解 | `outputs/cst_recognition_level2`、`outputs/cst_recognition_level2_ablation`、`outputs/cst_structure_comparison`、`data/recognition_stress_tests/level2_compound_stress` | 写清 Level 2 full48 accuracy=1.000、结构遮挡 cross-domain accuracy=1.000、zero-fill/mask 低于 0.85 与 frequency/sensor median imputation 最小 accuracy=0.867 |
 | 8 CST 测试设计 | 标准源、多源、简化载体、扰动 | `docs/phase_03...`、`outputs/cst_level2_superposed_export`、`outputs/cst_structure_comparison` | CST 工程参数表、导出日志和简化结构对照图 |
-| 9 误差与鲁棒性 | 噪声、缺测、正则化、姿态扰动、结构遮挡 | 合成鲁棒性、Level 1 指标风险、结构遮挡对照 | CST 误差来源、solver-safe 导出边界、简化结构遮挡边界和 full-wave 增强方向 |
+| 9 误差与鲁棒性 | 噪声、缺测、正则化、姿态扰动、结构遮挡、复合仪器误差 | 合成鲁棒性、Level 1 指标风险、结构遮挡对照、复合压力测试 | CST 误差来源、solver-safe 导出边界、简化结构遮挡边界、zero-fill 失败边界、插补缓解策略和 full-wave 增强方向 |
 | 10 创新点 | 受限域等效源、测点优化、联合指纹 | 已有草稿 | 与当前真实证据和保守风险口径绑定 |
 | 11 复现说明 | 代码、命令、数据字段 | README + scripts | 最终路径和版本锁定 |
 
@@ -111,7 +112,7 @@ outputs/final_archive/
 | 7 | 三维场重建算法 | 等效源公式、传播矩阵、正则化 |
 | 8 | 少测点优化结果 | 测点数-NMSE/相关系数曲线 |
 | 9 | Level 2 多源识别 | 多源配置表、混淆矩阵、accuracy/F1 |
-| 10 | 结构遮挡与鲁棒性 | 简化结构遮挡方向图、mean/P95/max shadow、cross-domain accuracy |
+| 10 | 结构遮挡与复合扰动边界 | 简化结构遮挡方向图、mean/P95/max shadow、cross-domain accuracy、compound stress strategy table |
 | 11 | 创新点与工程可行性 | 4 个创新点 + 数据接口闭环 |
 | 12 | 总结与提交物 | 最终指标、代码/CST/报告/视频清单 |
 
@@ -125,9 +126,9 @@ outputs/final_archive/
 | 0:20-0:50 | 传感布局图 | 半球面 162 测点覆盖 12m x 10m x 8m |
 | 0:50-1:30 | CST 标准源截图 + 角域/重建对比 | 展示 FarfieldPlot-derived 角域校准与 CST 真值高度一致，同时说明 full-wave 近场等效源反演边界 |
 | 1:30-2:10 | 鲁棒性/测点曲线 | 说明 75% 测点稳健、50% 为压缩候选，但标注为算法参考结果 |
-| 2:10-2:50 | Level 2 多源识别混淆矩阵 | 展示 full48 accuracy=1.000，并说明 CST-derived element-library 边界 |
-| 2:50-3:20 | 简化结构遮挡方向图对照 | 展示 mean shadow=3.06 dB、P95 shadow=6.63 dB、cross-domain accuracy=1.000，并说明非 full-wave airframe |
-| 3:20-3:45 | 代码和复现命令 | 展示校验、重建、识别、结构对照、scorecard 命令 |
+| 2:10-2:50 | Level 2 多源识别混淆矩阵 | 展示 full48 accuracy=1.000，并说明 CST-derived element-library 边界，同时引出复合扰动并非 clean 数据结论 |
+| 2:50-3:20 | 简化结构遮挡与复合扰动策略对照 | 展示 mean shadow=3.06 dB、P95 shadow=6.63 dB、cross-domain accuracy=1.000；补充 zero-fill/mask 最差 0.733、median imputation 最小 0.867，并说明非 full-wave airframe/实测标定 |
+| 3:20-3:45 | 代码和复现命令 | 展示校验、重建、识别、结构对照、compound stress、scorecard 命令 |
 | 3:45-4:10 | 总结页 | 对应评分项总结和最终提交物 |
 
 ## 5. 三人最终冲刺分工
@@ -151,10 +152,11 @@ Level 1 标准源阶段的详细日内分工和验收命令见 `docs/level1_cst_
 4. `code/merge_cst_level2_exports.py --strict` 通过，48/48 样本完整。
 5. `code/run_cst_recognition.py` 在 Level 2 full48 数据上 accuracy >= 0.85，并明确其 CST-derived element-library 证据性质。
 6. `code/run_cst_structure_comparison.py` 已生成简化结构遮挡对照，并在报告/PPT 中明确它不是 full-wave airframe scattering。
-7. `code/build_scorecard.py` 重新运行后，客观项不再只依赖 synthetic/demo 证据。
-8. 报告、PPT、视频中的 demo/synthetic 数字都已替换或明确标注为算法接口/鲁棒性参考。
-9. 正式打包前需确认 `submission/01_report/solution_report.pdf`、`solution_report.docx`、`submission/02_presentation/defense_slides.pptx`、`defense_slides.pdf` 和 `submission/03_video/demo_video.mp4` 均已导出并复核；当前 MP4 已生成但为静音自动计时版，需人工播放确认。
-10. `code/build_completion_audit.py` 和 `code/build_master_dashboard.py` 重跑后确认 `completion_proven=true`。
+7. `code/run_cst_recognition_compound_stress.py` 已生成复合仪器误差/结构缺测压力测试，并在报告/PPT 中明确 raw zero-fill/mask 可低于 0.85，frequency/sensor median imputation 是当前缓解候选。
+8. `code/build_scorecard.py` 重新运行后，客观项不再只依赖 synthetic/demo 证据。
+9. 报告、PPT、视频中的 demo/synthetic 数字都已替换或明确标注为算法接口/鲁棒性参考。
+10. 正式打包前需确认 `submission/01_report/solution_report.pdf`、`solution_report.docx`、`submission/02_presentation/defense_slides.pptx`、`defense_slides.pdf` 和 `submission/03_video/demo_video.mp4` 均已导出并复核；当前 MP4 已生成但为静音自动计时版，需人工播放确认。
+11. `code/build_completion_audit.py` 和 `code/build_master_dashboard.py` 重跑后确认 `completion_proven=true`。
 
 `outputs/synthetic_cst_level1_dataset` 可作为代码接口验证附录，但不能计入真实 CST 结果门槛。
 
@@ -162,5 +164,6 @@ Level 1 标准源阶段的详细日内分工和验收命令见 `docs/level1_cst_
 
 1. 人工完整播放 `submission/03_video/demo_video.mp4`，确认自动计时静音版是否满足提交展示要求。
 2. 若需要讲解录屏，按同一 PPT 和分镜替换为带人工讲解版本，并保持 Level 1/Level 2 边界口径一致。
-3. 如替换视频或修改提交信息，重跑 scorecard、problem requirements、submission index、completion audit、master dashboard、submission draft 和 `build_final_archive.py`。
-4. 整理最终压缩包命名、报名表和人工提交信息。
+3. 重跑 scorecard、report package 和 presentation package，确认复合压力测试口径进入评分表、报告替换清单、PPT 讲稿和视频分镜。
+4. 如替换视频或修改提交信息，重跑 problem requirements、submission index、completion audit、master dashboard、submission draft 和 `build_final_archive.py`。
+5. 整理最终压缩包命名、报名表和人工提交信息。

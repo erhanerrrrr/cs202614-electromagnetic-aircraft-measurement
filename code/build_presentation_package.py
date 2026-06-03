@@ -200,16 +200,16 @@ def slide_storyboard(figures: pd.DataFrame) -> pd.DataFrame:
             "Fig-06",
             "confusion_matrix",
             "强调识别不是单张方向图，而是空间、频谱、极化、等效源联合指纹。",
-            "Level 2 full48 accuracy=1.000 已满足 85% 指标；需说明 CST-derived element-library 边界。",
+            "Level 2 full48 accuracy=1.000 已满足 85% 指标；需说明 CST-derived element-library 边界，并补充复合仪器误差/缺测压力测试的插补缓解口径。",
         ),
         (
             10,
-            "结构遮挡对照与边界",
-            "展示简化载体遮挡前后方向图变化、遮挡 dB 和 cross-domain 识别结果。",
+            "结构遮挡与复合扰动边界",
+            "展示简化载体遮挡前后方向图变化、遮挡 dB、cross-domain 识别结果，以及复合仪器误差/缺测下的策略边界。",
             "Fig-09",
             "structure_comparison_chart",
-            "说明该结果是 simplified aircraft occlusion transfer，用于约束 element-library 证据边界；full-wave airframe 仍是增强项。",
-            "引用 mean/P95/max shadow、方向图相关系数和 cross-domain accuracy，并写清非 full-wave 边界。",
+            "说明结构结果是 simplified aircraft occlusion transfer；复合压力测试显示原始 zero-fill/mask 在 severe dropout+bias 下可低于 0.85，frequency/sensor median imputation 是当前通过 0.85 的缓解候选。",
+            "引用 mean/P95/max shadow、cross-domain accuracy、compound worst accuracy=0.733 和 imputation min accuracy=0.867，并写清二者都不是 full-wave airframe 或实测仪器校准结论。",
         ),
         (
             11,
@@ -289,18 +289,18 @@ def video_storyboard(slides: pd.DataFrame) -> pd.DataFrame:
         {
             "time_code": "2:10-2:50",
             "screen": "Level 2 多源识别混淆矩阵",
-            "narration": "识别模块融合空间、频谱和极化特征，当前 Level 2 full48 准确率达到 1.000，超过 85% 指标。",
+            "narration": "识别模块融合空间、频谱和极化特征，当前 Level 2 full48 准确率达到 1.000，超过 85% 指标；该结论适用于 CST-derived element-library 数据。",
             "linked_slide": "9",
             "current_asset": "outputs/cst_recognition_level2/cst_recognition_confusion_matrix.png",
-            "replacement_needed": "补充 CST-derived element-library 边界说明。",
+            "replacement_needed": "补充 CST-derived element-library 边界说明，并衔接下一段复合压力测试。",
         },
         {
             "time_code": "2:50-3:20",
-            "screen": "简化结构遮挡方向图对照",
-            "narration": "进一步把简化机身、机翼和尾翼遮挡迁移施加到 Level 2 数据上，量化安装效应，并检验跨域识别稳健性。",
+            "screen": "简化结构遮挡与复合扰动边界",
+            "narration": "进一步把简化机身、机翼和尾翼遮挡迁移施加到 Level 2 数据上，量化安装效应；同时说明 severe 仪器偏差叠加结构缺测会打穿原始策略，需要用频点-测点中位数插补保护识别指标。",
             "linked_slide": "10",
             "current_asset": "outputs/cst_structure_comparison/plots/L2_comm_pair_000_1200MHz_structure_compare.png",
-            "replacement_needed": "强调它是 bounded structure evidence，不是 full-wave airframe scattering。",
+            "replacement_needed": "强调结构对照不是 full-wave airframe scattering，复合压力测试不是实测校准结论；表格引用 data/recognition_stress_tests/level2_compound_stress/recognition_compound_stress_by_strategy.csv。",
         },
         {
             "time_code": "3:20-3:45",
@@ -407,7 +407,7 @@ This folder prepares the defense slide deck and demo video. Current state: {pres
 
 ## Finalization Rule
 
-Do not mark `submission/02_presentation/defense_slides.pptx` or `submission/03_video/demo_video.mp4` as final until the deck/video match the final report, Level 1 angular/near-field model-boundary wording, and Level 2 simplified structure-boundary caveats.
+Do not mark `submission/02_presentation/defense_slides.pptx` or `submission/03_video/demo_video.mp4` as final until the deck/video match the final report, Level 1 angular/near-field model-boundary wording, Level 2 simplified structure-boundary caveats, and the compound instrument/dropout stress mitigation caveat.
 After export, rerun the completion audit; `completion_proven=true` is the final submit gate, not a prerequisite for drafting the export.
 """
     (out_dir / "README_presentation_package.md").write_text(content, encoding="utf-8")

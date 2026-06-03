@@ -76,6 +76,13 @@ def collect_metrics() -> dict[str, Any]:
     level1_angular_summary = read_json("outputs/cst_level1_angular_calibration/angular_calibration_summary.json")
     level1_angular_results = read_csv("outputs/cst_level1_angular_calibration/angular_calibration_batch_results.csv")
     structure_summary = read_json("outputs/cst_structure_comparison/structure_comparison_summary.json")
+    compound_summary = read_json("data/recognition_stress_tests/level2_compound_stress/recognition_compound_stress_summary.json")
+    compound_core = compound_summary.get("summary", {})
+    compound_core = compound_core if isinstance(compound_core, dict) else {}
+    compound_best = compound_core.get("best_overall_strategy", {})
+    compound_best = compound_best if isinstance(compound_best, dict) else {}
+    compound_worst = compound_core.get("worst_row", {})
+    compound_worst = compound_worst if isinstance(compound_worst, dict) else {}
     level1_workpack_summary = read_json("outputs/cst_level1_workpack/level1_workpack_summary.json")
     level2_workpack_summary = read_json("outputs/cst_level2_workpack/level2_workpack_summary.json")
     cst_dashboard_summary = read_json("outputs/cst_execution_dashboard/cst_execution_dashboard_summary.json")
@@ -108,6 +115,16 @@ def collect_metrics() -> dict[str, Any]:
         "structure_cross_domain_accuracy": structure_summary.get("cross_domain_accuracy", ""),
         "structure_best_cross_domain_model": structure_summary.get("best_cross_domain_model", ""),
         "structure_is_full_wave_airframe": structure_summary.get("is_full_wave_cst_airframe", False),
+        "compound_stress_rows": compound_core.get("row_count", 0),
+        "compound_all_rows_pass_085": compound_core.get("all_rows_pass_085", ""),
+        "compound_worst_accuracy": compound_worst.get("best_accuracy", ""),
+        "compound_worst_candidate": compound_worst.get("candidate", ""),
+        "compound_worst_strategy": compound_worst.get("strategy", ""),
+        "compound_worst_case": compound_worst.get("stress_case", ""),
+        "compound_best_strategy": compound_best.get("strategy", ""),
+        "compound_best_mean_accuracy": compound_best.get("mean_accuracy", ""),
+        "compound_best_min_accuracy": compound_best.get("min_accuracy", ""),
+        "compound_best_delta_vs_zero_fill": compound_best.get("mean_delta_vs_zero_fill", ""),
         "level1_workpack_cases": level1_workpack_summary.get("case_count", 0),
         "level1_workpack_sensor_count": level1_workpack_summary.get("sensor_count", 0),
         "level1_measurement_surface": level1_workpack_summary.get("selected_measurement_surface", "2pi_upper_hemisphere"),
@@ -307,17 +324,21 @@ def build_score_items(metrics: dict[str, Any]) -> list[ScoreItem]:
         ScoreItem(
             item="空间-频谱特征辨识准确率 >= 85%",
             points=20,
-            status="Ready",
+            status="Ready with compound-stress mitigation caveat",
             current_status=(
                 f"Level 2 48 样本 CST-derived 数据已完成；识别样本 {metrics.get('level2_recognition_samples', 0)} 个、"
                 f"特征 {metrics.get('level2_recognition_features', 0)} 维，accuracy={metrics.get('level2_recognition_accuracy', '')}，"
                 f"消融最低 accuracy={metrics.get('level2_ablation_min_accuracy', '')}；"
                 f"简化结构 cross-domain accuracy={metrics.get('structure_cross_domain_accuracy', '')}，"
-                f"平均遮挡={metrics.get('structure_mean_shadow_db', 0.0):.2f} dB。"
+                f"平均遮挡={metrics.get('structure_mean_shadow_db', 0.0):.2f} dB；"
+                f"复合仪器误差+结构缺测 {metrics.get('compound_stress_rows', 0)} 行，"
+                f"原始最差 accuracy={metrics.get('compound_worst_accuracy', '')}，"
+                f"最佳缓解策略={metrics.get('compound_best_strategy', '')}，"
+                f"min accuracy={metrics.get('compound_best_min_accuracy', '')}。"
             ),
-            evidence="outputs/cst_level2_merge_report/level2_merge_summary.json; outputs/cst_recognition_level2; outputs/cst_recognition_level2_ablation; outputs/cst_structure_comparison",
-            missing_for_final="当前证据为 element-library 线性叠加 + 简化结构遮挡迁移；尚不是复杂载体 full-wave airframe 结构散射解。",
-            next_action="将混淆矩阵、消融曲线和简化结构对照写入报告；full-wave airframe 作为时间允许时的增强项。",
+            evidence="outputs/cst_level2_merge_report/level2_merge_summary.json; outputs/cst_recognition_level2; outputs/cst_recognition_level2_ablation; outputs/cst_structure_comparison; data/recognition_stress_tests/level2_compound_stress",
+            missing_for_final="当前证据为 element-library 线性叠加 + 简化结构遮挡迁移 + 仿真复合仪器/缺测压力测试；尚不是复杂载体 full-wave airframe 结构散射解或真实仪器校准结论。",
+            next_action="将混淆矩阵、消融曲线、简化结构对照和复合误差插补缓解结论写入报告；full-wave airframe 与真实仪器校准作为后续增强项。",
         ),
     ]
 
@@ -372,6 +393,14 @@ def write_markdown(items: list[ScoreItem], metrics: dict[str, Any], out_dir: Pat
         ("Level 2 结构 cross-domain accuracy", metrics.get("structure_cross_domain_accuracy", "")),
         ("Level 2 结构 cross-domain model", metrics.get("structure_best_cross_domain_model", "")),
         ("Level 2 结构对照是否 full-wave airframe", metrics.get("structure_is_full_wave_airframe", "")),
+        ("Level 2 复合压力测试行数", metrics.get("compound_stress_rows", "")),
+        ("Level 2 复合压力测试全行通过 0.85", metrics.get("compound_all_rows_pass_085", "")),
+        ("Level 2 复合压力测试原始最差 accuracy", metrics.get("compound_worst_accuracy", "")),
+        ("Level 2 复合压力测试原始最差策略", metrics.get("compound_worst_strategy", "")),
+        ("Level 2 复合压力测试原始最差场景", metrics.get("compound_worst_case", "")),
+        ("Level 2 复合压力测试最佳缓解策略", metrics.get("compound_best_strategy", "")),
+        ("Level 2 复合压力测试最佳策略最小 accuracy", metrics.get("compound_best_min_accuracy", "")),
+        ("Level 2 复合压力测试最佳策略平均提升", metrics.get("compound_best_delta_vs_zero_fill", "")),
         ("Level 1 真实重建完成数", metrics.get("level1_real_reconstruction_runs", "")),
         ("Level 1 真实重建最大 NMSE", metrics.get("level1_real_max_nmse", "")),
         ("Level 1 真实重建最小相关系数", metrics.get("level1_real_min_correlation", "")),
@@ -392,9 +421,9 @@ Generated from the current workspace. This scorecard is intentionally conservati
 ## Overall Status
 
 - Goal status: in progress.
-- Strongest current assets: literature matrix, CST data schema, Level 1 required CST exports/reconstruction, Level 2 48-sample CST-derived exports/recognition, manifests, merge audits, and robustness scans.
-- Critical gap: Level 1 equivalent-source reconstruction quality is weak, simplified structure/occlusion evidence is ready but not full-wave airframe scattering, and final report/PPT/video files are not generated.
-- Submission gap: final report, PPT, video/recording, CST screenshots/projects, and final packaged code are still pending.
+- Strongest current assets: literature matrix, CST data schema, Level 1 required CST exports/reconstruction, Level 2 48-sample CST-derived exports/recognition, simplified structure comparison, compound instrument/dropout stress test, manifests, merge audits, and robustness scans.
+- Critical gap: Level 1 equivalent-source reconstruction quality is weak, simplified structure/occlusion evidence is ready but not full-wave airframe scattering, and severe compound recognition stress needs the median-imputation mitigation caveat in report/PPT wording.
+- Submission gap: exported report/PPT/video/archive files exist, but they need review or regeneration after the latest G5 compound-stress wording update; administrative metadata and human playback review remain outside the code pipeline.
 
 ## Score Items
 
@@ -412,9 +441,10 @@ Generated from the current workspace. This scorecard is intentionally conservati
 
 1. Improve or explain the weak Level 1 solver-safe reconstruction metrics.
 2. Write the simplified airframe/occlusion comparison into the report and keep full-wave airframe scattering as an optional enhancement.
-3. Replace demo values in `docs/solution_report_draft.md` with the current Level 1/2 CST-derived evidence.
-4. Produce final report, PPT, video script, and code/package checklist.
-5. Rebuild completion audit and submission package after final artifacts are generated.
+3. Add the compound instrument/dropout stress boundary: raw zero-fill/mask can fall below 0.85, while frequency/sensor median imputation is the current mitigation candidate.
+4. Replace demo values in `docs/solution_report_draft.md` with the current Level 1/2 CST-derived evidence.
+5. Review or regenerate final report, PPT, video script, and code/package checklist with the compound-stress wording included.
+6. Rebuild completion audit and submission package after refreshed artifacts are accepted.
 """
     (out_dir / "scorecard.md").write_text(content, encoding="utf-8")
 

@@ -22,6 +22,7 @@ DEFAULT_LEVEL1_ANGULAR = ROOT / "outputs" / "cst_level1_angular_calibration" / "
 DEFAULT_LEVEL2_MERGE = ROOT / "outputs" / "cst_level2_merge_report" / "level2_merge_summary.json"
 DEFAULT_LEVEL2_RECOG = ROOT / "outputs" / "cst_recognition_level2" / "cst_recognition_metrics.json"
 DEFAULT_STRUCTURE_COMPARISON = ROOT / "outputs" / "cst_structure_comparison" / "structure_comparison_summary.json"
+DEFAULT_COMPOUND_STRESS = ROOT / "data" / "recognition_stress_tests" / "level2_compound_stress" / "recognition_compound_stress_summary.json"
 DEFAULT_OUT = ROOT / "outputs" / "report_package"
 FINAL_FILES = [
     ("final PDF", ROOT / "submission" / "01_report" / "solution_report.pdf"),
@@ -125,7 +126,7 @@ def section_status(headings: list[dict[str, object]], report_text: str) -> pd.Da
         has_unresolved_real_cst_gap = any(keyword in section_text for keyword in ["待补真实", "尚未导出", "Needs CST"])
         has_g5_risk = any(
             keyword in section_text
-            for keyword in ["Level 1 重建精度风险", "指标偏弱", "结构散射/遮挡", "CST-derived", "PDF/DOCX/PPTX/MP4"]
+            for keyword in ["Level 1 重建精度风险", "指标偏弱", "结构散射/遮挡", "CST-derived", "复合", "插补", "PDF/DOCX/PPTX/MP4"]
         )
         if "国内外发展调研" in title:
             readiness = "draft_ready"
@@ -255,6 +256,14 @@ def figure_manifest() -> pd.DataFrame:
             "status": "bounded_structure_ready",
             "replacement_needed": "说明该图是简化 aircraft occlusion transfer，不是 full-wave airframe scattering；用于约束 element-library 证据边界。",
         },
+        {
+            "figure_id": "Fig-10",
+            "caption": "Level 2 复合仪器误差与结构缺测压力测试策略对比",
+            "current_source": "data/recognition_stress_tests/level2_compound_stress/recognition_compound_stress_by_strategy.csv",
+            "report_section": "7. 空间-频谱-极化特征辨识；9. 误差、鲁棒性与工程可行性分析",
+            "status": "compound_stress_ready",
+            "replacement_needed": "用表格说明 severe compound stress 下 zero-fill/mask 存在低于 0.85 的失败行，frequency/sensor median imputation 是当前通过 0.85 的缓解策略；该证据仍是 CST-derived 仿真压力测试。",
+        },
     ]
     return pd.DataFrame(rows)
 
@@ -270,8 +279,15 @@ def replacement_todo(
     level2_recog: dict[str, object],
     level1_angular: dict[str, object],
     structure_summary: dict[str, object],
+    compound_summary: dict[str, object],
 ) -> pd.DataFrame:
     best_accuracy = nested_value(level2_recog, ("recognition", "best_accuracy"))
+    compound_core = compound_summary.get("summary", {})
+    compound_core = compound_core if isinstance(compound_core, dict) else {}
+    compound_best = compound_core.get("best_overall_strategy", {})
+    compound_best = compound_best if isinstance(compound_best, dict) else {}
+    compound_worst = compound_core.get("worst_row", {})
+    compound_worst = compound_worst if isinstance(compound_worst, dict) else {}
     final_ready, final_total, final_missing = final_file_state()
     best_model = nested_value(level2_recog, ("recognition", "best_model"))
     rows = [
@@ -305,18 +321,34 @@ def replacement_todo(
         },
         {
             "priority": 3,
-            "task": "把 Level 1/2 最新证据写入正式报告叙述",
-            "proof": "docs/solution_report_draft.md; outputs/report_package/report_section_status.csv",
-            "current_status": "solution_report_draft.md 已接入 Level 1 required 与 Level 2 full48；仍需正式排版、图表编号和 G5 风险口径复核",
+            "task": "写入 Level 2 复合仪器误差与结构缺测边界",
+            "proof": "data/recognition_stress_tests/level2_compound_stress/recognition_compound_stress_by_strategy.csv; data/recognition_stress_tests/level2_compound_stress/README.md",
+            "current_status": (
+                f"rows={compound_core.get('row_count', 'unknown')}; "
+                f"all_rows_pass_085={compound_core.get('all_rows_pass_085', 'unknown')}; "
+                f"worst={compound_worst.get('candidate', 'unknown')}/"
+                f"{compound_worst.get('strategy', 'unknown')}/"
+                f"{compound_worst.get('stress_case', 'unknown')} "
+                f"accuracy={compound_worst.get('best_accuracy', 'unknown')}; "
+                f"best_strategy={compound_best.get('strategy', 'unknown')} "
+                f"min_accuracy={compound_best.get('min_accuracy', 'unknown')} "
+                f"mean_delta_vs_zero_fill={compound_best.get('mean_delta_vs_zero_fill', 'unknown')}"
+            ),
         },
         {
             "priority": 4,
+            "task": "把 Level 1/2 最新证据写入正式报告叙述",
+            "proof": "docs/solution_report_draft.md; outputs/report_package/report_section_status.csv",
+            "current_status": "solution_report_draft.md 已接入 Level 1 required、Level 2 full48、结构对照和复合压力测试；仍需正式排版、图表编号和 G5 风险口径复核",
+        },
+        {
+            "priority": 5,
             "task": "导出最终 PDF/DOCX/PPTX/MP4",
             "proof": "submission/01_report/solution_report.pdf; submission/01_report/solution_report.docx; submission/02_presentation/defense_slides.pptx; submission/03_video/demo_video.mp4",
             "current_status": f"artifact_count={submission.get('artifact_count', 'unknown')}; final_files_ready={final_ready}/{final_total}; missing={final_missing}",
         },
         {
-            "priority": 5,
+            "priority": 6,
             "task": "重跑最终审计链并确认 completion_proven",
             "proof": "outputs/completion_audit/completion_audit_summary.json; outputs/master_dashboard/master_dashboard_summary.json",
             "current_status": (
@@ -378,8 +410,9 @@ Do not mark `submission/01_report/solution_report.pdf` or `solution_report.docx`
 1. Level 1 required CST cases are either improved or their metric risk is explicitly bounded.
 2. Level 1 angular calibration is described as FarfieldPlot-derived angular consistency, not full-wave near-field monitor proof.
 3. Level 2 recognition evidence is described with the correct CST-derived structure-boundary caveat, including the simplified structure/occlusion comparison and its non-full-wave limitation.
-4. Report figures and tables match the latest G5 audit state.
-5. The exported DOCX/PDF are visually checked and the final completion audit is rerun.
+4. Level 2 compound instrument/dropout stress is described honestly: raw zero-fill/mask can fail 0.85, while frequency/sensor median imputation is the current mitigation candidate.
+5. Report figures and tables match the latest G5 audit state.
+6. The exported DOCX/PDF are visually checked and the final completion audit is rerun.
 """
     (out_dir / "README_report_package.md").write_text(content, encoding="utf-8")
 
@@ -417,6 +450,7 @@ def main() -> None:
     level2_merge = read_json(DEFAULT_LEVEL2_MERGE)
     level2_recog = read_json(DEFAULT_LEVEL2_RECOG)
     structure_summary = read_json(DEFAULT_STRUCTURE_COMPARISON)
+    compound_summary = read_json(DEFAULT_COMPOUND_STRESS)
     todo_df = replacement_todo(
         scorecard,
         master,
@@ -428,6 +462,7 @@ def main() -> None:
         level2_recog,
         level1_angular,
         structure_summary,
+        compound_summary,
     )
 
     section_df.to_csv(out_dir / "report_section_status.csv", index=False, encoding="utf-8-sig")
@@ -469,6 +504,11 @@ def main() -> None:
         "structure_p95_shadow_db": structure_summary.get("p95_shadow_db", "unknown"),
         "structure_cross_domain_accuracy": structure_summary.get("cross_domain_accuracy", "unknown"),
         "structure_is_full_wave_airframe": bool(structure_summary.get("is_full_wave_cst_airframe", False)),
+        "compound_stress_rows": nested_value(compound_summary, ("summary", "row_count"), 0),
+        "compound_all_rows_pass_085": nested_value(compound_summary, ("summary", "all_rows_pass_085"), "unknown"),
+        "compound_worst_accuracy": nested_value(compound_summary, ("summary", "worst_row", "best_accuracy"), "unknown"),
+        "compound_best_strategy": nested_value(compound_summary, ("summary", "best_overall_strategy", "strategy"), "unknown"),
+        "compound_best_min_accuracy": nested_value(compound_summary, ("summary", "best_overall_strategy", "min_accuracy"), "unknown"),
         "is_final_report": report_final_ready(),
         "final_report_pdf": rel(FINAL_REPORT_FILES[0]),
         "final_report_docx": rel(FINAL_REPORT_FILES[1]),

@@ -3,13 +3,13 @@
 题目编号：CS-202614  
 发榜单位：电磁空间安全全国重点实验室  
 版本：v0.2 G5 成稿草稿  
-状态：Level 1 required、Level 2 full48 和简化结构遮挡对照证据已接入；当前尚未最终提交，仍需把 Level 1 角域/近场模型边界、Level 2 非 full-wave 结构边界写入成稿，并导出正式 PDF/DOCX/PPTX/MP4。
+状态：Level 1 required、Level 2 full48、简化结构遮挡对照和 Level 2 复合扰动压力测试证据已接入；既有 PDF/DOCX/PPTX/MP4 已导出过，但本轮需把 Level 1 角域/近场模型边界、Level 2 非 full-wave 结构边界，以及复合仪器误差/结构缺测下的插补缓解口径同步到成稿并复核导出件。
 
 ## 摘要
 
 本方案面向复杂航空载体电磁辐射发射空域特性的高效获取、三维场域重建与空间-频谱特征辨识需求，提出“物理约束的空-频-极化联合等效源重构与受限域压缩测量方法”。当前执行路线采用半球面 2π 空域分布式宽带电磁传感布局，通过 CST 建立标准源、多源和简化航空载体仿真模型，导出近场复数数据和远场参考真值；在算法侧构建等效源/Huygens 面反演模型，采用 Tikhonov/SVD 稳定反演与稀疏测点优化实现远场方向图重建；进一步提取方向图形态、频谱分布、极化比和等效源能量分布等联合特征，训练 SVM/随机森林等识别模型，实现不同载体与运行状态的有效区分。半柱面布局作为后续工程扩展备选，不进入本轮 CST 执行。
 
-当前已完成文献筛查、CST 数据模板、导出校验脚本、早期接口验证基线、Level 1 required 标准源合并审计与批量重建、Level 1 FarfieldPlot-derived 角域校准、Level 2 full48 CST-derived element-library 样本合并、识别、删减验证和简化结构遮挡对照。Level 1 required 两个标准源的角域校准最大 NMSE 为 `8.41e-5`、最小相关系数为 `0.99988`，说明 solver-safe 角域数据与 CST 远场网格高度一致；等效源近场反演指标偏弱，需要作为模型边界说明。Level 2 当前 48/48 样本完整，SVM RBF 识别准确率达到 `1.000`；简化结构遮挡迁移下 cross-domain accuracy 仍为 `1.000`，但必须说明该证据是 CST-derived element-library + simplified occlusion transfer，不等同于 full-wave airframe scattering。
+当前已完成文献筛查、CST 数据模板、导出校验脚本、早期接口验证基线、Level 1 required 标准源合并审计与批量重建、Level 1 FarfieldPlot-derived 角域校准、Level 2 full48 CST-derived element-library 样本合并、识别、删减验证、简化结构遮挡对照和复合仪器误差/结构缺测压力测试。Level 1 required 两个标准源的角域校准最大 NMSE 为 `8.41e-5`、最小相关系数为 `0.99988`，说明 solver-safe 角域数据与 CST 远场网格高度一致；等效源近场反演指标偏弱，需要作为模型边界说明。Level 2 当前 48/48 样本完整，SVM RBF 识别准确率达到 `1.000`；简化结构遮挡迁移下 cross-domain accuracy 仍为 `1.000`。新增 severe compound instrument/dropout pressure test 显示，原始 `zero_fill`/`mask_features` 策略会出现低于 0.85 的失败行，worst accuracy=`0.733`；`freq_sensor_median_impute` 的最小 accuracy=`0.867`，可作为当前工程缓解策略。必须说明这些证据是 CST-derived element-library + simplified occlusion/perturbation transfer，不等同于 full-wave airframe scattering 或实测标定结论。
 
 ## 1. 赛题理解与评分指标分解
 
@@ -34,7 +34,7 @@
 | 可容纳不小于 12 m x 10 m x 8 m 被测对象 | 被测空间包络设为 x ±6 m、y ±5 m、z 0-8 m | baseline 布局图已画出包络；提交包中保留测点/包络证据 | CST 模型截图与参数记录仍需进入报告/PPT |
 | 支撑远区辐射分布有效推算 | 等效源反演 + 远场外推 | `outputs/cst_level1_merge_report`、`outputs/cst_level1_reconstruction_batch`、`outputs/cst_reconstruction/L1_*` | Level 1 指标偏弱，需误差机理说明或继续优化 |
 | 高精度重建且尽量减少测点 | 全测点、随机稀疏、优化稀疏对照 | `outputs/reconstruction_robustness`；Level 1 required 已完成 2 个重建案例 | 少测点结论仍需结合 Level 1 指标风险说明边界 |
-| 空间频率特征辨识精度不低于 85% | 空-频-极化联合特征 + SVM/随机森林 | Level 2 48/48 样本完整，`outputs/cst_recognition_level2` 中 best_accuracy=`1.000`；简化结构遮挡 cross-domain accuracy=`1.000` | 需说明 CST-derived element-library、simplified occlusion transfer 与 full-wave airframe 的边界 |
+| 空间频率特征辨识精度不低于 85% | 空-频-极化联合特征 + SVM/随机森林 + 复合扰动插补策略 | Level 2 48/48 样本完整，`outputs/cst_recognition_level2` 中 best_accuracy=`1.000`；简化结构遮挡 cross-domain accuracy=`1.000`；复合仪器误差/结构缺测下 `freq_sensor_median_impute` 最小 accuracy=`0.867` | 需说明 CST-derived element-library、simplified occlusion/perturbation transfer、原始 zero-fill 失败边界与 full-wave airframe/实测标定的边界 |
 
 ### 1.3 评分项映射
 
@@ -280,7 +280,7 @@ min_{J(f)} sum_f ||G_f J(f) - E_f||_2^2
 
 ### 7.2 接口验证基线
 
-在正式 Level 2 数据进入前，项目先用轻量源模型完成识别接口验证：从近场表格读取 Ex/Ey/Ez，按 sample_id 和频点聚合，提取空间功率、相对相位、极化比和频谱斜率等特征，并训练 SVM/随机森林分类器。该基线用于证明代码接口、特征工程和评价指标链路可复现；本章正式结论以 7.3 和 7.4 的 Level 2 full48 结果为准。
+在正式 Level 2 数据进入前，项目先用轻量源模型完成识别接口验证：从近场表格读取 Ex/Ey/Ez，按 sample_id 和频点聚合，提取空间功率、相对相位、极化比和频谱斜率等特征，并训练 SVM/随机森林分类器。该基线用于证明代码接口、特征工程和评价指标链路可复现；本章正式结论以 7.3-7.6 的 Level 2 full48、删减、结构遮挡和复合扰动结果为准。
 
 当前证据：
 
@@ -308,7 +308,7 @@ min_{J(f)} sum_f ||G_f J(f) - E_f||_2^2
 - `outputs/cst_recognition_level2/cst_recognition_metrics.json`
 - `outputs/cst_recognition_level2/cst_recognition_confusion_matrix.png`
 
-说明：该准确率满足“空间频率特征辨识精度不低于 85%”的指标口径，但报告中必须明确其证据性质：当前 Level 2 是 CST-derived element-library superposition，用于验证多源多状态、频点和测点维度下的识别链路；复杂航空载体结构散射、遮挡和安装效应通过 7.5 的简化结构对照来给出边界约束。
+说明：该准确率满足“空间频率特征辨识精度不低于 85%”的基础指标口径，但报告中必须明确其证据性质：当前 Level 2 是 CST-derived element-library superposition，用于验证多源多状态、频点和测点维度下的识别链路；复杂航空载体结构散射、遮挡和安装效应通过 7.5 的简化结构对照来给出边界约束，仪器增益误差与结构化缺测的复合扰动通过 7.6 的压力测试来给出缓解口径。
 
 ### 7.4 识别测点/频点删减验证
 
@@ -363,6 +363,29 @@ min_{J(f)} sum_f ||G_f J(f) - E_f||_2^2
 - `outputs/cst_structure_comparison/plots/L2_comm_pair_000_1200MHz_structure_compare.png`
 
 结论：简化载体遮挡会带来可观方向图变化，因此报告和答辩中不能把 element-library full48 直接表述为复杂航空载体 full-wave 结构散射结论；但当前空-频-极化特征在该简化安装效应下仍保持跨域识别稳定，说明特征体系具有一定结构扰动鲁棒性。后续若时间允许，可进一步在 CST 中建立 full-wave airframe 模型验证散射、多径和安装点耦合效应。
+
+### 7.6 Level 2 复合仪器误差与结构缺测压力测试
+
+为避免把 clean full48 和单一结构遮挡结果过度外推，本轮新增 `code/run_cst_recognition_compound_stress.py`，在 Level 2 full48 特征上叠加更接近工程测量风险的复合扰动：传感器增益偏置、频点相关增益误差、结构化测点缺失、通道 dropout 以及组合压力情形。该测试重点不是追求更高数值，而是识别哪类预处理策略会在强扰动下失效，并给出报告中可落地的缓解策略。
+
+当前策略对照结果如下：
+
+| Strategy | Mean accuracy | Min accuracy | Passes 0.85 |
+|---|---:|---:|---|
+| `zero_fill` | `0.939` | `0.733` | false |
+| `mask_features` | `0.940` | `0.733` | false |
+| `freq_sensor_median_impute` | `0.993` | `0.867` | true |
+| `freq_sensor_median_impute_mask` | `0.990` | `0.867` | true |
+
+最差失败行出现在 `full_grid_162 / zero_fill / sensor_gain3db_sensor_node_dropout25pct`，accuracy=`0.733`。这说明在传感器增益误差和结构化缺测同时存在时，直接补零或仅加 mask 特征不足以保证 85% 指标；按频点和传感器维度做中位数插补后，当前压力测试中的最小 accuracy 提升到 `0.867`，平均 accuracy 相对 zero-fill 提升约 `0.054`。
+
+当前证据：
+
+- `data/recognition_stress_tests/level2_compound_stress/recognition_compound_stress_summary.json`
+- `data/recognition_stress_tests/level2_compound_stress/recognition_compound_stress_by_strategy.csv`
+- `data/recognition_stress_tests/level2_compound_stress/recognition_compound_stress_metrics.csv`
+
+结论：Level 2 识别能力可以作为 85% 指标的核心支撑，但最终材料应写成“clean full48 达标、简化结构遮挡跨域稳定、复合扰动下需采用 frequency/sensor median imputation 缓解”的口径。该结论仍属于 CST-derived 数据与可复现扰动模型上的算法证据，不能替代真实仪器标定误差和 full-wave airframe 求解。
 
 ## 8. CST 仿真测试设计
 
@@ -452,7 +475,7 @@ Level 2 当前验收结果：
 - 最优模型：SVM RBF
 - best accuracy：`1.000`
 
-说明：Level 2 当前证据是 CST-derived element-library superposition，适合支撑多源多状态识别链路和空-频-极化特征有效性；简化结构遮挡对照已在 `outputs/cst_structure_comparison` 中给出，full-wave airframe 结构散射仍作为后续增强项。
+说明：Level 2 当前证据是 CST-derived element-library superposition，适合支撑多源多状态识别链路和空-频-极化特征有效性；简化结构遮挡对照已在 `outputs/cst_structure_comparison` 中给出，复合仪器误差/结构缺测压力测试已在 `data/recognition_stress_tests/level2_compound_stress` 中给出，full-wave airframe 结构散射和真实仪器标定仍作为后续增强项。
 
 ### 8.3 Level 3 简化航空载体
 
@@ -478,6 +501,7 @@ Level 2 当前验收结果：
 - 重建噪声鲁棒性：20/25/30/35/40 dB SNR。
 - 测点删减：100%/75%/50%/25% 优化测点与 50% 随机测点。
 - 正则化参数：`1e-6` 到 `1e-2`。
+- 识别复合扰动压力测试：传感器增益误差、频点相关误差、结构化缺测和 dropout 组合。
 
 G5 阶段仍需说明或补强的工程扰动项：
 
@@ -485,7 +509,8 @@ G5 阶段仍需说明或补强的工程扰动项：
 2. 测点缺失：随机缺测、局部遮挡缺测。
 3. 频点扰动：中心频率偏移。
 4. 姿态扰动：俯仰、滚转、偏航小角度变化。
-5. 正则化参数扫描：lambda 与 NMSE/相关系数关系。
+5. 复合仪器误差：原始 zero-fill/mask 在强扰动下会低于 0.85，当前需采用 frequency/sensor median imputation 作为工程缓解策略。
+6. 正则化参数扫描：lambda 与 NMSE/相关系数关系。
 
 ## 10. 创新点
 
@@ -516,6 +541,7 @@ G5 阶段仍需说明或补强的工程扰动项：
 | CST Level 2 识别结果 | 已完成，SVM RBF accuracy=1.000 | `outputs/cst_recognition_level2` |
 | CST Level 2 识别删减验证 | 已完成，当前 Level 2 full48 数据上各删减组 accuracy=1.000 | `outputs/cst_recognition_level2_ablation` |
 | CST Level 2 简化结构遮挡对照 | 已完成，mean shadow=3.06 dB，cross-domain accuracy=1.000 | `outputs/cst_structure_comparison` |
+| CST Level 2 复合干扰压力测试 | 已完成，zero-fill/mask 最差 accuracy=0.733，frequency/sensor median imputation 最小 accuracy=0.867 | `data/recognition_stress_tests/level2_compound_stress` |
 | 重建鲁棒性扫描 | 已跑通，待 CST 复核 | `outputs/reconstruction_robustness` |
 | 评分项证据板 | 已跑通，保守标注缺口 | `outputs/scorecard` |
 | 最终提交材料计划 | 初版完成 | `docs/final_submission_package_plan.md` |
@@ -525,8 +551,8 @@ G5 阶段仍需说明或补强的工程扰动项：
 | 数据字典 | 初版完成，待最终字段复核 | `docs/data_dictionary.md` |
 | CST 幅相转换验证 | 已跑通 | 代码与附录数据包 |
 | CST 标准源结果 | required 链路已补齐，但重建精度风险未关闭 | `outputs/cst_reconstruction/L1_*` |
-| 多源识别结果 | Level 2 full48 已补齐；简化结构遮挡对照已补充，full-wave airframe 需作为边界说明 | `outputs/cst_recognition_level2`、`outputs/cst_structure_comparison` |
-| PPT/视频 | 未导出 | 等报告口径锁定后制作正式 PPTX/MP4 |
+| 多源识别结果 | Level 2 full48 已补齐；简化结构遮挡和复合干扰压力测试已补充，zero-fill 失败边界与插补缓解需作为边界说明 | `outputs/cst_recognition_level2`、`outputs/cst_structure_comparison`、`data/recognition_stress_tests/level2_compound_stress` |
+| PPT/视频 | 已导出过，需复核 | 按最新复合扰动边界口径复核/必要时重导出正式 PPTX/MP4 |
 
 ### 11.1 评分项证据板
 
@@ -547,9 +573,9 @@ G5 阶段仍需说明或补强的工程扰动项：
 | 测试方案完整性 | 10 | CST evidence ready; screenshots pending |
 | 2π 传感布局与 12m x 10m x 8m 包络 | 10 | Ready |
 | 三维场重建高精度与少测点 | 30 | CST angular calibration ready; near-field model risk |
-| 空间-频谱特征辨识准确率 >= 85% | 20 | Ready |
+| 空间-频谱特征辨识准确率 >= 85% | 20 | Ready with compound-stress mitigation caveat |
 
-该表用于区分早期接口证据和当前 G5 成稿证据。当前 CST 证据已从“缺文件”转为“G5 成稿风险”：Level 1 需写清 FarfieldPlot-derived 角域校准与 full-wave 近场等效源模型边界，Level 2 识别需要说明 element-library/简化结构遮挡/full-wave airframe 边界，正式 PDF/DOCX/PPTX/MP4 仍未导出。
+该表用于区分早期接口证据和当前 G5 成稿证据。当前 CST 证据已从“缺文件”转为“G5 成稿风险”：Level 1 需写清 FarfieldPlot-derived 角域校准与 full-wave 近场等效源模型边界，Level 2 识别需要说明 element-library/简化结构遮挡/full-wave airframe 边界，同时写清复合仪器误差和结构缺测下 zero-fill/mask 会失败、frequency/sensor median imputation 是当前缓解策略；既有正式 PDF/DOCX/PPTX/MP4 需按该口径复核或重导出。
 
 ### 11.2 最终提交包索引
 
@@ -569,7 +595,7 @@ G5 阶段仍需说明或补强的工程扰动项：
 - `outputs/submission_index/submission_checklist.csv`
 - `outputs/submission_index/submission_index_summary.json`
 
-当前状态：submission 草稿包可由 `code/build_submission_draft.py` 重新生成，submission index 可由 `code/build_submission_index.py` 刷新；正式打包前的主要缺口已收敛为最终报告、PPT、视频导出，以及 G5 风险说明闭合。
+当前状态：submission 草稿包可由 `code/build_submission_draft.py` 重新生成，submission index 可由 `code/build_submission_index.py` 刷新；正式打包前的主要缺口已收敛为按最新 G5 风险说明复核报告、PPT、视频和最终归档。
 
 ### 11.3 复现与数据交接材料
 
@@ -584,9 +610,9 @@ G5 阶段仍需说明或补强的工程扰动项：
 ## 12. 下一步
 
 1. 将 Level 1 角域校准结果和近场等效源模型边界写入正式报告/PPT；若后续追求 full-wave 近场反演，再补 near-field monitor 或匹配传播模型。
-2. 将 Level 2 full48 识别结果、删减验证和简化结构遮挡对照写入正式报告/PPT，并写清 CST-derived element-library + simplified occlusion transfer 的适用边界。
-3. 将本报告中的 Level 1/Level 2/结构对照当前证据统一到摘要、评分项映射、结果章节和风险章节。
-4. 根据 `docs/final_submission_package_plan.md` 与 `outputs/presentation_package` 制作正式 PPTX 和视频脚本。
-5. 导出正式报告 PDF/DOCX、答辩 PPTX 和演示视频 MP4。
+2. 将 Level 2 full48 识别结果、删减验证、简化结构遮挡对照和复合干扰压力测试写入正式报告/PPT，并写清 CST-derived element-library + simplified occlusion/perturbation transfer 的适用边界。
+3. 将本报告中的 Level 1/Level 2/结构对照/复合扰动当前证据统一到摘要、评分项映射、结果章节和风险章节。
+4. 根据 `docs/final_submission_package_plan.md` 与 `outputs/presentation_package` 复核正式 PPTX 和视频脚本，必要时按最新口径重导出。
+5. 复核正式报告 PDF/DOCX、答辩 PPTX 和演示视频 MP4 是否已同步复合扰动边界。
 6. 重跑 `code/build_scorecard.py`、`code/build_problem_requirements_matrix.py`、`code/build_submission_index.py`、`code/build_completion_audit.py`、`code/build_master_dashboard.py` 和 `code/build_submission_draft.py`。
 7. 运行 `code/build_progress_report.py --note "G5 最终文件和风险说明已收口"`，确认 `completion_proven=true` 后再进入最终提交。
