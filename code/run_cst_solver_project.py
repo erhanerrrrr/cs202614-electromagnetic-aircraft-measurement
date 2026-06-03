@@ -26,6 +26,11 @@ SOLVER_LOG_RELATIVE_PATHS = (
     "Result/hexmeshengine.log",
     "Result/ml_info.log",
 )
+RESULT_JSON_RELATIVE_PATHS = (
+    "Result/simulation_overview.json",
+    "Result/output.json",
+)
+RESULT_ARTIFACT_SUFFIXES = {".ffm", ".fme", ".m3d"}
 
 
 def now_iso() -> str:
@@ -119,6 +124,17 @@ def read_text_safe(path: Path) -> tuple[str, str]:
     return f"<failed to read {path}: {last_error}>", "unreadable"
 
 
+def read_json_safe(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    text, _encoding = read_text_safe(path)
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        return {"_json_error": "decode_failed", "_text_tail": tail_lines(text, keep=12)}
+    return data if isinstance(data, dict) else {"value": data}
+
+
 def tail_lines(text: str, keep: int = 24) -> list[str]:
     lines = [line.rstrip() for line in text.splitlines() if line.strip()]
     return lines[-keep:]
@@ -132,21 +148,78 @@ def unique_error_lines(text: str, limit: int = 20) -> list[str]:
         "requires:",
         "simulation cannot be started",
         "expecting local encoding",
+        "maximal path length",
     )
     lines: list[str] = []
     seen: set[str] = set()
-    for line in text.splitlines():
+    raw_lines = text.splitlines()
+    include_next = 0
+    for line in raw_lines:
         stripped = line.strip()
         lowered = f" {stripped.lower()} "
-        if not stripped or not any(needle in lowered for needle in needles):
+        triggered = any(needle in lowered for needle in needles)
+        if not stripped:
+            continue
+        if not triggered and include_next <= 0:
             continue
         if stripped in seen:
+            include_next = max(include_next - 1, 0)
             continue
         seen.add(stripped)
         lines.append(stripped)
+        include_next = 3 if triggered else max(include_next - 1, 0)
         if len(lines) >= limit:
             break
     return lines
+
+
+def result_item_summary(items: list[str], sample_size: int = 80) -> dict[str, Any]:
+    category_counts: dict[str, int] = {}
+    for item in items:
+        parts = item.split("\\")
+        if len(parts) >= 3:
+            category = "\\".join(parts[:3])
+        elif len(parts) >= 2:
+            category = "\\".join(parts[:2])
+        else:
+            category = item
+        category_counts[category] = category_counts.get(category, 0) + 1
+    return {
+        "count": len(items),
+        "category_counts": dict(sorted(category_counts.items())),
+        "sample": items[:sample_size],
+        "omitted_count": max(0, len(items) - sample_size),
+    }
+
+
+def collect_result_artifacts(project: Path) -> dict[str, Any]:
+    result_dir = project.with_suffix("")
+    artifacts: list[dict[str, Any]] = []
+    if result_dir.exists():
+        for path in sorted(result_dir.rglob("*")):
+            if not path.is_file() or path.suffix.lower() not in RESULT_ARTIFACT_SUFFIXES:
+                continue
+            artifacts.append(
+                {
+                    "path": display_path(path),
+                    "name": path.name,
+                    "suffix": path.suffix.lower(),
+                    "size_bytes": path.stat().st_size,
+                }
+            )
+    suffix_counts: dict[str, int] = {}
+    for artifact in artifacts:
+        suffix = str(artifact["suffix"])
+        suffix_counts[suffix] = suffix_counts.get(suffix, 0) + 1
+    return {
+        "result_dir": display_path(result_dir),
+        "artifact_count": len(artifacts),
+        "suffix_counts": suffix_counts,
+        "has_farfield_artifact": any(row["suffix"] in {".ffm", ".fme"} for row in artifacts),
+        "has_nearfield_artifact": any(row["suffix"] == ".m3d" for row in artifacts),
+        "artifacts": artifacts[:40],
+        "omitted_count": max(0, len(artifacts) - 40),
+    }
 
 
 def collect_solver_logs(project: Path) -> dict[str, Any]:
@@ -171,19 +244,52 @@ def collect_solver_logs(project: Path) -> dict[str, Any]:
             combined_parts.append(text)
         log_files.append(entry)
 
+    result_jsons: dict[str, Any] = {}
+    for relative_text in RESULT_JSON_RELATIVE_PATHS:
+        json_path = result_dir / Path(*relative_text.split("/"))
+        result_jsons[Path(relative_text).name] = {
+            "path": display_path(json_path),
+            "exists": json_path.exists(),
+            "data": read_json_safe(json_path),
+        }
+
     combined = "\n".join(combined_parts)
     mesh_match = re.search(r"Simulation setup for\s+([\d.]+)\s+billion mesh cells", combined, re.IGNORECASE)
     mpi_match = re.search(r"at least\s+(\d+)\s+cluster nodes", combined, re.IGNORECASE)
     mesh_cell_count_billion = float(mesh_match.group(1)) if mesh_match else None
     required_mpi_nodes = int(mpi_match.group(1)) if mpi_match else None
+    path_length_limit_detected = "exceeds the maximal path length" in combined
+    output_data = result_jsons.get("output.json", {}).get("data", {})
+    output_messages = output_data.get("messages", []) if isinstance(output_data, dict) else []
+    output_message_text = "\n".join(
+        str(row.get("message", "")) for row in output_messages if isinstance(row, dict)
+    )
+    simulation_data = result_jsons.get("simulation_overview.json", {}).get("data", {})
+    solver_run = (
+        simulation_data.get("solver_runs_and_tasks", {})
+        .get("solver_run", {})
+        if isinstance(simulation_data, dict)
+        else {}
+    )
     return {
         "project_result_dir": display_path(result_dir),
         "log_files": log_files,
+        "result_jsons": result_jsons,
+        "result_artifacts": collect_result_artifacts(project),
         "error_lines": unique_error_lines(combined),
         "mesh_cell_count_billion": mesh_cell_count_billion,
         "required_mpi_nodes": required_mpi_nodes,
         "mesh_limit_detected": bool(mesh_cell_count_billion and required_mpi_nodes),
+        "path_length_limit_detected": path_length_limit_detected,
         "encoding_warning_detected": "Expecting local encoding" in combined,
+        "aborted_keeping_results_detected": "aborted by user (keeping results)" in output_message_text.lower(),
+        "solver_return_code": solver_run.get("return_code") if isinstance(solver_run, dict) else None,
+        "solver_used": solver_run.get("solver_used") if isinstance(solver_run, dict) else None,
+        "solver_run_time_seconds": (
+            solver_run.get("time_info", {}).get("run_time")
+            if isinstance(solver_run, dict) and isinstance(solver_run.get("time_info"), dict)
+            else None
+        ),
     }
 
 
@@ -206,6 +312,26 @@ def write_trial_readme(trial_dir: Path, summary: dict[str, Any]) -> None:
                 "",
                 "Interpretation: CST could start the solver, but the full-wave setup is too large for the local machine.",
                 "The 13 m measurement shell should be treated as a Python-side extrapolation target, not as a remote probe mesh inside this CST solve.",
+            ]
+        )
+    if solver_logs.get("path_length_limit_detected"):
+        lines.extend(
+            [
+                "- Parsed path-length issue: CST reported a project/result path longer than its supported limit",
+                "",
+                "Interpretation: rerun this trial from a shorter ASCII path such as `C:\\csttmp\\huy_short` before treating the solve as numerically blocked.",
+            ]
+        )
+    result_artifacts = solver_logs.get("result_artifacts", {})
+    if solver_logs.get("aborted_keeping_results_detected"):
+        lines.extend(
+            [
+                "- CST output status: solver was aborted while keeping generated results",
+                f"- Result artifacts found: `{result_artifacts.get('artifact_count', 0)}`",
+                f"- Farfield artifacts present: `{result_artifacts.get('has_farfield_artifact', False)}`",
+                f"- Nearfield artifacts present: `{result_artifacts.get('has_nearfield_artifact', False)}`",
+                "",
+                "Interpretation: this is not a clean completed solve, but it may contain exportable CST result artifacts for a follow-up extraction attempt.",
             ]
         )
     error_lines = solver_logs.get("error_lines", [])
@@ -279,6 +405,13 @@ def worker_run(args: argparse.Namespace) -> int:
                 break
             time.sleep(args.poll_seconds)
 
+        timeout_stop_solver: dict[str, Any] = {}
+        if timed_out:
+            for stop_name in ("abort_solver", "AbortSolver", "stop_solver", "StopSolver"):
+                timeout_stop_solver = safe_call(model, stop_name)
+                if timeout_stop_solver.get("ok"):
+                    break
+
         save_project = safe_call(prj, "save")
         after_items = safe_call(model, "get_tree_items")
         after_tree_items = after_items.get("value", []) if after_items.get("ok") else []
@@ -293,6 +426,14 @@ def worker_run(args: argparse.Namespace) -> int:
         status = "timed_out" if timed_out else "finished"
         if solver_logs.get("mesh_limit_detected"):
             status = "solver_mesh_limit"
+        elif solver_logs.get("path_length_limit_detected"):
+            status = "solver_path_length_limit"
+        elif (
+            status == "timed_out"
+            and solver_logs.get("aborted_keeping_results_detected")
+            and solver_logs.get("result_artifacts", {}).get("artifact_count", 0)
+        ):
+            status = "aborted_keeping_results"
         elif status == "finished" and last_solver_state and last_solver_state.upper() not in {"SUCCESS", "FINISHED"}:
             status = "solver_reported_non_success"
         elif status == "finished" and not result_items_after:
@@ -308,11 +449,12 @@ def worker_run(args: argparse.Namespace) -> int:
                 "poll_count": len(poll_log),
                 "poll_log_tail": poll_log[-20:],
                 "last_solver_info": last_solver_info,
+                "timeout_stop_solver": timeout_stop_solver,
                 "save_project": save_project,
                 "tree_count_after": len(after_tree_items) if isinstance(after_tree_items, list) else 0,
                 "result_tree_roots_after": result_tree_roots(after_tree_items),
                 "result_tree_count_after": len(result_items_after),
-                "result_items_after": result_items_after,
+                "result_items_after_summary": result_item_summary(result_items_after),
                 "farfield_items_after": farfield_items_after,
                 "project_size_bytes": project.stat().st_size if project.exists() else 0,
                 "solver_logs": solver_logs,

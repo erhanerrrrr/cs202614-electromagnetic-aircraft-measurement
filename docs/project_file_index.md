@@ -160,3 +160,20 @@ same output directory.
 | `outputs/cst_solver_trials/required_true_nf_short/README.md` | 人类可读 trial 诊断 |
 
 后续 G3 路线应切换为 mesh-safe 流程：CST 侧求解近源/局部 Huygens 面或近边界物理数据，Python 侧把该数据外推到 13 m 测量壳，再做采样方案、外推反演和分类评估。
+
+## 2026-06-03 CST mesh-safe Huygens 工作包
+
+本轮新增 `data/cst_meshsafe_huygens_workpack/` 和 `code/prepare_cst_meshsafe_huygens_workpack.py`，把 S29 中不可求解的 13 m Cartesian probe 路线改成局部 Huygens 面观测路线：CST 只求解 0.35 m 局部面附近的 E-field probe 和 farfield reference，Python 负责把局部证据外推到 13 m 测量壳。由于 CST 对中文长路径和内部结果路径较敏感，工作包命令默认使用 `C:\csttmp\huy_p` 生成工程、`C:\csttmp\huy_s` 跑求解 gate。
+
+当前结论：CST 不是无法正常运行。短路径 `C:\csttmp\huy_p` 工程生成已经返回 `project_generation_complete`，2/2 `.cst` 工程保存成功；短路径 `L1_short_dipole_z_1p2G` solver gate 已经能进入 `HF Time Domain (Hex)` solver，并保留 `.m3d/.ffm/.fme` 结果文件；本轮没有再触发 mesh limit 或路径长度错误。剩余问题是 clean completion 与局部结果导出/解析，而不是 CST 启动或 Python API 失效。
+
+相关入口：
+
+| 文件/目录 | 意义 |
+|---|---|
+| `docs/stage_notes/30_g3_meshsafe_huygens_workpack.md` | S30 阶段说明，记录本轮 mesh-safe CST 路线和证据边界 |
+| `code/prepare_cst_meshsafe_huygens_workpack.py` | 生成 mesh-safe case CSV、局部 Huygens probe CSV、导出契约和下一步命令 |
+| `data/cst_meshsafe_huygens_workpack/README.md` | 给 CST/算法队友的工作包说明 |
+| `data/cst_meshsafe_huygens_workpack/next_meshsafe_huygens_commands.csv` | 从生成工程到短路径 solver gate 的命令清单 |
+| `C:\csttmp\huy_p` | 短 ASCII 路径下的 mesh-safe CST 工程缓存 |
+| `outputs/cst_solver_trials/meshsafe_huygens_required_shortpath/` | 本机短路径 solver gate 摘要和日志缓存 |

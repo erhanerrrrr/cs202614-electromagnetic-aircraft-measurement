@@ -335,3 +335,30 @@ sampling-workflow limit, not as CST installation failure.
 Next G3 code work should generate a mesh-safe CST observation pack: local
 Huygens/near-boundary monitors or other compact physical evidence near the
 source, followed by Python extrapolation to the 13 m hemisphere shell.
+
+## CST mesh-safe Huygens workpack addendum
+
+`prepare_cst_meshsafe_huygens_workpack.py` is the current G3 bridge after the
+13 m Cartesian probe mesh-limit diagnosis. It creates
+`data/cst_meshsafe_huygens_workpack/` with:
+
+- two Level 1 required mesh-safe Huygens CST cases;
+- 96 local E-field probe points on `level1_local_sphere_r0p35`;
+- `local_huygens_export_contract.csv` for the future local result adapter;
+- `next_meshsafe_huygens_commands.csv` with the project-generation and
+  short-path solver gate commands.
+
+Use it before regenerating the CST projects:
+
+```powershell
+python code\prepare_cst_meshsafe_huygens_workpack.py
+python code\run_cst_level1_required_automation.py --level1-csv data\cst_meshsafe_huygens_workpack\level1_required_meshsafe_huygens_cases.csv --probe-csv data\cst_meshsafe_huygens_workpack\level1_local_huygens_probe_points.csv --out-dir C:\csttmp\huy_p --probe-mode efield
+```
+
+Then run the first solver gate through a short path such as `C:\csttmp\huy_s`
+to avoid CST internal result-path limits. Keep both project generation and
+solver trials on short ASCII paths; the Chinese desktop path can make CST API
+save/close calls report `RuntimeError()` even when the `.cst` file appears.
+Current evidence says CST can run the mesh-safe project without the 4.6B-cell
+blocker; the next blocker is exporting or parsing the kept local `.m3d` E-field
+result into the CSV contract.
