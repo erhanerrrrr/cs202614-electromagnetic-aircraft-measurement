@@ -754,10 +754,61 @@ Next G5 actions:
 1. In the report/PPT, describe imputation as a missing-channel preprocessing
    candidate validated on internal Level 2 CST-derived stochastic dropout and
    dropout-bearing compound perturbations.
-2. If time allows, test correlated sensor dropout, polarization-pair dropout,
-   and contiguous angular-sector dropout rather than only independent random
-   channel dropout.
+2. The structured missing-channel follow-up is now complete; see Section 20.
 3. Rerun the same mitigation check after true CST monitor data or full-wave
    airframe data becomes available.
+4. Keep G3 separate: this does not close the true near-field monitor gate or
+   the physical/vector reduced-layout reconstruction proof.
+
+## 20. 2026-06-03 G5 structured dropout update
+
+The structured missing-channel follow-up is now implemented:
+
+```powershell
+python code\run_cst_recognition_structured_dropout.py
+```
+
+It writes `data/recognition_stress_tests/level2_structured_dropout/`.
+
+Method:
+
+- Train with the existing known perturbation augmentation set: clean, noise,
+  phase jitter, random dropout, and combined perturbations.
+- Test unseen structured dropout patterns that were not directly included as
+  augmentation families.
+- Cover three practical missing-channel modes: whole sensor-node dropout,
+  polarization-pair dropout at selected sensor-frequency pairs, and contiguous
+  60 deg azimuth-sector dropout.
+- Repeat five G2 representative layouts, four missing-channel strategies, and
+  seeds `202614`, `202615`, and `202616`.
+
+Current result:
+
+- Five layouts, four structured cases, four strategies, and three seeds give
+  240 rows.
+- All 240 rows pass the `0.85` threshold.
+- The worst single row is `geometric_farthest_32` with mask features under
+  `sensor_node_dropout_25pct`, accuracy `0.933`.
+- Zero-fill remains workable: mean accuracy about `0.996`, minimum `0.933`.
+- Mask-only features remain weaker than imputation: mean accuracy about
+  `0.994`, minimum `0.933`, and mean delta vs zero-fill about `-0.001`.
+- Frequency/sensor median imputation and imputation plus mask both reach
+  mean/min accuracy `1.000`.
+
+Engineering interpretation: the extended and structured missing-channel checks
+now point to the same G5 recommendation. Use frequency/sensor median imputation
+as the current default missing-channel preprocessing candidate, keep zero-fill
+as the conservative baseline, and do not present mask-only features as the
+preferred fix.
+
+Next G5 actions:
+
+1. Freeze the current Level 2 internal missing-channel evidence for the report
+   and PPT, with a clear boundary that it is simulated dropout evidence.
+2. If more time is available, test time/frequency-correlated instrument errors
+   and mixed amplitude calibration bias, because those are different from pure
+   missingness.
+3. Rerun the same structured-dropout script after true CST monitor data or
+   full-wave airframe data becomes available.
 4. Keep G3 separate: this does not close the true near-field monitor gate or
    the physical/vector reduced-layout reconstruction proof.

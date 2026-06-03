@@ -1,0 +1,5 @@
+﻿strategy,seed_count,row_count,mean_accuracy,std_accuracy,ci95_low_accuracy,ci95_high_accuracy,min_accuracy,max_accuracy,worst_seed,worst_case,all_rows_pass_085,mean_delta_vs_zero_fill,min_delta_vs_zero_fill,max_delta_vs_zero_fill
+zero_fill,3,60,0.9955555555555555,0.016769924952882112,0.9913121790716577,0.9997989320394534,0.9333333333333333,1.0,202614,sensor_node_dropout_25pct,True,0.0,0.0,0.0
+mask_features,3,60,0.9944444444444446,0.018581187119020137,0.9897427553978156,0.9991461334910735,0.9333333333333333,1.0,202614,sensor_node_dropout_25pct,True,-0.001111111111111111,-0.06666666666666665,0.0
+freq_sensor_median_impute,3,60,1.0,0.0,1.0,1.0,1.0,1.0,202614,sensor_node_dropout_10pct,True,0.004444444444444444,0.0,0.06666666666666665
+freq_sensor_median_impute_mask,3,60,1.0,0.0,1.0,1.0,1.0,1.0,202614,sensor_node_dropout_10pct,True,0.004444444444444444,0.0,0.06666666666666665

@@ -14,6 +14,7 @@ classification/recognition branch. Large CST near-field source tables remain in
 | `level2_seed_stability/` | Repeated-seed stability check for focused leave-one-family noise/dropout perturbations. |
 | `level2_dropout_mitigation/` | Focused missing-channel strategy comparison for the tightest held-out dropout layouts. |
 | `level2_dropout_mitigation_extended/` | Extended missing-channel strategy comparison across all five G2 layouts and dropout-bearing stress families. |
+| `level2_structured_dropout/` | Structured missing-channel check for unseen sensor-node, polarization-pair, and angular-sector dropout patterns. |
 
 ## Regenerate
 
@@ -24,6 +25,7 @@ python code\run_cst_recognition_leave_one_family_out.py
 python code\run_cst_recognition_seed_stability.py
 python code\run_cst_recognition_dropout_mitigation.py
 python code\run_cst_recognition_dropout_mitigation.py --layout-candidates full_grid_162,geometric_farthest_32,fibonacci_snap_120,task_driven_32,task_driven_48 --held-out-families dropout,combined --out-dir data\recognition_stress_tests\level2_dropout_mitigation_extended
+python code\run_cst_recognition_structured_dropout.py
 ```
 
 `level2_robustness/` should be read first because it exposes the clean-train
@@ -48,6 +50,12 @@ families. Current result: all 180 rows pass `0.85`; zero-fill and mask-only
 both bottom at `0.867`, mask-only can be worse than zero-fill on one
 `full_grid_162/dropout_25pct` aggregate, and both frequency/sensor median
 imputation variants reach mean/min accuracy `1.000`.
+`level2_structured_dropout/` then tests whether that missing-channel conclusion
+survives unseen structured patterns: dropping whole sensor nodes, both
+polarizations for selected sensor-frequency pairs, and contiguous 60 deg
+azimuth sectors. Current result: all 240 rows pass `0.85`; the lowest accuracy
+is `0.933`, and both frequency/sensor median imputation variants reach mean/min
+accuracy `1.000`.
 
 ## Boundary
 
@@ -63,5 +71,6 @@ single random split/draw, but it is still small-sample internal evidence. The
 dropout-mitigation result is a candidate preprocessing/calibration step for
 missing channels, not proof that arbitrary sensor failures or real instruments
 are covered. The extended mitigation result makes imputation-only the cleaner
-current candidate than mask-only features, but it is still bounded to internal
-stochastic/dropout-bearing perturbations.
+current candidate than mask-only features, and the structured-dropout result
+checks more realistic missing patterns, but both are still bounded to internal
+simulated dropout-bearing perturbations.

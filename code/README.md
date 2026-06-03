@@ -53,6 +53,7 @@
 | `run_cst_recognition_leave_one_family_out.py` | 逐类留出 noise/phase/dropout/combined 扰动族，检查增强训练对未见误差族的外推能力。 |
 | `run_cst_recognition_seed_stability.py` | 对 leave-one-family 中的 noise/dropout 随机扰动做多种子稳定性统计，输出均值、最小值和近似 95% CI。 |
 | `run_cst_recognition_dropout_mitigation.py` | 对 held-out dropout 或含 dropout 组合扰动比较 zero-fill、mask 特征和缺测插补策略。 |
+| `run_cst_recognition_structured_dropout.py` | 在已知扰动增强训练后，测试 sensor-node dropout、polarization-pair dropout 和 azimuth-sector dropout 等未见结构化缺测模式。 |
 | `run_cst_structure_comparison.py` | 结构/安装影响对比实验。 |
 | `build_g3_model_dashboard.py` | 汇总 G3 源模型、SWE、Huygens 和真近场 gate 证据，输出当前可汇报结论与下一步动作。 |
 | `build_*.py` | 报告、PPT、提交包、仪表盘和审查材料生成脚本。 |
@@ -87,6 +88,7 @@ python code\run_cst_recognition_leave_one_family_out.py
 python code\run_cst_recognition_seed_stability.py
 python code\run_cst_recognition_dropout_mitigation.py
 python code\run_cst_recognition_dropout_mitigation.py --layout-candidates full_grid_162,geometric_farthest_32,fibonacci_snap_120,task_driven_32,task_driven_48 --held-out-families dropout,combined --out-dir data\recognition_stress_tests\level2_dropout_mitigation_extended
+python code\run_cst_recognition_structured_dropout.py
 ```
 
 ## Spherical reduced-layout addendum
@@ -231,6 +233,18 @@ pass `0.85`; zero-fill has min accuracy `0.867`; mask-only also bottoms at
 aggregate; both frequency/sensor median imputation variants reach mean/min
 accuracy `1.000`. Report imputation-only as the cleaner current missing-channel
 preprocessing candidate, with zero-fill retained as the conservative baseline.
+
+`run_cst_recognition_structured_dropout.py` is the structured missing-channel
+follow-up. It trains with the existing clean/noise/phase/random-dropout/combined
+augmentation profiles, then tests unseen sensor-node dropout, polarization-pair
+dropout, and contiguous 60 deg azimuth-sector dropout. It writes
+`data/recognition_stress_tests/level2_structured_dropout/`. Current structured
+result: all 240 seed/layout/strategy/case rows pass `0.85`; the worst single
+row is `geometric_farthest_32` with mask features under
+`sensor_node_dropout_25pct` at accuracy `0.933`; both frequency/sensor median
+imputation variants reach mean/min accuracy `1.000`. Treat this as internal
+structured missing-channel evidence, not as real instrument calibration or
+full-wave complex-airframe validation.
 
 ## Huygens baseline addendum
 
