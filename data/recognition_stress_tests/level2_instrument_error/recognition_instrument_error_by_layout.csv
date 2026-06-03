@@ -1,0 +1,11 @@
+﻿candidate,training_profile,seed_count,row_count,mean_accuracy,std_accuracy,ci95_low_accuracy,ci95_high_accuracy,min_accuracy,max_accuracy,mean_delta_vs_clean_train_profile,min_delta_vs_clean_train_profile,max_delta_vs_clean_train_profile,worst_seed,worst_case,all_rows_pass_085
+full_grid_162,clean_train,3,15,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,202614,global_gain_drift_3db,True
+full_grid_162,known_perturbation_augmented,3,15,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,202614,global_gain_drift_3db,True
+geometric_farthest_32,clean_train,3,15,0.9955555555555555,0.017213259316477405,0.9868444444444444,1.0,0.9333333333333333,1.0,0.0,0.0,0.0,202614,sensor_gain_bias_3db,True
+geometric_farthest_32,known_perturbation_augmented,3,15,0.9955555555555555,0.017213259316477405,0.9868444444444444,1.0,0.9333333333333333,1.0,0.0,0.0,0.0,202614,sensor_gain_bias_3db,True
+fibonacci_snap_120,clean_train,3,15,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,202614,global_gain_drift_3db,True
+fibonacci_snap_120,known_perturbation_augmented,3,15,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,202614,global_gain_drift_3db,True
+task_driven_32,clean_train,3,15,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,202614,global_gain_drift_3db,True
+task_driven_32,known_perturbation_augmented,3,15,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,202614,global_gain_drift_3db,True
+task_driven_48,clean_train,3,15,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,202614,global_gain_drift_3db,True
+task_driven_48,known_perturbation_augmented,3,15,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,202614,global_gain_drift_3db,True

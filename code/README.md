@@ -54,6 +54,7 @@
 | `run_cst_recognition_seed_stability.py` | 对 leave-one-family 中的 noise/dropout 随机扰动做多种子稳定性统计，输出均值、最小值和近似 95% CI。 |
 | `run_cst_recognition_dropout_mitigation.py` | 对 held-out dropout 或含 dropout 组合扰动比较 zero-fill、mask 特征和缺测插补策略。 |
 | `run_cst_recognition_structured_dropout.py` | 在已知扰动增强训练后，测试 sensor-node dropout、polarization-pair dropout 和 azimuth-sector dropout 等未见结构化缺测模式。 |
+| `run_cst_recognition_instrument_error.py` | 测试全局增益漂移、传感器增益偏置、频率响应斜率、极化增益不平衡和混合幅相偏置等仪器相关误差。 |
 | `run_cst_structure_comparison.py` | 结构/安装影响对比实验。 |
 | `build_g3_model_dashboard.py` | 汇总 G3 源模型、SWE、Huygens 和真近场 gate 证据，输出当前可汇报结论与下一步动作。 |
 | `build_*.py` | 报告、PPT、提交包、仪表盘和审查材料生成脚本。 |
@@ -89,6 +90,7 @@ python code\run_cst_recognition_seed_stability.py
 python code\run_cst_recognition_dropout_mitigation.py
 python code\run_cst_recognition_dropout_mitigation.py --layout-candidates full_grid_162,geometric_farthest_32,fibonacci_snap_120,task_driven_32,task_driven_48 --held-out-families dropout,combined --out-dir data\recognition_stress_tests\level2_dropout_mitigation_extended
 python code\run_cst_recognition_structured_dropout.py
+python code\run_cst_recognition_instrument_error.py
 ```
 
 ## Spherical reduced-layout addendum
@@ -245,6 +247,17 @@ row is `geometric_farthest_32` with mask features under
 imputation variants reach mean/min accuracy `1.000`. Treat this as internal
 structured missing-channel evidence, not as real instrument calibration or
 full-wave complex-airframe validation.
+
+`run_cst_recognition_instrument_error.py` is the instrument-error follow-up.
+It trains both clean and known-perturbation-augmented models, then tests
+unseen correlated calibration errors: global gain drift, per-sensor gain bias,
+frequency-response slope, polarization gain imbalance, and mixed amplitude/
+phase bias. It writes `data/recognition_stress_tests/level2_instrument_error/`.
+Current result: all 150 seed/layout/profile/case rows pass `0.85`; the worst
+single row is `geometric_farthest_32` under `sensor_gain_bias_3db` at accuracy
+`0.933`; both training profiles have mean accuracy about `0.999` and minimum
+`0.933`. Treat this as internal simulated instrument-error evidence, not as
+real calibration or full-wave complex-airframe validation.
 
 ## Huygens baseline addendum
 

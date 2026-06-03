@@ -15,6 +15,7 @@ classification/recognition branch. Large CST near-field source tables remain in
 | `level2_dropout_mitigation/` | Focused missing-channel strategy comparison for the tightest held-out dropout layouts. |
 | `level2_dropout_mitigation_extended/` | Extended missing-channel strategy comparison across all five G2 layouts and dropout-bearing stress families. |
 | `level2_structured_dropout/` | Structured missing-channel check for unseen sensor-node, polarization-pair, and angular-sector dropout patterns. |
+| `level2_instrument_error/` | Correlated instrument calibration error check for gain drift, sensor bias, frequency slope, polarization imbalance, and mixed amp/phase bias. |
 
 ## Regenerate
 
@@ -26,6 +27,7 @@ python code\run_cst_recognition_seed_stability.py
 python code\run_cst_recognition_dropout_mitigation.py
 python code\run_cst_recognition_dropout_mitigation.py --layout-candidates full_grid_162,geometric_farthest_32,fibonacci_snap_120,task_driven_32,task_driven_48 --held-out-families dropout,combined --out-dir data\recognition_stress_tests\level2_dropout_mitigation_extended
 python code\run_cst_recognition_structured_dropout.py
+python code\run_cst_recognition_instrument_error.py
 ```
 
 `level2_robustness/` should be read first because it exposes the clean-train
@@ -56,6 +58,13 @@ polarizations for selected sensor-frequency pairs, and contiguous 60 deg
 azimuth sectors. Current result: all 240 rows pass `0.85`; the lowest accuracy
 is `0.933`, and both frequency/sensor median imputation variants reach mean/min
 accuracy `1.000`.
+`level2_instrument_error/` tests a different error family: correlated
+instrument calibration bias without zeroing channels. It compares clean-train
+and known-perturbation-augmented profiles under global gain drift, per-sensor
+gain bias, frequency-response slope, polarization gain imbalance, and mixed
+amplitude/phase bias. Current result: all 150 rows pass `0.85`; the tightest
+case is `geometric_farthest_32/sensor_gain_bias_3db` with minimum accuracy
+`0.933`, and both training profiles have mean accuracy about `0.999`.
 
 ## Boundary
 
@@ -73,4 +82,6 @@ missing channels, not proof that arbitrary sensor failures or real instruments
 are covered. The extended mitigation result makes imputation-only the cleaner
 current candidate than mask-only features, and the structured-dropout result
 checks more realistic missing patterns, but both are still bounded to internal
-simulated dropout-bearing perturbations.
+simulated dropout-bearing perturbations. The instrument-error result adds
+correlated calibration-bias evidence, but it is still simulated Level 2
+CST-derived evidence, not real measurement calibration.

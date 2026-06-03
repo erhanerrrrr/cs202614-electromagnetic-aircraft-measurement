@@ -805,10 +805,63 @@ Next G5 actions:
 
 1. Freeze the current Level 2 internal missing-channel evidence for the report
    and PPT, with a clear boundary that it is simulated dropout evidence.
-2. If more time is available, test time/frequency-correlated instrument errors
-   and mixed amplitude calibration bias, because those are different from pure
-   missingness.
+2. The correlated instrument-error follow-up is now complete; see Section 21.
 3. Rerun the same structured-dropout script after true CST monitor data or
    full-wave airframe data becomes available.
+4. Keep G3 separate: this does not close the true near-field monitor gate or
+   the physical/vector reduced-layout reconstruction proof.
+
+## 21. 2026-06-03 G5 instrument-error update
+
+The instrument-like calibration-error follow-up is now implemented:
+
+```powershell
+python code\run_cst_recognition_instrument_error.py
+```
+
+It writes `data/recognition_stress_tests/level2_instrument_error/`.
+
+Method:
+
+- Keep the same Level 2 CST-derived element-library recognition setting and
+  the same five G2 representative layouts.
+- Compare two training profiles: `clean_train` and
+  `known_perturbation_augmented`.
+- Test correlated errors that are different from missingness: global gain
+  drift, per-sensor gain bias, frequency-response slope, polarization gain
+  imbalance, and mixed amplitude/phase calibration bias.
+- Repeat seeds `202614`, `202615`, and `202616`.
+
+Current result:
+
+- Five layouts, five instrument-error cases, two training profiles, and three
+  seeds give 150 rows.
+- All 150 rows pass the `0.85` threshold.
+- The worst single row is `geometric_farthest_32` under
+  `sensor_gain_bias_3db`, accuracy `0.933`.
+- The tightest aggregate row is also
+  `geometric_farthest_32/sensor_gain_bias_3db`, mean accuracy about `0.978`
+  and minimum accuracy `0.933`.
+- Clean-train and known-perturbation-augmented profiles have the same aggregate
+  mean accuracy, about `0.999`, so the current feature pipeline is already
+  insensitive to these simulated moderate calibration biases.
+
+Engineering interpretation: the G5 branch now covers three distinct internal
+error categories: independent stochastic perturbations, structured missing
+channels, and correlated instrument-like gain/phase calibration bias. The
+report-safe wording is that Level 2 recognition is robust under these simulated
+internal error families, while true measurement calibration and full-wave
+complex-airframe scattering remain outside this evidence.
+
+Next G5 actions:
+
+1. Freeze the current internal G5 evidence set for report/PPT wording:
+   baseline stress, augmented stress, leave-one-family, seed stability,
+   dropout mitigation, structured dropout, and instrument-error checks.
+2. If more time is available, test severe compound cases that combine
+   instrument bias with structured dropout, because that is the next natural
+   stress family beyond either one alone.
+3. Rerun the same G5 checks after true CST monitor data or full-wave airframe
+   data becomes available.
 4. Keep G3 separate: this does not close the true near-field monitor gate or
    the physical/vector reduced-layout reconstruction proof.

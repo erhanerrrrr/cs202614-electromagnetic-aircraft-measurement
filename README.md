@@ -86,6 +86,7 @@
 59. G5 缺测通道缓解验证：`code/run_cst_recognition_dropout_mitigation.py` 输出 `data/recognition_stress_tests/level2_dropout_mitigation/`，在两个最紧 dropout 布局上比较 zero-fill、mask 特征和 frequency/sensor median imputation；当前 48 行全部高于 `0.85`，插补策略将 `geometric_farthest_32/dropout_25pct` 聚合结果从 mean `0.956`、min `0.867` 提升到 mean/min `1.000`。
 60. G5 缺测通道扩展验证：同一脚本输出 `data/recognition_stress_tests/level2_dropout_mitigation_extended/`，把比较扩展到 5 个 G2 代表布局和 held-out `dropout/combined` 两类含缺测压力；当前 180 行全部高于 `0.85`，zero-fill 最小 `0.867`，mask-only 最小 `0.867` 且个别聚合行会弱于 zero-fill，frequency/sensor median imputation 与 imputation+mask 均达到 mean/min `1.000`。
 61. G5 结构化缺测验证：`code/run_cst_recognition_structured_dropout.py` 输出 `data/recognition_stress_tests/level2_structured_dropout/`，在已知扰动增强训练后测试 sensor-node dropout、polarization-pair dropout 和 60 deg azimuth-sector dropout；当前 240 行全部高于 `0.85`，最低 accuracy=`0.933`，frequency/sensor median imputation 两种策略 mean/min 均为 `1.000`。
+62. G5 仪器相关误差验证：`code/run_cst_recognition_instrument_error.py` 输出 `data/recognition_stress_tests/level2_instrument_error/`，测试全局增益漂移、传感器增益偏置、频率响应斜率、极化增益不平衡和混合幅相偏置；当前 150 行全部高于 `0.85`，最低 accuracy=`0.933`，最紧项为 `geometric_farthest_32/sensor_gain_bias_3db`。
 
 ## 如何阅读本项目
 
@@ -118,7 +119,7 @@
 25. 若要判断是否能交付，查看 `outputs/completion_audit/completion_audit.md`。
 26. 若要推进真近场 monitor 复跑，先看 `docs/true_nearfield_monitor_workflow.md`，再运行 `python code\run_true_nearfield_gate.py` 查看 `data/cst_true_nearfield_workpack/gate_report/`。
 27. 若要判断 CST 真 monitor 回填后下一步，运行 `python code\run_true_nearfield_workflow_decision.py`，再看 `outputs/cst_true_nearfield_workflow_decision/true_nearfield_workflow_decision.md`。
-28. 若要查看 G5 分类鲁棒性边界、增强训练修复效果、未见误差族外推能力、种子稳定性、缺测缓解策略和结构化缺测压力，依次看 `data/recognition_stress_tests/level2_robustness/`、`data/recognition_stress_tests/level2_augmented_robustness/`、`data/recognition_stress_tests/level2_leave_one_family_out/`、`data/recognition_stress_tests/level2_seed_stability/`、`data/recognition_stress_tests/level2_dropout_mitigation/`、`data/recognition_stress_tests/level2_dropout_mitigation_extended/` 与 `data/recognition_stress_tests/level2_structured_dropout/`。
+28. 若要查看 G5 分类鲁棒性边界、增强训练修复效果、未见误差族外推能力、种子稳定性、缺测缓解策略、结构化缺测压力和仪器相关误差压力，依次看 `data/recognition_stress_tests/level2_robustness/`、`data/recognition_stress_tests/level2_augmented_robustness/`、`data/recognition_stress_tests/level2_leave_one_family_out/`、`data/recognition_stress_tests/level2_seed_stability/`、`data/recognition_stress_tests/level2_dropout_mitigation/`、`data/recognition_stress_tests/level2_dropout_mitigation_extended/`、`data/recognition_stress_tests/level2_structured_dropout/` 与 `data/recognition_stress_tests/level2_instrument_error/`。
 
 ## Baseline 运行方式
 
