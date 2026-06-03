@@ -322,3 +322,16 @@ baseline reaches the same acceptance gate used by the source-model diagnostics.
 ## 当前重点
 
 G2 已生成非冗余半球采样候选。G3 正在校准真实 CST Level 1 数据链：中心源先验和轻量球谐 NF-FF baseline 共同证明角度/极化/比较链路可信；Huygens 面源 baseline 已可运行并新增 `current_green` 诊断分支，但当前仍为 `diagnostic_only`，通用等效源网格也仍未达到最终采样证明要求。下一步应补 CST 真近场 monitor 实测，并升级 Huygens 电/磁面流 Green 算子与正则化。
+
+## CST solver mesh-limit addendum
+
+`run_cst_solver_project.py` now records CST solver-log diagnostics in addition
+to result-tree inspection. For the current required true-nearfield trial,
+`StartSolver` succeeds but CST stops before producing result-tree child items
+because the 13 m Cartesian probe setup expands to about `4.6` billion mesh
+cells and requires at least `3` MPI cluster nodes. Treat this as a modeling and
+sampling-workflow limit, not as CST installation failure.
+
+Next G3 code work should generate a mesh-safe CST observation pack: local
+Huygens/near-boundary monitors or other compact physical evidence near the
+source, followed by Python extrapolation to the 13 m hemisphere shell.

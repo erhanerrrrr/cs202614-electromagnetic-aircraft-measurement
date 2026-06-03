@@ -491,7 +491,7 @@ def controller_run(args: argparse.Namespace) -> int:
 
     command = [
         str(args.cst_python),
-        str(Path("src") / Path(__file__).name),
+        str(Path(__file__).resolve()),
         "--worker",
         str(config_path),
         str(worker_summary_path),

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -16,6 +17,15 @@ DEFAULT_CST_PYTHON = Path(
     r"D:\Program Files (x86)\CST Studio Suite 2025\Opera\code\bin\python.exe"
 )
 DEFAULT_OUT_DIR = ROOT / "outputs" / "cst_solver_trials"
+RESULT_TREE_ROOTS = ("1D Results", "2D/3D Results", "Tables", "Farfields")
+RESULT_TREE_PREFIXES = tuple(f"{root}\\" for root in RESULT_TREE_ROOTS)
+SOLVER_LOG_RELATIVE_PATHS = (
+    "Result/Model.log",
+    "Result/output.txt",
+    "Result/outputDS.txt",
+    "Result/hexmeshengine.log",
+    "Result/ml_info.log",
+)
 
 
 def now_iso() -> str:
@@ -27,6 +37,14 @@ def resolve_path(path_text: str | Path) -> Path:
     if path.is_absolute():
         return path
     return ROOT / path
+
+
+def display_path(path_text: str | Path) -> str:
+    path = Path(path_text)
+    try:
+        return str(path.resolve().relative_to(ROOT))
+    except Exception:
+        return str(path)
 
 
 def write_json(path: Path, data: dict[str, Any]) -> None:
@@ -62,6 +80,142 @@ def copy_project_to_trial(source_project: Path, trial_dir: Path, trial_name: str
     return target
 
 
+def result_tree_items(tree_items: Any) -> list[str]:
+    if not isinstance(tree_items, list):
+        return []
+    return [
+        item
+        for item in tree_items
+        if isinstance(item, str) and item.startswith(RESULT_TREE_PREFIXES)
+    ]
+
+
+def result_tree_roots(tree_items: Any) -> list[str]:
+    if not isinstance(tree_items, list):
+        return []
+    return [item for item in tree_items if isinstance(item, str) and item in RESULT_TREE_ROOTS]
+
+
+def farfield_tree_items(tree_items: Any) -> list[str]:
+    return [
+        item
+        for item in result_tree_items(tree_items)
+        if item.startswith("Farfields\\") or "\\Farfields\\" in item or "\\Farfield\\" in item
+    ]
+
+
+def read_text_safe(path: Path) -> tuple[str, str]:
+    last_error = ""
+    for encoding in ("utf-8-sig", "utf-16", "mbcs", "cp1252", "latin-1"):
+        try:
+            text = path.read_text(encoding=encoding, errors="replace")
+        except Exception as exc:  # noqa: BLE001
+            last_error = repr(exc)
+            continue
+        if text and text.count("\x00") / max(len(text), 1) > 0.1:
+            last_error = f"decoded with many NULs using {encoding}"
+            continue
+        return text, encoding
+    return f"<failed to read {path}: {last_error}>", "unreadable"
+
+
+def tail_lines(text: str, keep: int = 24) -> list[str]:
+    lines = [line.rstrip() for line in text.splitlines() if line.strip()]
+    return lines[-keep:]
+
+
+def unique_error_lines(text: str, limit: int = 20) -> list[str]:
+    needles = (
+        "*** error ***",
+        " error ",
+        "error:",
+        "requires:",
+        "simulation cannot be started",
+        "expecting local encoding",
+    )
+    lines: list[str] = []
+    seen: set[str] = set()
+    for line in text.splitlines():
+        stripped = line.strip()
+        lowered = f" {stripped.lower()} "
+        if not stripped or not any(needle in lowered for needle in needles):
+            continue
+        if stripped in seen:
+            continue
+        seen.add(stripped)
+        lines.append(stripped)
+        if len(lines) >= limit:
+            break
+    return lines
+
+
+def collect_solver_logs(project: Path) -> dict[str, Any]:
+    result_dir = project.with_suffix("")
+    log_files: list[dict[str, Any]] = []
+    combined_parts: list[str] = []
+    for relative_text in SOLVER_LOG_RELATIVE_PATHS:
+        log_path = result_dir / Path(*relative_text.split("/"))
+        entry: dict[str, Any] = {
+            "path": display_path(log_path),
+            "exists": log_path.exists(),
+        }
+        if log_path.exists():
+            text, encoding = read_text_safe(log_path)
+            entry.update(
+                {
+                    "encoding": encoding,
+                    "size_bytes": log_path.stat().st_size,
+                    "tail": tail_lines(text),
+                }
+            )
+            combined_parts.append(text)
+        log_files.append(entry)
+
+    combined = "\n".join(combined_parts)
+    mesh_match = re.search(r"Simulation setup for\s+([\d.]+)\s+billion mesh cells", combined, re.IGNORECASE)
+    mpi_match = re.search(r"at least\s+(\d+)\s+cluster nodes", combined, re.IGNORECASE)
+    mesh_cell_count_billion = float(mesh_match.group(1)) if mesh_match else None
+    required_mpi_nodes = int(mpi_match.group(1)) if mpi_match else None
+    return {
+        "project_result_dir": display_path(result_dir),
+        "log_files": log_files,
+        "error_lines": unique_error_lines(combined),
+        "mesh_cell_count_billion": mesh_cell_count_billion,
+        "required_mpi_nodes": required_mpi_nodes,
+        "mesh_limit_detected": bool(mesh_cell_count_billion and required_mpi_nodes),
+        "encoding_warning_detected": "Expecting local encoding" in combined,
+    }
+
+
+def write_trial_readme(trial_dir: Path, summary: dict[str, Any]) -> None:
+    solver_logs = summary.get("solver_logs", {}) if isinstance(summary.get("solver_logs"), dict) else {}
+    lines = [
+        "# CST solver trial diagnostic",
+        "",
+        f"- Status: `{summary.get('status', 'unknown')}`",
+        f"- Source project: `{summary.get('source_project', '')}`",
+        f"- Trial project: `{summary.get('trial_project', '')}`",
+        f"- CST API start result: `{summary.get('solver_start_result', {})}`",
+        f"- Result-tree child items after solve: `{summary.get('result_tree_count_after', 0)}`",
+    ]
+    if solver_logs.get("mesh_limit_detected"):
+        lines.extend(
+            [
+                f"- Parsed mesh size: `{solver_logs.get('mesh_cell_count_billion')}` billion cells",
+                f"- Parsed MPI requirement: `{solver_logs.get('required_mpi_nodes')}` cluster nodes",
+                "",
+                "Interpretation: CST could start the solver, but the full-wave setup is too large for the local machine.",
+                "The 13 m measurement shell should be treated as a Python-side extrapolation target, not as a remote probe mesh inside this CST solve.",
+            ]
+        )
+    error_lines = solver_logs.get("error_lines", [])
+    if error_lines:
+        lines.extend(["", "## Key log lines", ""])
+        lines.extend(f"- `{line}`" for line in error_lines[:12])
+    readme = trial_dir / "README.md"
+    readme.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def worker_run(args: argparse.Namespace) -> int:
     import cst.interface
 
@@ -72,7 +226,7 @@ def worker_run(args: argparse.Namespace) -> int:
         "created_at": now_iso(),
         "status": "started",
         "real_cst_api_used": True,
-        "project": str(project),
+        "project": display_path(project),
         "project_exists": project.exists(),
         "timeout_seconds": args.timeout_seconds,
         "poll_seconds": args.poll_seconds,
@@ -86,9 +240,9 @@ def worker_run(args: argparse.Namespace) -> int:
         before_items = safe_call(model, "get_tree_items")
         before_tree_items = before_items.get("value", []) if before_items.get("ok") else []
         summary["tree_count_before"] = len(before_tree_items) if isinstance(before_tree_items, list) else 0
-        summary["farfield_items_before"] = [
-            item for item in before_tree_items if isinstance(item, str) and item.startswith("Farfields\\")
-        ]
+        summary["result_tree_roots_before"] = result_tree_roots(before_tree_items)
+        summary["result_tree_count_before"] = len(result_tree_items(before_tree_items))
+        summary["farfield_items_before"] = farfield_tree_items(before_tree_items)
 
         start_result = safe_call(model, "start_solver")
         if not start_result["ok"]:
@@ -128,19 +282,23 @@ def worker_run(args: argparse.Namespace) -> int:
         save_project = safe_call(prj, "save")
         after_items = safe_call(model, "get_tree_items")
         after_tree_items = after_items.get("value", []) if after_items.get("ok") else []
-        farfield_items_after = [
-            item for item in after_tree_items if isinstance(item, str) and item.startswith("Farfields\\")
-        ]
+        result_items_after = result_tree_items(after_tree_items)
+        farfield_items_after = farfield_tree_items(after_tree_items)
+        solver_logs = collect_solver_logs(project)
         last_solver_info = poll_log[-1]["solver_info"] if poll_log else {}
         last_solver_value = last_solver_info.get("value", {}) if isinstance(last_solver_info, dict) else {}
         last_solver_state = ""
         if isinstance(last_solver_value, dict):
             last_solver_state = str(last_solver_value.get("state", ""))
         status = "timed_out" if timed_out else "finished"
-        if last_solver_state and last_solver_state.upper() not in {"SUCCESS", "FINISHED"}:
+        if solver_logs.get("mesh_limit_detected"):
+            status = "solver_mesh_limit"
+        elif status == "finished" and last_solver_state and last_solver_state.upper() not in {"SUCCESS", "FINISHED"}:
             status = "solver_reported_non_success"
-        if not farfield_items_after:
-            status = "finished_without_farfield_results" if status == "finished" else status
+        elif status == "finished" and not result_items_after:
+            status = "finished_without_result_tree_items"
+        elif status == "finished" and not farfield_items_after:
+            status = "finished_without_farfield_results"
 
         summary.update(
             {
@@ -152,8 +310,12 @@ def worker_run(args: argparse.Namespace) -> int:
                 "last_solver_info": last_solver_info,
                 "save_project": save_project,
                 "tree_count_after": len(after_tree_items) if isinstance(after_tree_items, list) else 0,
+                "result_tree_roots_after": result_tree_roots(after_tree_items),
+                "result_tree_count_after": len(result_items_after),
+                "result_items_after": result_items_after,
                 "farfield_items_after": farfield_items_after,
                 "project_size_bytes": project.stat().st_size if project.exists() else 0,
+                "solver_logs": solver_logs,
             }
         )
         write_json(summary_out, summary)
@@ -183,15 +345,15 @@ def controller_run(args: argparse.Namespace) -> int:
                 "status": "failed",
                 "real_cst_api_used": False,
                 "error": f"CST Python not found: {args.cst_python}",
-                "source_project": str(source_project),
-                "trial_project": str(trial_project),
+                "source_project": display_path(source_project),
+                "trial_project": display_path(trial_project),
             },
         )
         return 1
 
     command = [
         str(args.cst_python),
-        str(Path("src") / Path(__file__).name),
+        str(Path(__file__).resolve()),
         "--worker",
         "--project",
         str(trial_project),
@@ -223,12 +385,13 @@ def controller_run(args: argparse.Namespace) -> int:
     summary.update(
         {
             "controller_returncode": completed.returncode,
-            "source_project": str(source_project),
-            "trial_project": str(trial_project),
-            "stdout_log": str(stdout_log),
+            "source_project": display_path(source_project),
+            "trial_project": display_path(trial_project),
+            "stdout_log": display_path(stdout_log),
         }
     )
     write_json(summary_out, summary)
+    write_trial_readme(trial_dir, summary)
     return completed.returncode
 
 

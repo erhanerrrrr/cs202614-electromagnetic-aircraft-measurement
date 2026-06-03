@@ -1,0 +1,202 @@
+{
+  "created_at": "2026-06-03T14:23:57+00:00",
+  "status": "solver_mesh_limit",
+  "real_cst_api_used": true,
+  "project": "outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial.cst",
+  "project_exists": true,
+  "timeout_seconds": 300,
+  "poll_seconds": 10.0,
+  "tree_count_before": 205,
+  "result_tree_roots_before": [
+    "1D Results",
+    "2D/3D Results",
+    "Farfields",
+    "Tables"
+  ],
+  "result_tree_count_before": 0,
+  "farfield_items_before": [],
+  "solver_start_result": {
+    "ok": true,
+    "value": true
+  },
+  "completed_at": "2026-06-03T14:24:14+00:00",
+  "elapsed_seconds": 17.25,
+  "poll_count": 2,
+  "poll_log_tail": [
+    {
+      "elapsed_seconds": 6.343,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 16.359,
+      "is_solver_running": {
+        "ok": true,
+        "value": false
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    }
+  ],
+  "last_solver_info": {
+    "ok": false,
+    "error": "missing method get_solver_info"
+  },
+  "save_project": {
+    "ok": true,
+    "value": null
+  },
+  "tree_count_after": 205,
+  "result_tree_roots_after": [
+    "1D Results",
+    "2D/3D Results",
+    "Farfields",
+    "Tables"
+  ],
+  "result_tree_count_after": 0,
+  "result_items_after": [],
+  "farfield_items_after": [],
+  "project_size_bytes": 47943,
+  "solver_logs": {
+    "project_result_dir": "outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial",
+    "log_files": [
+      {
+        "path": "outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial\\Result\\Model.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 2697,
+        "tail": [
+          "                         Simulation cannot be started.",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-03 22:22:44   Defined reference frequency for open boundary condition (1.2 GHz) is larger",
+          "                      than the lowest relevant system frequency (monitor at 1.2 GHz).",
+          "                      Please check the Settings for PML Boundary (Simulation > Settings > Boundary",
+          "                      Conditions > Open Boundary) to ensure accurate monitor results for the lowest",
+          "                      frequency of interest. More...",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-03 22:22:44   *** Error ***",
+          "                      Simulation setup for 4.6 billion mesh cells requires:",
+          "                      \t- MPI simulation setup with at least 3 cluster nodes",
+          "                         Simulation cannot be started.",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-03 22:24:03   Defined reference frequency for open boundary condition (1.2 GHz) is larger",
+          "                      than the lowest relevant system frequency (monitor at 1.2 GHz).",
+          "                      Please check the Settings for PML Boundary (Simulation > Settings > Boundary",
+          "                      Conditions > Open Boundary) to ensure accurate monitor results for the lowest",
+          "                      frequency of interest. More...",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-03 22:24:03   *** Error ***",
+          "                      Simulation setup for 4.6 billion mesh cells requires:",
+          "                      \t- MPI simulation setup with at least 3 cluster nodes",
+          "                         Simulation cannot be started.",
+          "                      ------------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "path": "outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial\\Result\\output.txt",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 1383,
+        "tail": [
+          "_______________________________________________________________________________________________________________________",
+          "    Message output from C:\\Users\\heh20\\Desktop\\���Ӻ��������ŷ���������Բ�����������\\outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial",
+          "    Build: 2025.2 Release from 2024-12-16 (change 1361105)",
+          "_______________________________________________________________________________________________________________________",
+          "_______________________________________________________________________________________________________________________",
+          "Defined reference frequency for open boundary condition (1.2 GHz) is larger than the lowest relevant system frequency (monitor at 1.2 GHz).",
+          "Please check the Settings for PML Boundary (Simulation > Settings > Boundary Conditions > Open Boundary) to ensure accurate monitor results for the lowest frequency of interest. <a href=\"2108;2356.htm\">More...</a>",
+          "_______________________________________________________________________________________________________________________",
+          "ERROR:",
+          "Simulation setup for 4.6 billion mesh cells requires:",
+          "\t- MPI simulation setup with at least 3 cluster nodes",
+          "   Simulation cannot be started.",
+          "_______________________________________________________________________________________________________________________",
+          "ERROR:",
+          "1 error occurred."
+        ]
+      },
+      {
+        "path": "outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial\\Result\\outputDS.txt",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 1204,
+        "tail": [
+          "_______________________________________________________________________________________________________________________",
+          "    Message output from C:\\Users\\heh20\\Desktop\\���Ӻ��������ŷ���������Բ�����������\\outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial",
+          "    Build: 2025.2 Release from 2024-12-16 (change 1361105)",
+          "_______________________________________________________________________________________________________________________",
+          "_______________________________________________________________________________________________________________________",
+          "ERROR:",
+          "Error while opening parameter storage module:",
+          "CST::Exception: Expecting local encoding but found utf8 multibyte.",
+          "_______________________________________________________________________________________________________________________",
+          "ERROR:",
+          "Error while opening parameter storage module:",
+          "CST::FileError: Source file for copy db.parmap not found",
+          "_______________________________________________________________________________________________________________________",
+          "ERROR:",
+          "Error while opening parameter storage module:",
+          "CST::Exception: Expecting local encoding but found utf8 multibyte."
+        ]
+      },
+      {
+        "path": "outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial\\Result\\hexmeshengine.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 457,
+        "tail": [
+          ">2026-06-03 22:17:16.00054< :  Configuring HexMeshEngine...",
+          ">2026-06-03 22:17:16.00128< :  Locals Configured.",
+          ">2026-06-03 22:17:16.00129< :  Globals Configured.",
+          ">2026-06-03 22:17:16.00129< :  Configuration Done.",
+          ">2026-06-03 22:17:16.00129< :  HexMeshEngine correctly configured.",
+          ">2026-06-03 22:17:16.00129< :  Generating Mesh Line...",
+          ">2026-06-03 22:17:16.00244< :  Done.",
+          ">2026-06-03 22:17:16.00245< :  Postprocessing...",
+          ">2026-06-03 22:17:16.00245< :  Done."
+        ]
+      },
+      {
+        "path": "outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial\\Result\\ml_info.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 211,
+        "tail": [
+          "Layer Detection Run At: Wed Jun  3 22:17:16 2026",
+          "Layer Detection Version: 20180416",
+          "No Result from User Configuration (No Auto-Detection attempted).",
+          "Result from Auto-Detection.",
+          "Stack Detection Failed."
+        ]
+      }
+    ],
+    "error_lines": [
+      "2026-06-03 22:17:16   *** Error ***",
+      "Simulation setup for 4.6 billion mesh cells requires:",
+      "Simulation cannot be started.",
+      "2026-06-03 22:22:44   *** Error ***",
+      "2026-06-03 22:24:03   *** Error ***",
+      "ERROR:",
+      "1 error occurred.",
+      "Error while opening parameter storage module:",
+      "CST::Exception: Expecting local encoding but found utf8 multibyte.",
+      "CST::FileError: Source file for copy db.parmap not found"
+    ],
+    "mesh_cell_count_billion": 4.6,
+    "required_mpi_nodes": 3,
+    "mesh_limit_detected": true,
+    "encoding_warning_detected": true
+  },
+  "controller_returncode": 1,
+  "source_project": "outputs\\cst_real_level1_projects\\projects\\CST_L1_short_dipole_z_1p2G.cst",
+  "trial_project": "outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial.cst",
+  "stdout_log": "outputs\\cst_solver_trials\\required_true_nf_short\\CST_L1_short_dipole_z_1p2G_solver_trial_solver_stdout.log"
+}

@@ -146,3 +146,17 @@ same output directory.
 - 真实 Level 1 CST required 已完成求解、CSV 导出、严格审计、批量重建和 FarfieldPlot-derived 角域校准；Level 2 已完成 48/48 个 CST-derived element-library 样本、严格合并、识别、消融和简化结构遮挡对照，但复杂载体 full-wave airframe 对照仍未完成。
 - 正式报告 PDF/DOCX、答辩 PPTX/PDF、演示视频 MP4 和最终 zip 已生成；MP4 是自动计时静音版，正式报送前建议人工播放并按竞赛要求决定是否替换为带讲解版本。
 - Level 1 solver-safe 数据已经在报告/PPT 中区分角域高一致性与 full-wave 近场等效源模型边界；最终视频如替换，应保持同一口径。
+
+## 2026-06-03 CST solver mesh-limit 诊断
+
+`code/run_cst_solver_project.py` 现在会在 CST 试求解后解析 `Result` 日志、真实结果树子项、网格规模和 MPI 节点要求。本轮短偶极子 trial 证明：CST Python 可启动、工程可打开、`StartSolver` 返回成功，但原始 13 m Cartesian probe/full-grid true-nearfield 工程触发约 `4.6` billion mesh cells，并要求至少 `3` 个 MPI cluster nodes，因此本机没有生成可导出的求解结果。
+
+相关证据入口：
+
+| 文件/目录 | 意义 |
+|---|---|
+| `docs/stage_notes/29_g3_cst_solver_mesh_limit.md` | S29 阶段说明，解释“CST 可运行但当前采样建模路线不可求解”的原因 |
+| `outputs/cst_solver_trials/required_true_nf_short/CST_L1_short_dipole_z_1p2G_solver_trial_solver_summary.json` | 机器可读 trial 摘要，`status = solver_mesh_limit` |
+| `outputs/cst_solver_trials/required_true_nf_short/README.md` | 人类可读 trial 诊断 |
+
+后续 G3 路线应切换为 mesh-safe 流程：CST 侧求解近源/局部 Huygens 面或近边界物理数据，Python 侧把该数据外推到 13 m 测量壳，再做采样方案、外推反演和分类评估。
