@@ -52,6 +52,7 @@
 | `run_cst_recognition_augmented_stress_test.py` | 在同一 held-out 压力测试上加入扰动增强训练，对照 clean-train 边界能否被校准/增强恢复。 |
 | `run_cst_recognition_leave_one_family_out.py` | 逐类留出 noise/phase/dropout/combined 扰动族，检查增强训练对未见误差族的外推能力。 |
 | `run_cst_recognition_seed_stability.py` | 对 leave-one-family 中的 noise/dropout 随机扰动做多种子稳定性统计，输出均值、最小值和近似 95% CI。 |
+| `run_cst_recognition_dropout_mitigation.py` | 对 held-out dropout 的最紧布局比较 zero-fill、mask 特征和缺测插补策略。 |
 | `run_cst_structure_comparison.py` | 结构/安装影响对比实验。 |
 | `build_g3_model_dashboard.py` | 汇总 G3 源模型、SWE、Huygens 和真近场 gate 证据，输出当前可汇报结论与下一步动作。 |
 | `build_*.py` | 报告、PPT、提交包、仪表盘和审查材料生成脚本。 |
@@ -84,6 +85,7 @@ python code\run_cst_recognition_stress_test.py
 python code\run_cst_recognition_augmented_stress_test.py
 python code\run_cst_recognition_leave_one_family_out.py
 python code\run_cst_recognition_seed_stability.py
+python code\run_cst_recognition_dropout_mitigation.py
 ```
 
 ## Spherical reduced-layout addendum
@@ -204,6 +206,20 @@ tightest case is `geometric_farthest_32` under held-out `dropout_25pct`
 `[0.768, 1.000]`). This keeps missing-channel/dropout behavior as the G5
 calibration target while making the noise/dropout conclusion less dependent on
 a single random split.
+
+`run_cst_recognition_dropout_mitigation.py` is the focused missing-channel
+follow-up. It keeps the leave-one-family protocol, focuses on held-out dropout
+for the two tightest layouts, and compares zero-fill, missing-mask features,
+frequency/sensor median imputation, and imputation plus mask features. It
+writes `data/recognition_stress_tests/level2_dropout_mitigation/`.
+
+Current dropout-mitigation result: 48 seed/layout/strategy/stress rows all pass
+the `0.85` threshold. Mask features alone do not improve the zero-fill margin.
+The frequency/sensor median imputation strategy raises the tightest
+`geometric_farthest_32/dropout_25pct` aggregate from mean accuracy about
+`0.956` and min `0.867` to mean/min `1.000`. Treat this as a candidate
+test-time missing-channel preprocessing step for G5, still bounded to Level 2
+CST-derived internal stochastic dropout evidence.
 
 ## Huygens baseline addendum
 

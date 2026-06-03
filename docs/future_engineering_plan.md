@@ -648,3 +648,63 @@ Next G5 actions:
 3. Keep the report wording conservative: the seed-stability check strengthens
    internal perturbation evidence, but it is not real measurement calibration
    or full-wave complex-airframe validation.
+
+## 18. 2026-06-03 G5 dropout mitigation update
+
+The missing-channel follow-up is now implemented:
+
+```powershell
+python code\run_cst_recognition_dropout_mitigation.py
+```
+
+It writes `data/recognition_stress_tests/level2_dropout_mitigation/`:
+
+- `recognition_dropout_mitigation_metrics.csv`: per-seed, per-layout,
+  per-strategy dropout accuracy and macro-F1.
+- `recognition_dropout_mitigation_by_strategy.csv`: aggregate comparison of
+  zero-fill, missing-mask features, and imputation.
+- `recognition_dropout_mitigation_by_case.csv`: layout/dropout-case/strategy
+  aggregate table.
+- `recognition_dropout_mitigation_by_layout.csv`,
+  `recognition_dropout_mitigation_summary.json`, and `README.md`: supporting
+  summaries and claim boundary.
+
+Method:
+
+- Keep the leave-one-stress-family-out protocol.
+- Focus on held-out `dropout` for the two layouts that were tightest in the
+  earlier checks: `geometric_farthest_32` and `task_driven_48`.
+- Repeat seeds `202614`, `202615`, and `202616`.
+- Compare four test-time missing-channel strategies: current zero-fill,
+  missing-mask features, frequency/sensor median imputation, and imputation
+  plus mask features.
+
+Current result:
+
+- Two layouts, two dropout cases, four strategies, and three seeds give 48
+  rows.
+- All 48 rows remain above the `0.85` threshold.
+- Mask features alone do not improve zero-fill.
+- Frequency/sensor median imputation raises the tightest
+  `geometric_farthest_32/dropout_25pct` aggregate from mean accuracy about
+  `0.956` and minimum accuracy about `0.867` to mean/min `1.000`.
+- Adding mask features on top of imputation gives the same aggregate result as
+  imputation alone, so the simpler imputation-only strategy is the cleaner
+  current candidate.
+
+Engineering interpretation: for the current Level 2 CST-derived
+element-library data, random channel dropout is better treated as a
+missing-data problem than as a raw zero-amplitude measurement. The best current
+G5 preprocessing candidate is frequency/sensor median imputation before
+recognition feature extraction.
+
+Next G5 actions:
+
+1. Use frequency/sensor median imputation as the default candidate when writing
+   the missing-channel robustness section, while reporting zero-fill as the
+   conservative baseline.
+2. If time allows, broaden this mitigation comparison to all five G2 layouts
+   and to compound perturbations that include dropout.
+3. Keep the boundary explicit: this is still internal stochastic dropout
+   evidence, not real instrument calibration, arbitrary sensor-failure
+   coverage, or full-wave complex-airframe validation.
