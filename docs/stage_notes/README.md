@@ -34,6 +34,7 @@
 | S25 | `25_final_archive.md` | 最终 zip、文件级 SHA256 manifest、压缩包完整性检查和人工提交清单 |
 | S26 | `26_current_work_explanation.md` | 当前工作详细讲解、阅读入口、提交附录归档和后续接手口径 |
 | S27 | `27_g5_compound_stress_material_refresh.md` | Level 2 复合仪器误差/结构缺测压力测试、zero-fill 失败边界和插补缓解口径 |
+| S28 | `28_g3_true_nearfield_export_controller.md` | G3 required 真近场 monitor/probe 导出控制器、dry-run/inspect-only 工作流和当前物理证据边界 |
 
 后续规则：
 

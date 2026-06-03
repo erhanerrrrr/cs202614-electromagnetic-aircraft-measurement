@@ -24,7 +24,7 @@
 | 分组 | 脚本 | 意义 |
 |---|---|---|
 | 核心电磁与 baseline | `em_core.py`, `run_baseline.py` | 合成场、等效源、重建和初始布局验证 |
-| CST 数据接口 | `cst_io.py`, `check_cst_export.py`, `normalize_cst_complex_columns.py`, `prepare_cst_templates.py`, `prepare_cst_macro_templates.py`, `build_cst_execution_dashboard.py`, `build_cst_operator_runbook.py`, `run_cst_level1_required_automation.py`, `run_cst_solver_project.py`, `export_cst_farfield_results.py`, `run_cst_level2_element_library.py`, `export_cst_level2_superposed_results.py` | 固定 CST 表格格式、校验、幅相转换、宏模板、执行 dashboard、真机操作包、本机 CST API 工程生成、单工程求解、FarfieldPlot 真实结果导出和 Level 2 element-library 叠加导出 |
+| CST 数据接口 | `cst_io.py`, `check_cst_export.py`, `normalize_cst_complex_columns.py`, `prepare_cst_templates.py`, `prepare_cst_macro_templates.py`, `build_cst_execution_dashboard.py`, `build_cst_operator_runbook.py`, `run_cst_level1_required_automation.py`, `run_cst_solver_project.py`, `export_cst_farfield_results.py`, `export_cst_true_nearfield_monitor.py`, `run_cst_level2_element_library.py`, `export_cst_level2_superposed_results.py` | 固定 CST 表格格式、校验、幅相转换、宏模板、执行 dashboard、真机操作包、本机 CST API 工程生成、单工程求解、FarfieldPlot 真实结果导出、G3 真近场 monitor/probe 导出控制器和 Level 2 element-library 叠加导出 |
 | Level 1 标准源 | `prepare_cst_level1_manifest.py`, `prepare_cst_level1_workpack.py`, `merge_cst_level1_exports.py`, `run_cst_level1_batch_reconstruction.py`, `generate_synthetic_cst_level1_dataset.py` | 标准源计划、建模任务包、审计和重建 |
 | Level 2 多源识别 | `prepare_cst_level2_manifest.py`, `prepare_cst_level2_workpack.py`, `merge_cst_level2_exports.py`, `generate_synthetic_cst_dataset.py`, `run_cst_recognition.py`, `run_cst_recognition_ablation.py`, `run_cst_level2_element_library.py`, `export_cst_level2_superposed_results.py`, `run_cst_structure_comparison.py` | 多源多状态计划、任务包、合并、识别、CST element-library 工程、sample-level full48 导出和简化结构遮挡对照 |
 | 重建验证 | `run_cst_reconstruction.py`, `run_cst_level1_angular_calibration.py`, `run_reconstruction_robustness.py` | CST 数据重建、Level 1 FarfieldPlot-derived 角域校准和鲁棒性分析 |
@@ -58,6 +58,7 @@
 | CST solver-safe 工程 | `cst_solver_ready_level1_projects` | 使用 `efarfield` probe mode 生成的本机可求解 Level 1 required 工程 |
 | CST 真机求解试验 | `cst_solver_trials` | 短偶极子/半波偶极子 solver-safe 求解证据，以及原始 13 m Cartesian probe 失败证据 |
 | CST FarfieldPlot 导出 | `cst_farfield_export` | 真实 CST FarfieldPlot 导出 summary、stdout 和 `check_cst_export.py` 校验 JSON |
+| CST 真近场导出控制器 | `cst_true_nearfield_monitor_export` | G3 required true-monitor/probe dry-run 任务计划、CST worker 日志、结果树检查和 raw export 尝试 |
 | 报告成稿素材 | `report_package`, `final_report` | 报告章节状态、图表占位、核心引用、替换任务、正式报告导出摘要和 PDF 页面预览 |
 | PPT/视频素材 | `presentation_package`, `presentation_artifact`, `video_artifact` | 答辩 storyboard、视频分镜、展示素材、PPTX/PDF 导出摘要、layout JSON、预览接触表和 MP4 导出摘要 |
 | 最终归档 | `final_archive` | 最终 zip、文件级 SHA256 manifest、压缩包摘要和完整性检查依据 |
@@ -119,6 +120,8 @@
 35. `docs/stage_notes/22_structure_occlusion_comparison.md`
 36. `outputs/cst_execution_dashboard/cst_execution_dashboard.md`
 37. `outputs/cst_execution_logs/README_cst_execution_logs.md`
+38. `docs/stage_notes/28_g3_true_nearfield_export_controller.md`
+39. `outputs/cst_true_nearfield_monitor_export/README.md`
 
 ## 2026-06-02 true-monitor queue index
 
@@ -131,6 +134,12 @@ handoff package plus a reduced-layout rerun queue:
 | `true_nearfield_sensor_shell.csv` | Full 162-point upper-hemisphere shell. |
 | `true_nearfield_priority_layout_queue.csv` | Eighteen case-layout tasks: `full_grid_162`, `geometric_farthest_32`, and `fibonacci_snap_120` for each Level 1 case. |
 | `true_nearfield_priority_sensor_subsets.csv` | Sensor ids and coordinates needed to derive each queued layout from a full-grid export. |
+
+`code/export_cst_true_nearfield_monitor.py` is the current executable bridge
+from this packet to CST. It writes
+`outputs/cst_true_nearfield_monitor_export/true_nearfield_export_task_plan.csv`
+in dry-run mode and records CST result-tree inspection/export attempts in the
+same output directory.
 
 ## 当前不能声称完成的原因
 

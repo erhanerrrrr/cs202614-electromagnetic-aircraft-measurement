@@ -41,6 +41,7 @@
 | `prepare_cst_true_nearfield_operator_packet.py` | 从真近场 workpack 和 gate 状态生成 required full-grid CST 任务卡、manifest、验收命令和 operator packet summary。 |
 | `build_true_nearfield_handoff.py` | 将真近场 monitor 队列、gate 状态和 CSV 合同汇总成 CST 操作者 action sheet。 |
 | `check_true_nearfield_dropzone.py` | 预检 CST 真近场 monitor dropzone 文件的合同列、行数、Ex/Ey/Ez 组件和 sensor 子集。 |
+| `export_cst_true_nearfield_monitor.py` | 规划、检查并尝试导出两份 G3 required full-grid CST 真近场 monitor/probe CSV。 |
 | `merge_cst_level1_exports.py`、`merge_cst_level2_exports.py` | 合并 CST 导出的 near/far-field 数据。 |
 | `run_cst_solver_project.py`、`export_cst_farfield_results.py` | 本机 CST 求解和结果导出辅助入口。 |
 
@@ -72,6 +73,8 @@ python code\run_cst_sparse_reconstruction.py
 python code\run_cst_level1_convention_check.py
 python code\prepare_cst_true_nearfield_workpack.py
 python code\prepare_cst_true_nearfield_operator_packet.py
+python code\export_cst_true_nearfield_monitor.py --dry-run
+python code\export_cst_true_nearfield_monitor.py --inspect-only
 python code\derive_true_nearfield_layout_exports.py --sample-id L1_short_dipole_z_1p2G
 python code\run_true_nearfield_gate.py
 python code\run_true_nearfield_workflow_decision.py
@@ -122,6 +125,17 @@ the two required `full_grid_162` CST exports and writes tracked task cards under
 `data/cst_true_nearfield_workpack/operator_packet/`. Current packet status:
 required full-grid present `0/2`; export the two 486-row true-monitor CSVs
 before running the required gate.
+
+`export_cst_true_nearfield_monitor.py` is the executable bridge for that
+blocker. Use `--dry-run` first to refresh
+`outputs/cst_true_nearfield_monitor_export/true_nearfield_export_task_plan.csv`.
+Use `--inspect-only` to open the two `.cst` projects with CST Python and record
+available result-tree items without writing contract CSVs. A non-dry run only
+writes `data/cst_exports/level1_true_nearfield/*_true_nearfield.csv` after it
+can parse complete Cartesian `Ex/Ey/Ez` values for all 162 shell sensors. The
+worker records `Field Monitors`/`Probes` definition nodes for diagnosis, but it
+attempts ASCII export only on solved result-tree nodes under `1D Results`,
+`2D/3D Results`, or `Tables`.
 
 Once the full-grid true-monitor CSV exists,
 `derive_true_nearfield_layout_exports.py` filters it through that subset table

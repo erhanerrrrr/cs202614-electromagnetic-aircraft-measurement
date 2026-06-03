@@ -26,5 +26,22 @@ and acceptance commands.
 | `post_export_acceptance_commands.csv` | Ordered commands after CST files are dropped into `data/cst_exports/level1_true_nearfield/`. |
 | `operator_packet_summary.json` | Machine-readable packet summary and current blocker. |
 
+## Automation Bridge
+
+Use the tracked export controller before manual CST work:
+
+```powershell
+python code\export_cst_true_nearfield_monitor.py --dry-run
+python code\export_cst_true_nearfield_monitor.py --inspect-only
+```
+
+The dry run refreshes the task plan under
+`outputs/cst_true_nearfield_monitor_export/`. The inspect run opens the `.cst`
+projects through CST Python and records available true-nearfield/probe result
+tree items. It writes the target CSVs only when a complete 162-sensor Cartesian
+`Ex/Ey/Ez` table can be parsed. `Field Monitors` and `Probes` entries are kept
+as diagnostic definition nodes; automated ASCII export is attempted only from
+solved result-tree nodes under `1D Results`, `2D/3D Results`, or `Tables`.
+
 Do not treat this packet as final G3 evidence. The gate closes only after the
 target CSV files pass dropzone validation and `run_true_nearfield_gate.py`.
