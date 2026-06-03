@@ -38,6 +38,7 @@
 | `prepare_cst_templates.py`、`prepare_cst_macro_templates.py` | 生成 CST 建模和导出宏模板。 |
 | `prepare_cst_level1_workpack.py`、`prepare_cst_level2_workpack.py` | 生成 Level 1/2 CST 执行任务包。 |
 | `prepare_cst_true_nearfield_workpack.py` | 生成 CST 真近场 monitor 导出工作包、采样壳层、三档布局复跑队列、宏骨架和对照清单。 |
+| `prepare_cst_true_nearfield_operator_packet.py` | 从真近场 workpack 和 gate 状态生成 required full-grid CST 任务卡、manifest、验收命令和 operator packet summary。 |
 | `build_true_nearfield_handoff.py` | 将真近场 monitor 队列、gate 状态和 CSV 合同汇总成 CST 操作者 action sheet。 |
 | `check_true_nearfield_dropzone.py` | 预检 CST 真近场 monitor dropzone 文件的合同列、行数、Ex/Ey/Ez 组件和 sensor 子集。 |
 | `merge_cst_level1_exports.py`、`merge_cst_level2_exports.py` | 合并 CST 导出的 near/far-field 数据。 |
@@ -69,6 +70,7 @@ python code\run_cst_source_model_sweep.py
 python code\run_cst_sparse_reconstruction.py
 python code\run_cst_level1_convention_check.py
 python code\prepare_cst_true_nearfield_workpack.py
+python code\prepare_cst_true_nearfield_operator_packet.py
 python code\derive_true_nearfield_layout_exports.py --sample-id L1_short_dipole_z_1p2G
 python code\run_true_nearfield_gate.py
 python code\run_true_nearfield_workflow_decision.py
@@ -112,6 +114,12 @@ reruns, not as final vector SWE or Huygens proof.
 `true_nearfield_priority_layout_queue.csv` plus
 `true_nearfield_priority_sensor_subsets.csv`, prioritizing `full_grid_162`,
 `geometric_farthest_32`, and `fibonacci_snap_120`.
+
+`prepare_cst_true_nearfield_operator_packet.py` narrows the current workpack to
+the two required `full_grid_162` CST exports and writes tracked task cards under
+`data/cst_true_nearfield_workpack/operator_packet/`. Current packet status:
+required full-grid present `0/2`; export the two 486-row true-monitor CSVs
+before running the required gate.
 
 Once the full-grid true-monitor CSV exists,
 `derive_true_nearfield_layout_exports.py` filters it through that subset table

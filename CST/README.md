@@ -1,23 +1,49 @@
-# CST 目录说明
+# CST workspace notes
 
-本目录作为 CST 建模与自动化工作流的入口索引。当前不重复搬运大型 `.cst` 工程、`Result/` 缓存和临时求解目录；这些文件仍保留在 `outputs/` 与 `submission/05_cst/` 的既有路径中，避免破坏已生成的审计和复现链。
+This folder is the GitHub-visible index for CST modeling, CST automation, and
+true near-field monitor handoff material. Large `.cst` projects, `Result/`
+caches, solver scratch folders, and generated binary/runtime files are kept out
+of Git by default. The tracked files point to the reproducible manifests,
+operator packets, and CSV contracts that teammates should use.
 
-## 当前 CST 主线
+## Current CST entry points
 
-| 类型 | 当前位置 | 说明 |
+| Area | Current path | Purpose |
 |---|---|---|
-| 测点表与导出模板 | `outputs/cst_templates/` | 半球面 2π 测点、nearfield/farfield demo、导出模板。 |
-| 宏模板与参数表 | `outputs/cst_macro_templates/` | Level 1/Level 2 VBA 宏骨架、参数表、pilot 队列。 |
-| 操作手册 | `outputs/cst_operator_runbook/` | 162 探针点、远场网格、导出合同、人工 CST 操作步骤。 |
-| Level 1 workpack | `outputs/cst_level1_workpack/` | 标准源建模任务卡、导出检查表、工作项。 |
-| Level 2 workpack | `outputs/cst_level2_workpack/` | 多源多状态样本任务卡、频点/类别清单。 |
-| 本机 CST 工程/求解痕迹 | `outputs/cst_real_level1_projects/`, `outputs/cst_solver_ready_level1_projects/`, `outputs/cst_solver_trials/`, `outputs/cst_level2_element_library/` | 已生成工程与求解记录，Git 默认排除大缓存。 |
-| 真实导出数据 | `data/cst_exports/` | 供 Python 合并、重建和识别使用的 nearfield/farfield CSV。 |
+| CST templates | `outputs/cst_templates/` | Hemisphere sampling points, nearfield/farfield demo exports, and template CSVs. |
+| CST macro templates | `outputs/cst_macro_templates/` | Level 1/Level 2 VBA skeletons, parameter tables, and pilot queues. |
+| Operator runbook | `outputs/cst_operator_runbook/` | Manual CST steps for probe points, far-field grids, export contracts, and validation. |
+| Level 1 workpack | `outputs/cst_level1_workpack/` | Standard-source modeling cards and export checks. |
+| Level 2 workpack | `outputs/cst_level2_workpack/` | Multi-source/multi-state sample cards and category lists. |
+| True monitor workpack | `data/cst_true_nearfield_workpack/` | Tracked G3 true near-field monitor queue, CSV contract, gate report, and CST task packet. |
+| Required true monitor operator packet | `data/cst_true_nearfield_workpack/operator_packet/` | GitHub-visible task cards for the two required Level 1 full-grid true near-field exports. |
+| Real CST CSV exports | `data/cst_exports/` | Python-consumable nearfield/farfield CSVs used by reconstruction and recognition scripts. |
+| Local CST projects and solver traces | `outputs/cst_real_level1_projects/`, `outputs/cst_solver_ready_level1_projects/`, `outputs/cst_solver_trials/`, `outputs/cst_level2_element_library/` | Generated projects and solver traces; large caches are ignored by Git. |
 
-## 后续 Python 调 CST 工作流
+## Current G3 blocker
 
-1. 在 `code/prepare_cst_level*_manifest.py` 固定样本、频点、极化、源参数和导出合同。
-2. 在 `code/run_cst_level1_required_automation.py` 或 `code/run_cst_level2_element_library.py` 调用 CST API 生成工程。
-3. 用 `code/run_cst_solver_project.py` 求解单工程，或按 runbook 人工批量运行。
-4. 用 `code/export_cst_farfield_results.py` 与 `code/export_cst_level2_superposed_results.py` 导出结果。
-5. 用 `code/check_cst_export.py`、`code/merge_cst_level*_exports.py` 进入 Python 数据链路。
+The G3 true-monitor gate is waiting for two required full-grid CST true
+near-field monitor CSV files:
+
+- `data\cst_exports\level1_true_nearfield\L1_short_dipole_z_1p2G_true_nearfield.csv`
+- `data\cst_exports\level1_true_nearfield\L1_halfwave_dipole_z_1p2G_true_nearfield.csv`
+
+Each file must contain 486 rows: 162 sensor points times the three Cartesian
+components `Ex`, `Ey`, and `Ez`. The exact CST task cards are in
+`data/cst_true_nearfield_workpack/operator_packet/required_full_grid_task_cards.md`.
+
+## Python-to-CST workflow
+
+1. Use `code/prepare_cst_level*_manifest.py` to fix sample ids, frequencies,
+   source parameters, and export contracts.
+2. Use `code/run_cst_level1_required_automation.py` or
+   `code/run_cst_level2_element_library.py` to generate CST projects when the
+   local CST COM environment is available.
+3. Solve single projects with `code/run_cst_solver_project.py`, or follow the
+   manual CST operator runbook when COM automation is unavailable.
+4. Export results with `code/export_cst_farfield_results.py`,
+   `code/export_cst_level2_superposed_results.py`, or the true-monitor task
+   cards in `data/cst_true_nearfield_workpack/operator_packet/`.
+5. Validate and merge exports with `code/check_cst_export.py`,
+   `code/merge_cst_level*_exports.py`, and for G3 true-monitor data:
+   `code/check_true_nearfield_dropzone.py --required-only --full-grid-only`.

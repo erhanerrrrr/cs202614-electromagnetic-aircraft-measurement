@@ -1,0 +1,139 @@
+{
+  "generated_by": "code/prepare_cst_true_nearfield_operator_packet.py",
+  "required_full_grid_count": 2,
+  "required_full_grid_present_count": 0,
+  "required_full_grid_missing_count": 2,
+  "next_required_action": "export_required_full_grid_true_monitor_csvs",
+  "claim_boundary": "This packet is an operator handoff. It is not full-wave evidence until the required true-monitor CSVs pass dropzone validation and the true-nearfield gate.",
+  "manifest_records": [
+    {
+      "queue_order": 1,
+      "sample_id": "L1_short_dipole_z_1p2G",
+      "case_priority": "required",
+      "frequency_hz": 1200000000,
+      "frequency_label": "1200MHz",
+      "cst_project": "CST_L1_short_dipole_z_1p2G.cst",
+      "source_type": "short_dipole",
+      "orientation_axis": "z",
+      "source_center_m": "0.0,0.0,4.0",
+      "source_start_m": "0.0,0.0,3.993754323791667",
+      "source_end_m": "0.0,0.0,4.006245676208334",
+      "true_nearfield_monitor": "true_nf_shell_1200MHz",
+      "sample_shell_csv": "data\\cst_true_nearfield_workpack\\true_nearfield_sensor_shell.csv",
+      "target_export_path": "data\\cst_exports\\level1_true_nearfield\\L1_short_dipole_z_1p2G_true_nearfield.csv",
+      "target_export_exists": false,
+      "expected_sensor_count": 162,
+      "expected_export_rows": 486,
+      "required_components": "Ex;Ey;Ez",
+      "reference_nearfield_export": "data\\cst_exports\\level1\\L1_short_dipole_z_1p2G_nearfield.csv",
+      "reference_export_exists": true,
+      "gate_status": "pending_source",
+      "source_status": "missing_candidate_export",
+      "operator_action": "export_full_grid_true_monitor_csv",
+      "dropzone_command": "python code\\check_true_nearfield_dropzone.py --required-only --full-grid-only",
+      "gate_command": "python code\\run_true_nearfield_gate.py --required-only --candidate full_grid_162",
+      "comparison_command": "python code\\compare_true_nearfield_exports.py --true-nearfield data/cst_exports/level1_true_nearfield/L1_short_dipole_z_1p2G_true_nearfield.csv --reference-nearfield data/cst_exports/level1/L1_short_dipole_z_1p2G_nearfield.csv --out-dir data\\cst_true_nearfield_workpack\\comparison\\L1_short_dipole_z_1p2G\\full_grid_162"
+    },
+    {
+      "queue_order": 4,
+      "sample_id": "L1_halfwave_dipole_z_1p2G",
+      "case_priority": "required",
+      "frequency_hz": 1200000000,
+      "frequency_label": "1200MHz",
+      "cst_project": "CST_L1_halfwave_dipole_z_1p2G.cst",
+      "source_type": "halfwave_dipole",
+      "orientation_axis": "z",
+      "source_center_m": "0.0,0.0,4.0",
+      "source_start_m": "0.0,0.0,3.9375432379166666",
+      "source_end_m": "0.0,0.0,4.062456762083333",
+      "true_nearfield_monitor": "true_nf_shell_1200MHz",
+      "sample_shell_csv": "data\\cst_true_nearfield_workpack\\true_nearfield_sensor_shell.csv",
+      "target_export_path": "data\\cst_exports\\level1_true_nearfield\\L1_halfwave_dipole_z_1p2G_true_nearfield.csv",
+      "target_export_exists": false,
+      "expected_sensor_count": 162,
+      "expected_export_rows": 486,
+      "required_components": "Ex;Ey;Ez",
+      "reference_nearfield_export": "data\\cst_exports\\level1\\L1_halfwave_dipole_z_1p2G_nearfield.csv",
+      "reference_export_exists": true,
+      "gate_status": "pending_source",
+      "source_status": "missing_candidate_export",
+      "operator_action": "export_full_grid_true_monitor_csv",
+      "dropzone_command": "python code\\check_true_nearfield_dropzone.py --required-only --full-grid-only",
+      "gate_command": "python code\\run_true_nearfield_gate.py --required-only --candidate full_grid_162",
+      "comparison_command": "python code\\compare_true_nearfield_exports.py --true-nearfield data/cst_exports/level1_true_nearfield/L1_halfwave_dipole_z_1p2G_true_nearfield.csv --reference-nearfield data/cst_exports/level1/L1_halfwave_dipole_z_1p2G_nearfield.csv --out-dir data\\cst_true_nearfield_workpack\\comparison\\L1_halfwave_dipole_z_1p2G\\full_grid_162"
+    }
+  ],
+  "acceptance_command_records": [
+    {
+      "order": 1,
+      "owner": "CST operator",
+      "stage": "export_required_full_grid",
+      "command": "export the two required full_grid_162 true-monitor CSV files listed in required_full_grid_manifest.csv",
+      "expected_result": "Both target CSV files exist with 486 rows each.",
+      "blocked_by": "CST true near-field monitor export"
+    },
+    {
+      "order": 2,
+      "owner": "Algorithm operator",
+      "stage": "dropzone_preflight",
+      "command": "python code\\check_true_nearfield_dropzone.py --required-only --full-grid-only",
+      "expected_result": "Required full-grid rows are ready_for_gate.",
+      "blocked_by": "required true-monitor CSV files"
+    },
+    {
+      "order": 3,
+      "owner": "Algorithm operator",
+      "stage": "required_gate",
+      "command": "python code\\run_true_nearfield_gate.py --required-only --candidate full_grid_162",
+      "expected_result": "Required full-grid rows leave pending_source.",
+      "blocked_by": "ready_for_gate dropzone status"
+    },
+    {
+      "order": 4,
+      "owner": "Algorithm operator",
+      "stage": "derive_required_reduced_layouts",
+      "command": "python code\\derive_true_nearfield_layout_exports.py --sample-id L1_short_dipole_z_1p2G",
+      "expected_result": "The queued 32-point and 120-point reduced-layout CSVs are derived from the full-grid monitor CSV.",
+      "blocked_by": "data\\cst_exports\\level1_true_nearfield\\L1_short_dipole_z_1p2G_true_nearfield.csv"
+    },
+    {
+      "order": 5,
+      "owner": "Algorithm operator",
+      "stage": "derive_required_reduced_layouts",
+      "command": "python code\\derive_true_nearfield_layout_exports.py --sample-id L1_halfwave_dipole_z_1p2G",
+      "expected_result": "The queued 32-point and 120-point reduced-layout CSVs are derived from the full-grid monitor CSV.",
+      "blocked_by": "data\\cst_exports\\level1_true_nearfield\\L1_halfwave_dipole_z_1p2G_true_nearfield.csv"
+    },
+    {
+      "order": 6,
+      "owner": "Algorithm operator",
+      "stage": "reduced_layout_gate",
+      "command": "python code\\run_true_nearfield_gate.py --required-only",
+      "expected_result": "Full-grid and reduced-layout required rows are compared.",
+      "blocked_by": "derived reduced-layout CSV files"
+    },
+    {
+      "order": 7,
+      "owner": "Algorithm operator",
+      "stage": "workflow_decision_refresh",
+      "command": "python code\\run_true_nearfield_workflow_decision.py",
+      "expected_result": "The next G3 action is refreshed from current dropzone and gate evidence.",
+      "blocked_by": ""
+    },
+    {
+      "order": 8,
+      "owner": "Algorithm operator",
+      "stage": "g3_dashboard_refresh",
+      "command": "python code\\build_g3_model_dashboard.py",
+      "expected_result": "G3 dashboard records true-monitor gate status.",
+      "blocked_by": ""
+    }
+  ],
+  "output_files": {
+    "readme": "data\\cst_true_nearfield_workpack\\operator_packet\\README.md",
+    "task_cards": "data\\cst_true_nearfield_workpack\\operator_packet\\required_full_grid_task_cards.md",
+    "manifest": "data\\cst_true_nearfield_workpack\\operator_packet\\required_full_grid_manifest.csv",
+    "commands": "data\\cst_true_nearfield_workpack\\operator_packet\\post_export_acceptance_commands.csv",
+    "summary": "data\\cst_true_nearfield_workpack\\operator_packet\\operator_packet_summary.json"
+  }
+}

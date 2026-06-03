@@ -865,3 +865,41 @@ Next G5 actions:
    data becomes available.
 4. Keep G3 separate: this does not close the true near-field monitor gate or
    the physical/vector reduced-layout reconstruction proof.
+
+## 22. 2026-06-03 G3 operator-packet update
+
+The pending CST true-monitor export is now narrowed into a GitHub-trackable
+operator packet:
+
+```powershell
+python code\prepare_cst_true_nearfield_operator_packet.py
+```
+
+It writes `data/cst_true_nearfield_workpack/operator_packet/`:
+
+- `required_full_grid_manifest.csv`: the two required Level 1 `full_grid_162`
+  CST true-monitor exports.
+- `required_full_grid_task_cards.md`: human-readable CST task cards for
+  `L1_short_dipole_z_1p2G` and `L1_halfwave_dipole_z_1p2G`.
+- `post_export_acceptance_commands.csv`: exact dropzone, gate, decision, and
+  dashboard commands to run after CSV export.
+- `operator_packet_summary.json`: machine-readable current status and claim
+  boundary.
+
+Current result: required full-grid present `0/2`. The missing files are still
+the two 486-row true-monitor CSVs under
+`data/cst_exports/level1_true_nearfield/`, so this update is an execution
+handoff, not new physical evidence.
+
+Next G3 actions:
+
+1. CST operator exports the two required true-monitor CSVs from the task cards.
+2. Algorithm operator runs `check_true_nearfield_dropzone.py --required-only
+   --full-grid-only`, then `run_true_nearfield_gate.py --required-only
+   --candidate full_grid_162`.
+3. Run `run_true_nearfield_workflow_decision.py` and
+   `build_g3_model_dashboard.py`.
+4. If the true monitor differs from the FarfieldPlot-derived baseline in phase,
+   polarization, or direction, rerun the source-model, SWE, reduced-layout, and
+   Huygens baselines on the authoritative monitor data before making any
+   reduced-sampling reconstruction claim.

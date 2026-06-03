@@ -1,0 +1,9 @@
+﻿order,owner,stage,command,expected_result,blocked_by
+1,CST operator,export_required_full_grid,export the two required full_grid_162 true-monitor CSV files listed in required_full_grid_manifest.csv,Both target CSV files exist with 486 rows each.,CST true near-field monitor export
+2,Algorithm operator,dropzone_preflight,python code\check_true_nearfield_dropzone.py --required-only --full-grid-only,Required full-grid rows are ready_for_gate.,required true-monitor CSV files
+3,Algorithm operator,required_gate,python code\run_true_nearfield_gate.py --required-only --candidate full_grid_162,Required full-grid rows leave pending_source.,ready_for_gate dropzone status
+4,Algorithm operator,derive_required_reduced_layouts,python code\derive_true_nearfield_layout_exports.py --sample-id L1_short_dipole_z_1p2G,The queued 32-point and 120-point reduced-layout CSVs are derived from the full-grid monitor CSV.,data\cst_exports\level1_true_nearfield\L1_short_dipole_z_1p2G_true_nearfield.csv
+5,Algorithm operator,derive_required_reduced_layouts,python code\derive_true_nearfield_layout_exports.py --sample-id L1_halfwave_dipole_z_1p2G,The queued 32-point and 120-point reduced-layout CSVs are derived from the full-grid monitor CSV.,data\cst_exports\level1_true_nearfield\L1_halfwave_dipole_z_1p2G_true_nearfield.csv
+6,Algorithm operator,reduced_layout_gate,python code\run_true_nearfield_gate.py --required-only,Full-grid and reduced-layout required rows are compared.,derived reduced-layout CSV files
+7,Algorithm operator,workflow_decision_refresh,python code\run_true_nearfield_workflow_decision.py,The next G3 action is refreshed from current dropzone and gate evidence.,
+8,Algorithm operator,g3_dashboard_refresh,python code\build_g3_model_dashboard.py,G3 dashboard records true-monitor gate status.,

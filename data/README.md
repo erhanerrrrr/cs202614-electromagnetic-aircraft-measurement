@@ -25,6 +25,7 @@
 | `sampling_layouts/cst_level1_sparse_calibration/` | `python code\run_cst_sparse_reconstruction.py` | group-sparse 等效源校准结果。 |
 | `sampling_layouts/cst_level1_convention_check/` | `python code\run_cst_level1_convention_check.py` | 相位、复共轭和极化约定诊断。 |
 | `cst_true_nearfield_workpack/` | `python code\prepare_cst_true_nearfield_workpack.py` | 真近场 monitor 导出任务包、三档布局复跑队列和 FarfieldPlot-derived 基线对照入口。 |
+| `cst_true_nearfield_workpack/operator_packet/` | `python code\prepare_cst_true_nearfield_operator_packet.py` | GitHub 可追踪的 required full-grid 真 monitor CST 任务卡、manifest、验收命令和当前 `0/2` 状态摘要。 |
 | `cst_true_nearfield_workpack/reference_self_check/` | `python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check` | 对照脚本自检结果，不是新增 CST 物理证据。 |
 | `cst_true_nearfield_workpack/gate_report/` | `python code\run_true_nearfield_gate.py` | 当前 true-monitor 队列状态、可用源文件、派生状态、行数检查和参考比较汇总。 |
 | `source_priors/huygens_surface/` | `python code\prepare_huygens_surface_prior.py` | Huygens 面源节点、法向/切向基、面积权重和四复未知量合同。 |
