@@ -195,6 +195,13 @@ def command_rows(out_dir: Path, project_out_dir: Path, case_csv: Path, probe_csv
     short_project = project_out_dir / "projects" / "CST_L1_short_dipole_z_1p2G_meshsafe_huygens_r0p35.cst"
     short_summary = DEFAULT_SOLVER_SUMMARY_DIR / "h_short_solver_summary.json"
     short_stdout = DEFAULT_SOLVER_SUMMARY_DIR / "h_short_stdout.log"
+    local_export = (
+        ROOT
+        / "data"
+        / "cst_exports"
+        / "level1_meshsafe_huygens"
+        / "L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv"
+    )
     return [
         {
             "step_order": "1",
@@ -228,6 +235,12 @@ def command_rows(out_dir: Path, project_out_dir: Path, case_csv: Path, probe_csv
             ),
             "expected_output": rel(short_summary),
         },
+        {
+            "step_order": "4",
+            "stage": "result_tree_local_probe_export",
+            "command": "python code\\export_cst_meshsafe_huygens_results.py --attempt-export",
+            "expected_output": rel(local_export),
+        },
     ]
 
 
@@ -260,7 +273,7 @@ Python extrapolates that local evidence to the 13 m measurement shell.
 | `{case_csv.name}` | Level 1 required cases rewritten to use mesh-safe local Huygens exports. |
 | `{probe_csv.name}` | `{metadata['node_count']}` Cartesian E-field probe points on `{metadata['prior_id']}`. |
 | `{contract_csv.name}` | CSV columns expected from local Huygens probe exports. |
-| `{commands_csv.name}` | Next executable commands: refresh workpack, generate CST projects, run first solver gate. |
+| `{commands_csv.name}` | Next executable commands: refresh workpack, generate CST projects, run first solver gate, export local probe CSV. |
 | `meshsafe_huygens_workpack_summary.json` | Machine-readable counts, source paths, and next gates. |
 
 ## Surface
@@ -285,25 +298,29 @@ Then run the first solver feasibility gate listed in `{commands_csv.name}`.
 Use short ASCII CST work paths such as `{project_out_dir}` for project
 generation and `{DEFAULT_SHORTPATH_TRIAL_DIR}` for the solver trial so CST's
 internal result paths stay under its path-length limit. If the gate produces
-local `.m3d` nearfield and `.ffm/.fme` farfield artifacts, the next code step
-is an export adapter that maps CST local probe results to `{contract_csv.name}`
-and then feeds `run_cst_huygens_baseline.py`/future Huygens extrapolation.
+local `.m3d` nearfield and `.ffm/.fme` farfield artifacts, run the ResultTree
+export command listed in `{commands_csv.name}`. It reads solved `1D Results`
+E-field probe curves and maps CST local probe values to `{contract_csv.name}`;
+do not use CST's ASCII export from the `Field Monitors` view for this handoff.
 
 ## Current Solver Observation
 
 The short-path `L1_short_dipole_z_1p2G` trial confirms that CST can open the
 project and run the HF Time Domain solver without the `4.6` billion-cell mesh
 limit. The 600 s gate ended as `aborted_keeping_results`, with CST keeping one
-nearfield `.m3d` artifact and one farfield `.ffm/.fme` pair. Treat this as an
-export-adapter opportunity and as evidence that the remaining blocker is clean
-completion/extraction of local E-field results, not CST startup.
+nearfield `.m3d` artifact and one farfield `.ffm/.fme` pair. The ResultTree
+controller has now extracted `96 * 3 = 288` complex Cartesian E-field probe
+rows from the kept results, so the immediate blocker has moved from CST
+startup/export to Python Huygens extrapolation and reference comparison.
 
 ## Boundary
 
 This is not final 13 m near-field evidence. It is a solver-feasible CST
 observation package intended to replace the infeasible remote-probe solve.
-Final G3 claims still require local field export, Python extrapolation to the
-13 m shell, and comparison against the existing FarfieldPlot-derived reference.
+Final G3 claims still require Python extrapolation to the 13 m shell, comparison
+against the existing FarfieldPlot-derived reference, and repetition on the
+second Level 1 source case before the local Huygens route becomes report-level
+evidence.
 """
     (out_dir / "README.md").write_text(content, encoding="utf-8")
 
@@ -367,7 +384,7 @@ def main(argv: list[str] | None = None) -> int:
             "commands_csv": rel(commands_csv),
             "readme": rel(out_dir / "README.md"),
         },
-        "next_gate": "generate_meshsafe_cst_projects_then_run_short_case_solver_gate",
+        "next_gate": "run_result_tree_local_probe_export_then_huygens_extrapolation_gate",
         "mesh_limit_context": {
             "remote_probe_status": "solver_mesh_limit",
             "remote_probe_mesh_cell_count_billion": 4.6,

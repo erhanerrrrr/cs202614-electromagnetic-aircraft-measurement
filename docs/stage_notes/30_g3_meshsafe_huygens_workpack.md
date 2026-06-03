@@ -56,3 +56,7 @@ python code\run_cst_solver_project.py --project C:\csttmp\huy_p\projects\CST_L1_
 2. 若 `.m3d` 解析不稳定，则调整 CST solver/monitor 导出设置，争取一次 clean completion 或显式 table export。
 3. 把局部 Huygens 导出接入 `run_cst_huygens_baseline.py` 或新的 Huygens extrapolation runner，外推到 13 m 壳并与 FarfieldPlot-derived reference 对比。
 4. 用完成后的真实局部场链路更新 G3 dashboard、workflow 和报告证据边界。
+
+## 2026-06-03 后续更新
+
+S31 已完成第 1 步和第一轮第 3 步诊断：`export_cst_meshsafe_huygens_results.py --attempt-export --overwrite` 已通过 CST ResultTree 读取 1D E-field probe 曲线，生成 `data/cst_exports/level1_meshsafe_huygens/L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv`，并由 `run_cst_meshsafe_huygens_extrapolation.py` 接入 Python 外推诊断。当前不再卡在 `.m3d` 是否存在或 ASCII export 弹窗，而是进入 Huygens 算子/约定校准与第二源案例复验阶段。

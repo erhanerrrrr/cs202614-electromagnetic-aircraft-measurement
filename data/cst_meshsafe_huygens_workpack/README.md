@@ -18,7 +18,7 @@ Python extrapolates that local evidence to the 13 m measurement shell.
 | `level1_required_meshsafe_huygens_cases.csv` | Level 1 required cases rewritten to use mesh-safe local Huygens exports. |
 | `level1_local_huygens_probe_points.csv` | `96` Cartesian E-field probe points on `level1_local_sphere_r0p35`. |
 | `local_huygens_export_contract.csv` | CSV columns expected from local Huygens probe exports. |
-| `next_meshsafe_huygens_commands.csv` | Next executable commands: refresh workpack, generate CST projects, run first solver gate. |
+| `next_meshsafe_huygens_commands.csv` | Next executable commands: refresh workpack, generate CST projects, run first solver gate, export local probe CSV. |
 | `meshsafe_huygens_workpack_summary.json` | Machine-readable counts, source paths, and next gates. |
 
 ## Surface
@@ -43,22 +43,26 @@ Then run the first solver feasibility gate listed in `next_meshsafe_huygens_comm
 Use short ASCII CST work paths such as `C:\csttmp\huy_p` for project
 generation and `C:\csttmp\huy_s` for the solver trial so CST's
 internal result paths stay under its path-length limit. If the gate produces
-local `.m3d` nearfield and `.ffm/.fme` farfield artifacts, the next code step
-is an export adapter that maps CST local probe results to `local_huygens_export_contract.csv`
-and then feeds `run_cst_huygens_baseline.py`/future Huygens extrapolation.
+local `.m3d` nearfield and `.ffm/.fme` farfield artifacts, run the ResultTree
+export command listed in `next_meshsafe_huygens_commands.csv`. It reads solved `1D Results`
+E-field probe curves and maps CST local probe values to `local_huygens_export_contract.csv`;
+do not use CST's ASCII export from the `Field Monitors` view for this handoff.
 
 ## Current Solver Observation
 
 The short-path `L1_short_dipole_z_1p2G` trial confirms that CST can open the
 project and run the HF Time Domain solver without the `4.6` billion-cell mesh
 limit. The 600 s gate ended as `aborted_keeping_results`, with CST keeping one
-nearfield `.m3d` artifact and one farfield `.ffm/.fme` pair. Treat this as an
-export-adapter opportunity and as evidence that the remaining blocker is clean
-completion/extraction of local E-field results, not CST startup.
+nearfield `.m3d` artifact and one farfield `.ffm/.fme` pair. The ResultTree
+controller has now extracted `96 * 3 = 288` complex Cartesian E-field probe
+rows from the kept results, so the immediate blocker has moved from CST
+startup/export to Python Huygens extrapolation and reference comparison.
 
 ## Boundary
 
 This is not final 13 m near-field evidence. It is a solver-feasible CST
 observation package intended to replace the infeasible remote-probe solve.
-Final G3 claims still require local field export, Python extrapolation to the
-13 m shell, and comparison against the existing FarfieldPlot-derived reference.
+Final G3 claims still require Python extrapolation to the 13 m shell, comparison
+against the existing FarfieldPlot-derived reference, and repetition on the
+second Level 1 source case before the local Huygens route becomes report-level
+evidence.

@@ -37,6 +37,7 @@
 | S28 | `28_g3_true_nearfield_export_controller.md` | G3 required 真近场 monitor/probe 导出控制器、dry-run/inspect-only 工作流和当前物理证据边界 |
 | S29 | `29_g3_cst_solver_mesh_limit.md` | G3 CST 试求解网格上限诊断：CST 可启动，但 13 m Cartesian probe 路线触发 4.6B cells / 3 MPI nodes 资源阻塞 |
 | S30 | `30_g3_meshsafe_huygens_workpack.md` | G3 mesh-safe Huygens 工作包：CST 近源局部面观测、短路径 solver gate 和后续 Python 外推入口 |
+| S31 | `31_g3_meshsafe_huygens_resulttree_extrapolation.md` | G3 mesh-safe Huygens ResultTree 实测导出与 Python 外推诊断 |
 
 后续规则：
 

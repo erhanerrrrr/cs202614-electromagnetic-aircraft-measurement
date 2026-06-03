@@ -177,3 +177,20 @@ same output directory.
 | `data/cst_meshsafe_huygens_workpack/next_meshsafe_huygens_commands.csv` | 从生成工程到短路径 solver gate 的命令清单 |
 | `C:\csttmp\huy_p` | 短 ASCII 路径下的 mesh-safe CST 工程缓存 |
 | `outputs/cst_solver_trials/meshsafe_huygens_required_shortpath/` | 本机短路径 solver gate 摘要和日志缓存 |
+
+## 2026-06-03 CST mesh-safe Huygens ResultTree 导出与外推诊断
+
+S31 完成了 mesh-safe Huygens 路线的第一个真实数据闭环：CST 短路径工程已保留局部 `.m3d`、farfield `.ffm/.fme` 结果，导出控制器改用 ResultTree 读取 1D probe 复数曲线，生成了第一份可进入算法链路的局部 Huygens E-field CSV。Field Monitor ASCII 弹窗不是 CST 不能运行，而是导出入口不适用于当前 3D monitor view。
+
+相关入口：
+
+| 文件/目录 | 意义 |
+|---|---|
+| `docs/stage_notes/31_g3_meshsafe_huygens_resulttree_extrapolation.md` | S31 阶段说明，记录 ResultTree 导出、实测 CSV 和 Python 外推诊断结果 |
+| `code/export_cst_meshsafe_huygens_results.py` | CST 结果审计/导出控制器；可用 `--attempt-export --overwrite` 生成局部复数 E-field CSV |
+| `data/cst_exports/level1_meshsafe_huygens/L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv` | 第一份真实 CST 局部 Huygens probe 导出，`96 * 3 = 288` 行 |
+| `code/run_cst_meshsafe_huygens_extrapolation.py` | Python 侧局部 Huygens 证据外推到远场参考的诊断脚本 |
+| `data/sampling_layouts/cst_meshsafe_huygens_extrapolation/` | 外推诊断结果、局部场质量表、最佳 farfield shape 对比和摘要 |
+| `outputs/cst_meshsafe_huygens_result_export/` | 本机 CST 结果树探查、日志和导出审计缓存；默认不纳入 Git 版本库 |
+
+当前结论：CST Python API、短路径工程生成、solver gate、ResultTree 读取和 CSV 接入链路均可用；剩余风险集中在等效源/Huygens 算子的物理约定校准、第二源案例复验，以及从局部实测面向 13 m 半球采样方案的严格误差门限收敛。

@@ -362,3 +362,43 @@ save/close calls report `RuntimeError()` even when the `.cst` file appears.
 Current evidence says CST can run the mesh-safe project without the 4.6B-cell
 blocker; the next blocker is exporting or parsing the kept local `.m3d` E-field
 result into the CSV contract.
+
+`export_cst_meshsafe_huygens_results.py` is the next audit/export controller.
+It inventories the short-path CST result artifacts, checks whether the local
+Huygens CSV contract exists and has the expected `96 * 3 = 288` component rows,
+and optionally opens the CST project to inspect result-tree candidates:
+
+```powershell
+python code\export_cst_meshsafe_huygens_results.py --inspect-tree
+```
+
+The successful export route is CST `ResultTree`, not Field Monitor ASCII
+export. The earlier CST popup saying ASCII export was unavailable came from
+trying to export the 3D Field Monitor view directly; the solved local probe
+curves can instead be read under `1D Results\Probes\E-Field\...\(X/Y/Z)` with
+`GetResultFromTreeItem`, `GetYRe`, and `GetYIm`.
+
+```powershell
+python code\export_cst_meshsafe_huygens_results.py --attempt-export --overwrite
+```
+
+Current status after the first short-path solver gate is
+`target_contract_complete`: the short-dipole 1.2 GHz local Huygens contract has
+`96 * 3 = 288` complex E-field component rows in
+`data/cst_exports/level1_meshsafe_huygens/L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv`.
+
+`run_cst_meshsafe_huygens_extrapolation.py` is the next Python-side diagnostic.
+It consumes the real local CST probe CSV plus the Level 1 farfield reference
+and writes local field quality and farfield-shape checks to
+`data/sampling_layouts/cst_meshsafe_huygens_extrapolation/`:
+
+```powershell
+python code\run_cst_meshsafe_huygens_extrapolation.py
+```
+
+The first diagnostic pass is a data-chain success rather than a final physics
+claim: the best variant reaches whole-pattern correlation about `0.999` and
+scale-fitted power NMSE about `6.96e-4`, while the single-point main-lobe index
+is still ambiguous for the broad short-dipole pattern. The next model work is
+operator/convention calibration and a second source-case repeat, not CST
+startup repair.

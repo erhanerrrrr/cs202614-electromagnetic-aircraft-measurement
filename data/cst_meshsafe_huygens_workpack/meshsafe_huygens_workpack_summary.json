@@ -1,5 +1,5 @@
 {
-  "created_at": "2026-06-03T15:15:00+00:00",
+  "created_at": "2026-06-03T16:04:54+00:00",
   "stage_status": "workpack_ready",
   "source_level1_csv": "outputs\\cst_operator_runbook\\level1_required_operator_steps.csv",
   "source_prior_nodes": "data\\source_priors\\huygens_surface\\level1_local_sphere_r0p35_nodes.csv",
@@ -26,7 +26,7 @@
     "commands_csv": "data\\cst_meshsafe_huygens_workpack\\next_meshsafe_huygens_commands.csv",
     "readme": "data\\cst_meshsafe_huygens_workpack\\README.md"
   },
-  "next_gate": "generate_meshsafe_cst_projects_then_run_short_case_solver_gate",
+  "next_gate": "run_result_tree_local_probe_export_then_huygens_extrapolation_gate",
   "mesh_limit_context": {
     "remote_probe_status": "solver_mesh_limit",
     "remote_probe_mesh_cell_count_billion": 4.6,
