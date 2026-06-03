@@ -858,9 +858,8 @@ Next G5 actions:
 1. Freeze the current internal G5 evidence set for report/PPT wording:
    baseline stress, augmented stress, leave-one-family, seed stability,
    dropout mitigation, structured dropout, and instrument-error checks.
-2. If more time is available, test severe compound cases that combine
-   instrument bias with structured dropout, because that is the next natural
-   stress family beyond either one alone.
+2. The severe compound instrument-bias plus structured-dropout follow-up is
+   now complete; see Section 23.
 3. Rerun the same G5 checks after true CST monitor data or full-wave airframe
    data becomes available.
 4. Keep G3 separate: this does not close the true near-field monitor gate or
@@ -903,3 +902,63 @@ Next G3 actions:
    polarization, or direction, rerun the source-model, SWE, reduced-layout, and
    Huygens baselines on the authoritative monitor data before making any
    reduced-sampling reconstruction claim.
+
+## 23. 2026-06-03 G5 compound-stress update
+
+The severe compound recognition stress follow-up is now implemented:
+
+```powershell
+python code\run_cst_recognition_compound_stress.py
+```
+
+It writes `data/recognition_stress_tests/level2_compound_stress/`.
+
+Method:
+
+- Keep the same Level 2 CST-derived element-library recognition setting, five
+  G2 representative layouts, and seeds `202614`, `202615`, and `202616`.
+- Train with the existing known perturbation augmentation profiles: clean,
+  noise, phase jitter, random dropout, and combined perturbations.
+- Test unseen severe compound cases that combine instrument-like gain/phase
+  bias with structured missing-channel patterns.
+- Cover four compound cases: sensor gain bias plus 25 percent sensor-node
+  dropout, mixed amplitude/phase bias plus 25 percent sensor-node dropout,
+  mixed amplitude/phase bias plus 60 degree azimuth-sector dropout, and
+  polarization imbalance plus paired polarization dropout.
+- Compare the same four missing-channel strategies: zero-fill, mask features,
+  frequency/sensor median imputation, and imputation plus mask features.
+
+Current result:
+
+- Five layouts, four compound cases, four strategies, and three seeds give 240
+  rows.
+- Not all rows pass the `0.85` threshold. The severe compound setting exposes
+  a real G5 boundary for raw zero-fill and mask-only handling.
+- The worst single row is `full_grid_162 / zero_fill /
+  sensor_gain3db_sensor_node_dropout25pct`, accuracy `0.733`.
+- Zero-fill has mean accuracy about `0.939`; mask-only has mean accuracy about
+  `0.940`.
+- The best overall strategy is `freq_sensor_median_impute`, with mean accuracy
+  about `0.993`, minimum accuracy about `0.867`, and mean delta versus
+  zero-fill about `+0.054`.
+- Imputation plus mask features is slightly weaker than imputation-only in the
+  aggregate: mean accuracy about `0.990`, minimum accuracy about `0.867`.
+
+Engineering interpretation: the G5 recognition story is now more honest and
+more useful. Single-family simulated errors and structured dropout are mostly
+absorbed by the current pipeline, but severe compound instrument bias plus
+structured missing channels can break raw zero-fill and mask-only strategies.
+Frequency/sensor median imputation is therefore the current default
+missing-channel preprocessing candidate, while zero-fill remains a conservative
+baseline and mask-only should not be presented as the preferred fix.
+
+Next G5 actions:
+
+1. In the report/PPT, state the compound-error boundary explicitly: raw
+   zero-fill/mask can fall below `0.85` under severe internal compound stress.
+2. Present frequency/sensor median imputation as the current mitigation
+   candidate, not as a final measurement-calibration guarantee.
+3. Rerun the same compound-stress script after true CST monitor data or
+   full-wave airframe data becomes available.
+4. Keep G3 separate: this does not close the true near-field monitor gate or
+   the physical/vector reduced-layout reconstruction proof.

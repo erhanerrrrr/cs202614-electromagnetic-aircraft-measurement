@@ -56,6 +56,7 @@
 | `run_cst_recognition_dropout_mitigation.py` | 对 held-out dropout 或含 dropout 组合扰动比较 zero-fill、mask 特征和缺测插补策略。 |
 | `run_cst_recognition_structured_dropout.py` | 在已知扰动增强训练后，测试 sensor-node dropout、polarization-pair dropout 和 azimuth-sector dropout 等未见结构化缺测模式。 |
 | `run_cst_recognition_instrument_error.py` | 测试全局增益漂移、传感器增益偏置、频率响应斜率、极化增益不平衡和混合幅相偏置等仪器相关误差。 |
+| `run_cst_recognition_compound_stress.py` | 测试仪器偏置与结构化缺测同时出现时的复合压力边界，并比较缺测缓解策略。 |
 | `run_cst_structure_comparison.py` | 结构/安装影响对比实验。 |
 | `build_g3_model_dashboard.py` | 汇总 G3 源模型、SWE、Huygens 和真近场 gate 证据，输出当前可汇报结论与下一步动作。 |
 | `build_*.py` | 报告、PPT、提交包、仪表盘和审查材料生成脚本。 |
@@ -93,6 +94,7 @@ python code\run_cst_recognition_dropout_mitigation.py
 python code\run_cst_recognition_dropout_mitigation.py --layout-candidates full_grid_162,geometric_farthest_32,fibonacci_snap_120,task_driven_32,task_driven_48 --held-out-families dropout,combined --out-dir data\recognition_stress_tests\level2_dropout_mitigation_extended
 python code\run_cst_recognition_structured_dropout.py
 python code\run_cst_recognition_instrument_error.py
+python code\run_cst_recognition_compound_stress.py
 ```
 
 ## Spherical reduced-layout addendum
@@ -266,6 +268,19 @@ single row is `geometric_farthest_32` under `sensor_gain_bias_3db` at accuracy
 `0.933`; both training profiles have mean accuracy about `0.999` and minimum
 `0.933`. Treat this as internal simulated instrument-error evidence, not as
 real calibration or full-wave complex-airframe validation.
+
+`run_cst_recognition_compound_stress.py` is the severe compound-stress
+follow-up. It trains with the existing clean/noise/phase/random-dropout/combined
+augmentation profiles, then tests unseen cases that combine instrument-like
+gain/phase bias with structured sensor-node, polarization-pair, or azimuth
+sector dropout. It writes
+`data/recognition_stress_tests/level2_compound_stress/`. Current result: all
+240 rows run, but not all rows pass `0.85`; the worst single row is
+`full_grid_162/zero_fill/sensor_gain3db_sensor_node_dropout25pct` at accuracy
+`0.733`. The best overall strategy is `freq_sensor_median_impute`, with mean
+accuracy about `0.993` and minimum `0.867`. Treat this as the current G5
+boundary: raw zero-fill/mask can fail under severe compound errors, while
+frequency/sensor median imputation is the reportable mitigation candidate.
 
 ## Huygens baseline addendum
 

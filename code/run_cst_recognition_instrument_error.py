@@ -123,7 +123,7 @@ def apply_instrument_error(
     stress: dict[str, Any],
     seed: int,
 ) -> tuple[pd.DataFrame, dict[str, object]]:
-    work = ensure_theta_phi(case_nearfield).copy()
+    work = ensure_theta_phi(case_nearfield).copy().reset_index(drop=True)
     rng = np.random.default_rng(seed)
     work["sample_id"] = work["sample_id"].astype(str).str.strip()
     work["sensor_id"] = pd.to_numeric(work["sensor_id"], errors="coerce").astype(int)

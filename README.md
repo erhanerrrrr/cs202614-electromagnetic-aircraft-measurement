@@ -88,6 +88,7 @@
 61. G5 缺测通道扩展验证：同一脚本输出 `data/recognition_stress_tests/level2_dropout_mitigation_extended/`，把比较扩展到 5 个 G2 代表布局和 held-out `dropout/combined` 两类含缺测压力；当前 180 行全部高于 `0.85`，zero-fill 最小 `0.867`，mask-only 最小 `0.867` 且个别聚合行会弱于 zero-fill，frequency/sensor median imputation 与 imputation+mask 均达到 mean/min `1.000`。
 62. G5 结构化缺测验证：`code/run_cst_recognition_structured_dropout.py` 输出 `data/recognition_stress_tests/level2_structured_dropout/`，在已知扰动增强训练后测试 sensor-node dropout、polarization-pair dropout 和 60 deg azimuth-sector dropout；当前 240 行全部高于 `0.85`，最低 accuracy=`0.933`，frequency/sensor median imputation 两种策略 mean/min 均为 `1.000`。
 63. G5 仪器相关误差验证：`code/run_cst_recognition_instrument_error.py` 输出 `data/recognition_stress_tests/level2_instrument_error/`，测试全局增益漂移、传感器增益偏置、频率响应斜率、极化增益不平衡和混合幅相偏置；当前 150 行全部高于 `0.85`，最低 accuracy=`0.933`，最紧项为 `geometric_farthest_32/sensor_gain_bias_3db`。
+64. G5 仪器偏置+结构化缺测复合压力验证：`code/run_cst_recognition_compound_stress.py` 输出 `data/recognition_stress_tests/level2_compound_stress/`，把传感器增益/混合幅相/极化失衡等仪器偏置与 sensor-node、azimuth-sector、polarization-pair 缺测组合测试；当前 240 行中 zero-fill/mask 暴露低于 `0.85` 的边界，最差为 `full_grid_162/zero_fill/sensor_gain3db_sensor_node_dropout25pct`，accuracy=`0.733`；最佳总体策略为 frequency/sensor median imputation，mean accuracy 约 `0.993`、min accuracy 约 `0.867`。
 
 ## 如何阅读本项目
 
@@ -750,3 +751,4 @@ python code\run_cst_recognition_ablation.py --nearfield outputs\synthetic_cst_da
 17. 运行 `python code\run_cst_recognition_seed_stability.py` 刷新 `data/recognition_stress_tests/level2_seed_stability/`；若 `geometric_farthest_32/dropout_25pct` 的下界仍偏窄，下一步优先做 dropout-aware 特征、缺测插补或测点冗余备份策略。
 18. 运行 `python code\run_cst_recognition_dropout_mitigation.py` 刷新 `data/recognition_stress_tests/level2_dropout_mitigation/`；若插补仍优于 zero-fill，可在 G5 报告中将 frequency/sensor median imputation 写成缺测通道预处理候选。
 19. 若要复核五布局和含缺测组合扰动，运行 `python code\run_cst_recognition_dropout_mitigation.py --layout-candidates full_grid_162,geometric_farthest_32,fibonacci_snap_120,task_driven_32,task_driven_48 --held-out-families dropout,combined --out-dir data\recognition_stress_tests\level2_dropout_mitigation_extended`；下一步仍应使用真实 monitor、相关传感器缺测或 full-wave airframe 数据复核该预处理策略。
+20. 运行 `python code\run_cst_recognition_compound_stress.py` 刷新 `data/recognition_stress_tests/level2_compound_stress/`；若 zero-fill/mask 低于 `0.85`，应把复合仪器偏置+结构化缺测写成 G5 边界，并把 frequency/sensor median imputation 写成当前默认缓解策略，后续仍需真实 monitor 或 full-wave airframe 数据复核。
