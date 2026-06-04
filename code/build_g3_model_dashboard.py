@@ -165,6 +165,8 @@ def best_batch_rows(summary: dict[str, Any]) -> list[dict[str, Any]]:
         item = dict(best)
         item["sample_id"] = case.get("sample_id", "")
         item["sensor_count"] = quality.get("sensor_count", math.nan) if isinstance(quality, dict) else math.nan
+        item["hfield_available"] = bool(case.get("hfield_available", False))
+        item["hfield_load_status"] = str(case.get("hfield_load_status", "unknown"))
         rows.append(item)
     return rows
 
@@ -407,14 +409,22 @@ def build_rows() -> list[dict[str, Any]]:
         / "meshsafe_huygens_batch_summary.json"
     )
     meshsafe_batch = read_json(meshsafe_batch_path)
+    meshsafe_requested = 0
+    meshsafe_hfield_available = 0
+    meshsafe_best_real_hfield = 0
     if meshsafe_batch:
         case_rows = best_batch_rows(meshsafe_batch)
         requested = int(meshsafe_batch.get("case_count_requested", 0))
+        meshsafe_requested = requested
         completed = int(meshsafe_batch.get("case_count_completed", 0))
         missing = int(meshsafe_batch.get("case_count_missing_or_failed", 0))
         pass_like = int(meshsafe_batch.get("case_count_strict_proxy_or_region", 0))
         impedance_scan_enabled = bool(meshsafe_batch.get("impedance_scan_enabled", False))
         non_eta0_count = int(meshsafe_batch.get("case_count_best_non_eta0_impedance", 0))
+        hfield_available_count = int(meshsafe_batch.get("case_count_hfield_available", 0))
+        best_real_hfield_count = int(meshsafe_batch.get("case_count_best_real_hfield", 0))
+        meshsafe_hfield_available = hfield_available_count
+        meshsafe_best_real_hfield = best_real_hfield_count
         if completed == requested and requested > 0 and pass_like == requested:
             batch_status = "impedance_region_proxy_batch_pass" if impedance_scan_enabled else "region_proxy_batch_pass"
         elif completed == requested and pass_like > 0:
@@ -433,6 +443,7 @@ def build_rows() -> list[dict[str, Any]]:
             (
                 f"{item.get('sample_id', '')}:{item.get('status', '')}/{item.get('variant', '')}"
                 f"/eta={format_float(item.get('impedance_factor_to_eta0'), 3)}eta0"
+                f"/H={item.get('hfield_load_status', 'unknown')}"
             )
             for item in case_rows
         )
@@ -453,10 +464,15 @@ def build_rows() -> list[dict[str, Any]]:
                 interpretation=(
                     "The mesh-safe route now uses real CST local probe curves for two Level 1 sources and "
                     "passes the data-chain/region-lobe gate with scalar impedance calibration "
-                    f"({non_eta0_count}/{requested} best settings use non-eta0 eta_eff); it still needs "
-                    "independent H-field support before being used as final Stratton-Chu/Huygens proof."
+                    f"({non_eta0_count}/{requested} best settings use non-eta0 eta_eff). "
+                    f"Matching H-field is now loaded for {hfield_available_count}/{requested} cases and "
+                    f"{best_real_hfield_count}/{requested} best settings currently select a real-H branch, "
+                    "so this is upgraded from export-blocked to E/H-operator-calibration work."
                 ),
-                next_action="Use the calibrated eta_eff result as a proxy baseline; next add H-field export or independent impedance validation before final physics wording.",
+                next_action=(
+                    "Finish the missing half-wave H-field export, then calibrate the real E/H "
+                    "Love-equivalence operator against the CST far field; keep eta_eff as the proxy baseline."
+                ),
             )
         )
     else:
@@ -488,37 +504,43 @@ def build_rows() -> list[dict[str, Any]]:
             for item in case_rows
         )
         hfield_status = str(impedance_stability.get("hfield_resulttree_status", "unknown"))
+        if meshsafe_requested > 0:
+            hfield_context = (
+                f"Latest batch H-field coverage is {meshsafe_hfield_available}/{meshsafe_requested} loaded and "
+                f"{meshsafe_best_real_hfield}/{meshsafe_requested} best settings use a real-H branch; "
+                f"the older stability ResultTree flag is {hfield_status}."
+            )
+        else:
+            hfield_context = f"Current H-field ResultTree readiness is {hfield_status}."
         if stability_status == "cross_case_impedance_disagreement":
             stability_interpretation = (
                 "The lower-eta extension removed the immediate scan-boundary issue, but the two real CST "
-                f"cases now prefer different eta_eff values. Current H-field ResultTree readiness is {hfield_status}; "
-                "therefore the scalar impedance route is a source-dependent calibrated proxy, not a single "
+                f"cases now prefer different eta_eff values. {hfield_context} "
+                "Therefore the scalar impedance route is a source-dependent calibrated proxy, not a single "
                 "global physical impedance closure."
             )
             stability_next_action = (
-                "Add matching CST H-field probe curves, or validate a source-dependent eta model on additional "
-                "CST source families before using this route in final Huygens wording."
+                "Complete H-field coverage and rerun the stability check through the real E/H branch before "
+                "using this route in final Huygens wording."
             )
         elif stability_status == "needs_impedance_extension":
             stability_interpretation = (
                 "The scalar impedance proxy is now guarded by an explicit stability check, and the best eta_eff "
-                f"still sits on a scan boundary. Current H-field ResultTree readiness is {hfield_status}; the "
+                f"still sits on a scan boundary. {hfield_context} The "
                 "calibrated proxy remains useful but not final physics evidence."
             )
             stability_next_action = (
-                "Run the lower-eta scan listed by the stability gate or export matching CST H-field probe curves; "
-                "keep final wording at calibrated-proxy level until an interior stable eta or H-field-backed "
-                "current evidence exists."
+                "Run the lower-eta scan listed by the stability gate only as a proxy check; prioritize full "
+                "E/H branch coverage and operator calibration before final physics wording."
             )
         else:
             stability_interpretation = (
                 "The scalar impedance proxy is now guarded by an explicit stability check. "
-                f"Current H-field ResultTree readiness is {hfield_status}; keep the result as a calibrated "
+                f"{hfield_context} Keep the result as a calibrated "
                 "proxy until H-field-backed currents or broader CST case coverage confirm it."
             )
             stability_next_action = (
-                "Export matching CST H-field probe curves if available, or validate the candidate eta_eff on "
-                "additional CST source families before final physics wording."
+                "Use the proxy as a baseline while completing E/H branch coverage and additional CST source-family checks."
             )
         rows.append(
             row(
@@ -601,14 +623,14 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             "priority": 1,
             "owner": "Independent workflow",
             "gate": "meshsafe_huygens_physics",
-            "action": "Promote the scalar impedance proxy to H-field-backed Huygens evidence; if H-field is unavailable, validate eta_eff on more CST cases and keep source-dependent calibration explicit.",
+            "action": "Complete the real E/H Huygens closure: export the remaining half-wave H-field, calibrate the Love-equivalence surface-integral operator, and keep scalar eta_eff as the proxy baseline.",
             "trigger": (
-                "Mesh-safe real CST batch gate is region/proxy ready, while the stability gate still needs "
-                "impedance or H-field closure." if impedance_extension_needed else
+                "Mesh-safe real CST batch gate is region/proxy ready, but the stability gate still shows "
+                "source-dependent impedance sensitivity." if impedance_extension_needed else
                 "Mesh-safe real CST batch gate is region/proxy ready and the impedance stability gate is available."
             ),
-            "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv or data/sampling_layouts/cst_meshsafe_huygens_impedance_stability/",
-            "proof_to_close": "Batch summary reports H-field-backed currents or the stability gate records an interior, cross-case stable eta_eff candidate.",
+            "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv and data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/",
+            "proof_to_close": "Batch summary reports H-field loaded for all required cases and a real E/H branch is accepted by the vector-operator gate.",
             "blocked_by": "" if meshsafe_ready else "Mesh-safe batch gate",
         },
         {
@@ -680,6 +702,12 @@ def write_markdown(status: pd.DataFrame, actions: pd.DataFrame, summary: dict[st
                 "- True-monitor gate is no longer pending; inspect its status before writing reduced-layout claims.",
                 "- Rerun physical baselines when the gate reports `needs_physical_rerun`.",
             ]
+        )
+    meshsafe_rows = status.loc[status["artifact"] == "meshsafe_huygens_real_cst_batch"]
+    if not meshsafe_rows.empty:
+        lines.append(
+            "- Mesh-safe Huygens is no longer blocked at CST export for the short-dipole H-field path; "
+            "the current bottleneck is real E/H operator calibration plus remaining half-wave H-field coverage."
         )
 
     lines.extend(

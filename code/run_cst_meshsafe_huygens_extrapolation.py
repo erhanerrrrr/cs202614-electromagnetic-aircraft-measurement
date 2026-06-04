@@ -23,6 +23,13 @@ DEFAULT_LOCAL_NEARFIELD = (
     / "level1_meshsafe_huygens"
     / "L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv"
 )
+DEFAULT_LOCAL_HFIELD = (
+    ROOT
+    / "data"
+    / "cst_exports"
+    / "level1_meshsafe_huygens"
+    / "L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_hfield.csv"
+)
 DEFAULT_FARFIELD = ROOT / "data" / "cst_exports" / "level1" / "all_farfield.csv"
 DEFAULT_OUT_DIR = ROOT / "data" / "sampling_layouts" / "cst_meshsafe_huygens_extrapolation"
 DEFAULT_CASE_CSV = (
@@ -33,7 +40,22 @@ DEFAULT_CASE_CSV = (
 )
 DEFAULT_BATCH_OUT_DIR = ROOT / "data" / "sampling_layouts" / "cst_meshsafe_huygens_extrapolation_batch"
 ETA0 = 376.730313668
-COMPONENTS = ("Ex", "Ey", "Ez")
+E_COMPONENTS = ("Ex", "Ey", "Ez")
+H_COMPONENTS = ("Hx", "Hy", "Hz")
+FIELD_CONFIG = {
+    "e": {
+        "components": E_COMPONENTS,
+        "real_column": "e_real",
+        "imag_column": "e_imag",
+        "label": "E-field",
+    },
+    "h": {
+        "components": H_COMPONENTS,
+        "real_column": "h_real",
+        "imag_column": "h_imag",
+        "label": "H-field",
+    },
+}
 DEFAULT_IMPEDANCE_FACTORS = (0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0)
 
 
@@ -68,7 +90,14 @@ def as_numeric(work: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     return out
 
 
-def load_local_field(path: Path, sample_id: str, frequency_hz: float) -> pd.DataFrame:
+def load_local_field(path: Path, sample_id: str, frequency_hz: float, field_kind: str = "e") -> pd.DataFrame:
+    if field_kind not in FIELD_CONFIG:
+        raise ValueError(f"unsupported local field kind: {field_kind}")
+    config = FIELD_CONFIG[field_kind]
+    components = tuple(config["components"])
+    real_column = str(config["real_column"])
+    imag_column = str(config["imag_column"])
+    complex_column = f"{field_kind}_complex"
     required = {
         "sample_id",
         "frequency_hz",
@@ -89,13 +118,13 @@ def load_local_field(path: Path, sample_id: str, frequency_hz: float) -> pd.Data
         "tangent2_z",
         "weight_m2",
         "polarization",
-        "e_real",
-        "e_imag",
+        real_column,
+        imag_column,
     }
     table = read_table(path)
     missing = sorted(required - set(table.columns))
     if missing:
-        raise ValueError(f"local Huygens CSV missing required columns: {missing}")
+        raise ValueError(f"local Huygens {config['label']} CSV missing required columns: {missing}")
 
     numeric_columns = [
         "frequency_hz",
@@ -114,8 +143,8 @@ def load_local_field(path: Path, sample_id: str, frequency_hz: float) -> pd.Data
         "tangent2_y",
         "tangent2_z",
         "weight_m2",
-        "e_real",
-        "e_imag",
+        real_column,
+        imag_column,
     ]
     work = as_numeric(table, numeric_columns)
     work["sample_id"] = work["sample_id"].astype(str).str.strip()
@@ -126,11 +155,11 @@ def load_local_field(path: Path, sample_id: str, frequency_hz: float) -> pd.Data
         raise ValueError(f"no local Huygens rows for sample_id={sample_id}, frequency_hz={frequency_hz}")
     if sub[numeric_columns].isna().any().any():
         bad_columns = sorted(column for column in numeric_columns if sub[column].isna().any())
-        raise ValueError(f"local Huygens CSV has non-numeric values in: {bad_columns}")
+        raise ValueError(f"local Huygens {config['label']} CSV has non-numeric values in: {bad_columns}")
 
     duplicate_count = int(sub.duplicated(["sensor_id", "polarization"]).sum())
     if duplicate_count:
-        raise ValueError(f"local Huygens CSV has {duplicate_count} duplicate sensor/component rows")
+        raise ValueError(f"local Huygens {config['label']} CSV has {duplicate_count} duplicate sensor/component rows")
 
     index_columns = [
         "sample_id",
@@ -152,24 +181,94 @@ def load_local_field(path: Path, sample_id: str, frequency_hz: float) -> pd.Data
         "tangent2_z",
         "weight_m2",
     ]
-    sub["e_complex"] = sub["e_real"].to_numpy(dtype=float) + 1j * sub["e_imag"].to_numpy(dtype=float)
-    pivot = sub.pivot(index=index_columns, columns="polarization", values="e_complex").reset_index()
-    missing_components = [component for component in COMPONENTS if component not in pivot.columns]
+    sub[complex_column] = sub[real_column].to_numpy(dtype=float) + 1j * sub[imag_column].to_numpy(dtype=float)
+    pivot = sub.pivot(index=index_columns, columns="polarization", values=complex_column).reset_index()
+    missing_components = [component for component in components if component not in pivot.columns]
     if missing_components:
-        raise ValueError(f"local Huygens CSV missing components: {missing_components}")
+        raise ValueError(f"local Huygens {config['label']} CSV missing components: {missing_components}")
     pivot = pivot.sort_values("sensor_id").reset_index(drop=True)
     return pivot
 
 
-def field_quality(surface: pd.DataFrame) -> tuple[dict[str, Any], dict[str, np.ndarray]]:
+def vector_from_components(surface: pd.DataFrame, components: tuple[str, str, str]) -> np.ndarray:
+    return np.column_stack([surface[component].to_numpy() for component in components]).astype(np.complex128)
+
+
+def align_hfield_surface(efield_surface: pd.DataFrame, hfield_surface: pd.DataFrame) -> pd.DataFrame:
+    hfield_sorted = hfield_surface.sort_values("sensor_id").reset_index(drop=True)
+    if efield_surface.shape[0] != hfield_sorted.shape[0]:
+        raise ValueError(
+            "local Huygens E/H surfaces have different sensor counts: "
+            f"{efield_surface.shape[0]} vs {hfield_sorted.shape[0]}"
+        )
+    id_columns = ["sample_id", "sensor_id", "node_id", "prior_id"]
+    for column in id_columns:
+        left = efield_surface[column].astype(str).to_numpy()
+        right = hfield_sorted[column].astype(str).to_numpy()
+        if not np.array_equal(left, right):
+            raise ValueError(f"local Huygens E/H surfaces do not align on column {column}")
+    numeric_columns = [
+        "frequency_hz",
+        "x_m",
+        "y_m",
+        "z_m",
+        "normal_x",
+        "normal_y",
+        "normal_z",
+        "tangent1_x",
+        "tangent1_y",
+        "tangent1_z",
+        "tangent2_x",
+        "tangent2_y",
+        "tangent2_z",
+        "weight_m2",
+    ]
+    for column in numeric_columns:
+        left = efield_surface[column].to_numpy(dtype=float)
+        right = hfield_sorted[column].to_numpy(dtype=float)
+        if not np.allclose(left, right, rtol=1e-8, atol=1e-10):
+            raise ValueError(f"local Huygens E/H surfaces do not align on numeric column {column}")
+    return hfield_sorted
+
+
+def infer_hfield_path(local_nearfield: Path) -> Path:
+    local_text = str(local_nearfield)
+    if "_local_efield.csv" in local_text:
+        return Path(local_text.replace("_local_efield.csv", "_local_hfield.csv"))
+    if "_efield.csv" in local_text:
+        return Path(local_text.replace("_efield.csv", "_hfield.csv"))
+    return local_nearfield.with_name(f"{local_nearfield.stem}_hfield.csv")
+
+
+def load_optional_hfield(
+    local_nearfield: Path,
+    local_hfield: Path | None,
+    sample_id: str,
+    frequency_hz: float,
+    disabled: bool = False,
+) -> tuple[pd.DataFrame | None, Path | None, str, str]:
+    if disabled:
+        return None, None, "disabled", ""
+    hfield_path = local_hfield if local_hfield is not None else infer_hfield_path(local_nearfield)
+    if not hfield_path.exists():
+        return None, hfield_path, "missing", ""
+    try:
+        surface = load_local_field(hfield_path, sample_id, frequency_hz, field_kind="h")
+    except Exception as exc:
+        return None, hfield_path, "failed", repr(exc)
+    return surface, hfield_path, "loaded", ""
+
+
+def field_quality(
+    surface: pd.DataFrame,
+    hfield_surface: pd.DataFrame | None = None,
+) -> tuple[dict[str, Any], dict[str, np.ndarray]]:
     positions = surface[["x_m", "y_m", "z_m"]].to_numpy(dtype=float)
     normals = surface[["normal_x", "normal_y", "normal_z"]].to_numpy(dtype=float)
     tangent1 = surface[["tangent1_x", "tangent1_y", "tangent1_z"]].to_numpy(dtype=float)
     tangent2 = surface[["tangent2_x", "tangent2_y", "tangent2_z"]].to_numpy(dtype=float)
     weights = surface["weight_m2"].to_numpy(dtype=float)
-    field = np.column_stack([surface["Ex"].to_numpy(), surface["Ey"].to_numpy(), surface["Ez"].to_numpy()]).astype(
-        np.complex128
-    )
+    field = vector_from_components(surface, E_COMPONENTS)
     normal_component = np.sum(field * normals, axis=1)
     tangential = field - normal_component[:, None] * normals
     t1_component = np.sum(tangential * tangent1, axis=1)
@@ -182,7 +281,7 @@ def field_quality(surface: pd.DataFrame) -> tuple[dict[str, Any], dict[str, np.n
     local_radii = np.linalg.norm(positions - center[None, :], axis=1)
     quality = {
         "sensor_count": int(surface.shape[0]),
-        "component_rows_expected": int(surface.shape[0] * len(COMPONENTS)),
+        "component_rows_expected": int(surface.shape[0] * len(E_COMPONENTS)),
         "prior_id": str(surface["prior_id"].iloc[0]),
         "center_x_m": float(center[0]),
         "center_y_m": float(center[1]),
@@ -201,6 +300,7 @@ def field_quality(surface: pd.DataFrame) -> tuple[dict[str, Any], dict[str, np.n
         "dynamic_range_db": float(
             20.0 * math.log10(max(float(np.max(amplitudes)), 1e-30) / max(float(np.min(amplitudes)), 1e-30))
         ),
+        "hfield_available": bool(hfield_surface is not None),
     }
     arrays = {
         "positions": positions,
@@ -211,6 +311,47 @@ def field_quality(surface: pd.DataFrame) -> tuple[dict[str, Any], dict[str, np.n
         "t1_component": t1_component,
         "t2_component": t2_component,
     }
+    if hfield_surface is not None:
+        aligned_hfield = align_hfield_surface(surface, hfield_surface)
+        hfield = vector_from_components(aligned_hfield, H_COMPONENTS)
+        h_normal_component = np.sum(hfield * normals, axis=1)
+        h_tangential = hfield - h_normal_component[:, None] * normals
+        h_t1_component = np.sum(h_tangential * tangent1, axis=1)
+        h_t2_component = np.sum(h_tangential * tangent2, axis=1)
+        h_total_norm = float(np.linalg.norm(hfield))
+        h_tangential_norm = float(np.linalg.norm(h_tangential))
+        h_normal_norm = float(np.linalg.norm(h_normal_component))
+        h_amplitudes = np.linalg.norm(hfield, axis=1)
+        tangential_eta = float(tangential_norm / max(h_tangential_norm, 1e-30))
+        quality.update(
+            {
+                "h_component_rows_expected": int(aligned_hfield.shape[0] * len(H_COMPONENTS)),
+                "h_total_field_l2": h_total_norm,
+                "h_tangential_field_l2": h_tangential_norm,
+                "h_normal_field_l2": h_normal_norm,
+                "h_normal_to_total_l2_ratio": float(h_normal_norm / max(h_total_norm, 1e-30)),
+                "h_tangential_to_total_l2_ratio": float(h_tangential_norm / max(h_total_norm, 1e-30)),
+                "h_min_sensor_field_abs": float(np.min(h_amplitudes)),
+                "h_max_sensor_field_abs": float(np.max(h_amplitudes)),
+                "h_median_sensor_field_abs": float(np.median(h_amplitudes)),
+                "h_dynamic_range_db": float(
+                    20.0
+                    * math.log10(
+                        max(float(np.max(h_amplitudes)), 1e-30) / max(float(np.min(h_amplitudes)), 1e-30)
+                    )
+                ),
+                "tangential_e_to_h_impedance_ohm": tangential_eta,
+                "tangential_e_to_h_eta0_ratio": float(tangential_eta / ETA0),
+            }
+        )
+        arrays.update(
+            {
+                "hfield": hfield,
+                "h_tangential": h_tangential,
+                "h_t1_component": h_t1_component,
+                "h_t2_component": h_t2_component,
+            }
+        )
     return quality, arrays
 
 
@@ -237,7 +378,7 @@ def impedance_label(factor: float) -> str:
     return text.rstrip("0").rstrip("p") if "p" in text else text
 
 
-def candidate_settings(impedance_factors: list[float]) -> list[dict[str, Any]]:
+def candidate_settings(impedance_factors: list[float], include_hfield: bool = False) -> list[dict[str, Any]]:
     settings: list[dict[str, Any]] = [
         {
             "variant": "electric_only_outgoing",
@@ -261,6 +402,32 @@ def candidate_settings(impedance_factors: list[float]) -> list[dict[str, Any]]:
             "calibration_mode": "not_used",
         },
     ]
+    if include_hfield:
+        settings.extend(
+            [
+                {
+                    "variant": "hfield_electric_only",
+                    "variant_family": "hfield_electric_only",
+                    "impedance_factor_to_eta0": 1.0,
+                    "impedance_ohm": ETA0,
+                    "calibration_mode": "real_hfield_only",
+                },
+                {
+                    "variant": "eh_love_equivalence_plus",
+                    "variant_family": "eh_love_equivalence_plus",
+                    "impedance_factor_to_eta0": 1.0,
+                    "impedance_ohm": ETA0,
+                    "calibration_mode": "real_eh_surface_currents",
+                },
+                {
+                    "variant": "eh_love_equivalence_minus",
+                    "variant_family": "eh_love_equivalence_minus",
+                    "impedance_factor_to_eta0": 1.0,
+                    "impedance_ohm": ETA0,
+                    "calibration_mode": "real_eh_surface_currents",
+                },
+            ]
+        )
     for family in ("outgoing_equivalence_plus", "outgoing_equivalence_minus"):
         for factor in impedance_factors:
             fixed_eta0 = math.isclose(factor, 1.0, rel_tol=1e-9, abs_tol=1e-12)
@@ -284,9 +451,35 @@ def equivalent_currents(
     normals = arrays["normals"]
     tangential = arrays["tangential"]
     magnetic_current = -np.cross(normals, tangential)
+    h_tangential = arrays.get("h_tangential")
+    electric_current_from_h = None
+    if h_tangential is not None:
+        electric_current_from_h = np.cross(normals, h_tangential)
     eta_eff = max(float(impedance_ohm), 1e-30)
     electric_current = -tangential / eta_eff
     zeros = np.zeros_like(tangential)
+    if variant == "hfield_electric_only":
+        if electric_current_from_h is None:
+            raise ValueError("hfield_electric_only requires loaded H-field tangential data")
+        return electric_current_from_h, zeros, 1.0, "J=n_cross_H_t from real CST H-field, M=0"
+    if variant == "eh_love_equivalence_plus":
+        if electric_current_from_h is None:
+            raise ValueError("eh_love_equivalence_plus requires loaded H-field tangential data")
+        return (
+            electric_current_from_h,
+            magnetic_current,
+            1.0,
+            "J=n_cross_H_t from real CST H-field, M=-n_cross_E_t from real CST E-field",
+        )
+    if variant == "eh_love_equivalence_minus":
+        if electric_current_from_h is None:
+            raise ValueError("eh_love_equivalence_minus requires loaded H-field tangential data")
+        return (
+            electric_current_from_h,
+            magnetic_current,
+            -1.0,
+            "J=n_cross_H_t from real CST H-field, M contribution sign flipped for convention check",
+        )
     if variant == "electric_only_outgoing":
         return electric_current, zeros, 1.0, f"J=-E_t/eta_eff, eta_eff={eta_eff:.6g} ohm, M=0"
     if variant == "magnetic_only_plus":
@@ -437,16 +630,22 @@ def batch_summary_row(summary: dict[str, Any], local_nearfield: Path, out_dir: P
         "frequency_hz": summary["frequency_hz"],
         "status": "ok",
         "local_nearfield": display_path(local_nearfield),
+        "local_hfield": summary.get("local_hfield", ""),
+        "hfield_load_status": summary.get("hfield_load_status", ""),
+        "hfield_available": bool(summary.get("hfield_available", False)),
         "out_dir": display_path(out_dir),
         "sensor_count": quality["sensor_count"],
         "tangential_to_total_l2_ratio": quality["tangential_to_total_l2_ratio"],
         "normal_to_total_l2_ratio": quality["normal_to_total_l2_ratio"],
         "dynamic_range_db": quality["dynamic_range_db"],
+        "tangential_e_to_h_impedance_ohm": quality.get("tangential_e_to_h_impedance_ohm", ""),
+        "tangential_e_to_h_eta0_ratio": quality.get("tangential_e_to_h_eta0_ratio", ""),
         "best_variant": best["variant"],
         "best_variant_family": best.get("variant_family", ""),
         "best_impedance_ohm": best.get("impedance_ohm", ""),
         "best_impedance_factor_to_eta0": best.get("impedance_factor_to_eta0", ""),
         "best_calibration_mode": best.get("calibration_mode", ""),
+        "best_uses_real_hfield": bool(best.get("uses_real_hfield", False)),
         "best_status": best["status"],
         "correlation": best["correlation"],
         "nmse": best["nmse"],
@@ -466,18 +665,18 @@ def write_batch_readme(out_dir: Path, rows: pd.DataFrame, summary: dict[str, Any
         table_rows = []
         for row in rows.itertuples(index=False):
             if row.status != "ok":
-                table_rows.append(f"| {row.sample_id} | {row.status} | - | - | - | - | - | - | - |")
+                table_rows.append(f"| {row.sample_id} | - | {row.status} | - | - | - | - | - | - | - |")
                 continue
             table_rows.append(
-                f"| {row.sample_id} | {row.best_status} | {row.best_variant} | "
+                f"| {row.sample_id} | {row.hfield_available} | {row.best_status} | {row.best_variant} | "
                 f"{row.best_impedance_factor_to_eta0:.3g} | "
                 f"{row.correlation:.4f} | {row.scaled_power_nmse:.4e} | "
                 f"{row.main_lobe_error_deg:.2f} | {row.main_lobe_region_error_deg:.2f} | "
                 f"{row.main_lobe_region_jaccard:.3f} |"
             )
         table = (
-            "| Sample | Best status | Best variant | Eta/eta0 | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |\n"
-            "|---|---|---|---:|---:|---:|---:|---:|---:|\n"
+            "| Sample | H-field | Best status | Best variant | Eta/eta0 | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |\n"
+            "|---|---:|---|---|---:|---:|---:|---:|---:|---:|\n"
             + "\n".join(table_rows)
             + "\n"
         )
@@ -496,6 +695,8 @@ cross-case pass/fail picture.
 - Best strict/physics-proxy cases: `{summary['case_count_strict_or_proxy']}`
 - Best region-shape cases: `{summary['case_count_region_shape']}`
 - Best strict/physics-proxy/region cases: `{summary['case_count_strict_proxy_or_region']}`
+- Cases with real H-field loaded: `{summary['case_count_hfield_available']}`
+- Best variants using real H-field: `{summary['case_count_best_real_hfield']}`
 - Impedance scan enabled: `{summary['impedance_scan_enabled']}`
 - Best non-eta0 impedance cases: `{summary['case_count_best_non_eta0_impedance']}`
 
@@ -506,12 +707,13 @@ cross-case pass/fail picture.
 
 This is a batch data-chain gate, not the final Huygens physics proof. The
 region-lobe metrics compare the overlap of the top-power directional regions,
-which is more stable than a single argmax for broad or ring-like patterns. Final
-claims still require a stricter vector surface-integral operator and independent
-H-field support. The scalar impedance scan is a calibration proxy: it tunes the
-relative weight of electric and magnetic equivalent currents against the current
-Level 1 far-field reference and keeps the selected `eta_eff/eta0` visible in
-every row.
+which is more stable than a single argmax for broad or ring-like patterns. When
+matching H-field rows are present, the gate evaluates real dual-field surface
+currents `J = n x H_t` and `M = -n x E_t`; when H-field rows are missing, it
+falls back to the older E-only impedance proxy. Final claims still require a
+stricter vector surface-integral operator and source-family cross-checks. The
+scalar impedance scan remains visible because it is useful as a calibration
+baseline against the Level 1 far-field reference.
 
 ## Command
 
@@ -551,6 +753,8 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
             continue
         case_args = argparse.Namespace(
             local_nearfield=local_nearfield,
+            local_hfield=resolve_path(args.local_hfield) if args.local_hfield else infer_hfield_path(local_nearfield),
+            disable_hfield=args.disable_hfield,
             farfield=resolve_path(args.farfield),
             out_dir=case_out_dir,
             sample_id=sample_id,
@@ -584,12 +788,18 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
     region_shape = 0
     strict_proxy_or_region = 0
     best_non_eta0_impedance = 0
+    hfield_available_count = 0
+    best_real_hfield_count = 0
     if not ok_rows.empty and "best_status" in ok_rows.columns:
         strict_or_proxy = int(ok_rows["best_status"].isin(["strict_pass", "physics_proxy_pass"]).sum())
         region_shape = int(ok_rows["best_status"].eq("region_shape_pass").sum())
         strict_proxy_or_region = int(
             ok_rows["best_status"].isin(["strict_pass", "physics_proxy_pass", "region_shape_pass"]).sum()
         )
+    if not ok_rows.empty and "hfield_available" in ok_rows.columns:
+        hfield_available_count = int(ok_rows["hfield_available"].fillna(False).astype(bool).sum())
+    if not ok_rows.empty and "best_uses_real_hfield" in ok_rows.columns:
+        best_real_hfield_count = int(ok_rows["best_uses_real_hfield"].fillna(False).astype(bool).sum())
     if not ok_rows.empty and "best_impedance_factor_to_eta0" in ok_rows.columns:
         best_non_eta0_impedance = int(
             ok_rows["best_impedance_factor_to_eta0"].map(finite_non_eta0_impedance).fillna(False).sum()
@@ -606,6 +816,8 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
         "case_count_strict_or_proxy": strict_or_proxy,
         "case_count_region_shape": region_shape,
         "case_count_strict_proxy_or_region": strict_proxy_or_region,
+        "case_count_hfield_available": hfield_available_count,
+        "case_count_best_real_hfield": best_real_hfield_count,
         "impedance_scan_factors": impedance_factors,
         "impedance_scan_ohms": [float(ETA0 * factor) for factor in impedance_factors],
         "impedance_scan_enabled": any(not math.isclose(factor, 1.0) for factor in impedance_factors),
@@ -620,13 +832,26 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
 def run(args: argparse.Namespace) -> dict[str, Any]:
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    local_field = load_local_field(Path(args.local_nearfield), args.sample_id, float(args.frequency_hz))
-    quality, arrays = field_quality(local_field)
+    local_nearfield = Path(args.local_nearfield)
+    local_hfield_arg = getattr(args, "local_hfield", None)
+    local_hfield = Path(local_hfield_arg) if local_hfield_arg else None
+    local_field = load_local_field(local_nearfield, args.sample_id, float(args.frequency_hz), field_kind="e")
+    hfield_surface, hfield_path, hfield_status, hfield_error = load_optional_hfield(
+        local_nearfield,
+        local_hfield,
+        args.sample_id,
+        float(args.frequency_hz),
+        disabled=bool(getattr(args, "disable_hfield", False)),
+    )
+    if hfield_surface is not None:
+        hfield_surface = align_hfield_surface(local_field, hfield_surface)
+    quality, arrays = field_quality(local_field, hfield_surface)
     farfield = read_table(args.farfield)
     theta, phi, true_power, farfield_shape = farfield_power_from_table(farfield, args.sample_id, float(args.frequency_hz))
 
     impedance_factors = parse_impedance_factors(args.impedance_factors)
-    settings = candidate_settings(impedance_factors)
+    hfield_available = bool(quality["hfield_available"])
+    settings = candidate_settings(impedance_factors, include_hfield=hfield_available)
     result_rows: list[dict[str, Any]] = []
     prediction_cache: dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]] = {}
     for setting in settings:
@@ -659,6 +884,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "impedance_ohm": float(setting["impedance_ohm"]),
             "impedance_factor_to_eta0": float(setting["impedance_factor_to_eta0"]),
             "calibration_mode": str(setting["calibration_mode"]),
+            "uses_real_hfield": bool(str(setting["calibration_mode"]).startswith("real_")),
             "model_note": model_note,
             "sensor_count": int(quality["sensor_count"]),
             "farfield_points": int(theta.size),
@@ -707,7 +933,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     summary = {
         "generated_at": now_iso(),
         "generated_by": "code/run_cst_meshsafe_huygens_extrapolation.py",
-        "local_nearfield": display_path(Path(args.local_nearfield)),
+        "local_nearfield": display_path(local_nearfield),
+        "local_hfield": "" if hfield_path is None else display_path(hfield_path),
+        "hfield_load_status": hfield_status,
+        "hfield_load_error": hfield_error,
+        "hfield_available": hfield_available,
         "farfield": display_path(Path(args.farfield)),
         "out_dir": display_path(out_dir),
         "sample_id": args.sample_id,
@@ -723,8 +953,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "candidate_count": int(len(settings)),
         },
         "interpretation": (
-            "diagnostic Huygens/Kirchhoff proxy; use to verify the real CST local probe export and directionality, "
-            "then replace with a stricter vector surface-integral operator and independent H-field support before final report claims"
+            "real E/H CST local probe export is used for Love-equivalence current diagnostics when H-field rows are available; "
+            "E-only impedance proxy variants are retained as calibration baselines until a stricter vector surface-integral operator is implemented"
+            if hfield_available
+            else "diagnostic Huygens/Kirchhoff proxy; use to verify the real CST local E-field probe export and directionality, "
+            "then replace with real H-field currents and a stricter vector surface-integral operator before final report claims"
         ),
     }
     write_json(out_dir / "meshsafe_huygens_extrapolation_summary.json", summary)
@@ -735,6 +968,22 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 def write_readme(out_dir: Path, summary: dict[str, Any], results: pd.DataFrame) -> None:
     best = summary["best_setting"]
     quality = summary["quality"]
+    hfield_available = bool(summary.get("hfield_available", False))
+    hfield_input = summary.get("local_hfield", "") or "not requested"
+    hfield_quality_rows = ""
+    if hfield_available:
+        hfield_quality_rows = f"""| H tangential/total L2 ratio | `{quality['h_tangential_to_total_l2_ratio']:.4f}` |
+| H normal/total L2 ratio | `{quality['h_normal_to_total_l2_ratio']:.4f}` |
+| H dynamic range / dB | `{quality['h_dynamic_range_db']:.2f}` |
+| Tangential E/H impedance / ohm | `{quality['tangential_e_to_h_impedance_ohm']:.6g}` |
+| Tangential E/H eta0 ratio | `{quality['tangential_e_to_h_eta0_ratio']:.4f}` |"""
+    hfield_reading = (
+        "- This Python gate consumes matched real CST local E-field and H-field probe values.\n"
+        "- Real dual-field variants evaluate `J = n x H_t` and `M = -n x E_t`, while the older E-only impedance scan remains as a calibration baseline."
+        if hfield_available
+        else "- This Python gate currently consumes real CST local E-field probe values only.\n"
+        "- H-field rows were not loaded, so the equivalent-current formulas remain an E-only impedance proxy for this run."
+    )
     command = (
         "python code\\run_cst_meshsafe_huygens_extrapolation.py "
         f"--local-nearfield {summary['local_nearfield']} "
@@ -744,7 +993,7 @@ def write_readme(out_dir: Path, summary: dict[str, Any], results: pd.DataFrame) 
     rows = []
     for row in results.itertuples(index=False):
         rows.append(
-            f"| {row.variant} | {row.calibration_mode} | {row.impedance_factor_to_eta0:.3g} | "
+            f"| {row.variant} | {row.calibration_mode} | {row.uses_real_hfield} | {row.impedance_factor_to_eta0:.3g} | "
             f"{row.status} | {row.correlation:.4f} | {row.nmse:.4e} | "
             f"{row.scaled_power_nmse:.4e} | {row.main_lobe_error_deg:.2f} | "
             f"{row.main_lobe_region_error_deg:.2f} | {row.main_lobe_region_jaccard:.3f} | "
@@ -753,15 +1002,17 @@ def write_readme(out_dir: Path, summary: dict[str, Any], results: pd.DataFrame) 
     content = f"""# CST Mesh-Safe Huygens Extrapolation Gate
 
 This directory evaluates one real CST local Huygens-surface probe export.
-It consumes the `96 * 3 = 288` complex Cartesian E-field probe rows exported
-through CST `ResultTree` and compares a diagnostic equivalent-current far-field
-proxy against the existing Level 1 CST far-field reference.
+It consumes matched complex Cartesian probe rows exported through CST
+`ResultTree` and compares diagnostic equivalent-current far-field predictions
+against the existing Level 1 CST far-field reference.
 
 ## Inputs
 
 | Item | Path |
 |---|---|
 | Local Huygens E field | `{summary['local_nearfield']}` |
+| Local Huygens H field | `{hfield_input}` |
+| H-field load status | `{summary.get('hfield_load_status', '')}` |
 | Far-field reference | `{summary['farfield']}` |
 
 ## Field Quality
@@ -774,6 +1025,7 @@ proxy against the existing Level 1 CST far-field reference.
 | Tangential/total L2 ratio | `{quality['tangential_to_total_l2_ratio']:.4f}` |
 | Normal/total L2 ratio | `{quality['normal_to_total_l2_ratio']:.4f}` |
 | Dynamic range / dB | `{quality['dynamic_range_db']:.2f}` |
+{hfield_quality_rows}
 
 ## Best Diagnostic Variant
 
@@ -782,6 +1034,7 @@ proxy against the existing Level 1 CST far-field reference.
 | Variant | `{best['variant']}` |
 | Variant family | `{best.get('variant_family', '')}` |
 | Calibration mode | `{best.get('calibration_mode', '')}` |
+| Uses real H-field | `{best.get('uses_real_hfield', False)}` |
 | Eta_eff / eta0 | `{best.get('impedance_factor_to_eta0', '')}` |
 | Eta_eff / ohm | `{best.get('impedance_ohm', '')}` |
 | Status | `{best['status']}` |
@@ -795,25 +1048,24 @@ proxy against the existing Level 1 CST far-field reference.
 
 ## Variant Ranking
 
-| Variant | Calibration | Eta/eta0 | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
-|---|---|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| Variant | Calibration | Real H | Eta/eta0 | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
+|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|
 {chr(10).join(rows)}
 
 ## Reading
 
-- This Python gate uses real CST local Huygens probe values
-  instead of the previous FarfieldPlot-derived 13 m near-field surrogate.
-- The equivalent-current formulas are deliberately kept as a diagnostic proxy:
-  `J ~= -E_t/eta_eff` and `M = -n x E_t`. The scalar impedance scan tunes
-  the relative electric/magnetic current weight against the Level 1 far-field
-  reference, making it a calibration proxy rather than final report-level
-  Stratton-Chu/Huygens evidence.
+{hfield_reading}
+- The equivalent-current formulas are still a diagnostic Huygens/Kirchhoff
+  operator rather than final report-level Stratton-Chu evidence. Treat the
+  scalar impedance scan as a calibration baseline and the real E/H variants as
+  the next physics gate to refine.
 - Broad, ring-like, or multi-peak reference patterns can make the single-point
   main-lobe metric stricter than the whole-pattern shape metrics. Treat
   `region_shape_pass` or `shape_pass_lobe_ambiguous` as good data-chain
   signals, not as final physics passes.
-- Final G3 evidence still needs a stricter vector surface-integral operator
-  plus H-field or impedance-backed current estimates.
+- Final G3 evidence still needs a stricter vector surface-integral operator,
+  source-family cross-checks, and reduced-layout propagation to the 13 m
+  measurement shell.
 
 ## Generated Files
 
@@ -836,6 +1088,20 @@ proxy against the existing Level 1 CST far-field reference.
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the CST mesh-safe local Huygens extrapolation gate.")
     parser.add_argument("--local-nearfield", type=Path, default=DEFAULT_LOCAL_NEARFIELD)
+    parser.add_argument(
+        "--local-hfield",
+        type=Path,
+        default=None,
+        help=(
+            "Optional local H-field CSV. If omitted, the script looks for the matching "
+            "_local_hfield.csv next to --local-nearfield."
+        ),
+    )
+    parser.add_argument(
+        "--disable-hfield",
+        action="store_true",
+        help="Ignore local H-field rows and run only the E-field impedance proxy variants.",
+    )
     parser.add_argument("--farfield", type=Path, default=DEFAULT_FARFIELD)
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     parser.add_argument("--sample-id", default="L1_short_dipole_z_1p2G")
@@ -864,7 +1130,9 @@ def main() -> int:
             f"completed {summary['case_count_completed']}/{summary['case_count_requested']} cases; "
             f"strict_or_proxy={summary['case_count_strict_or_proxy']}; "
             f"region_shape={summary['case_count_region_shape']}; "
-            f"strict_proxy_or_region={summary['case_count_strict_proxy_or_region']}"
+            f"strict_proxy_or_region={summary['case_count_strict_proxy_or_region']}; "
+            f"hfield={summary['case_count_hfield_available']}; "
+            f"best_real_hfield={summary['case_count_best_real_hfield']}"
         )
         return 0 if summary["case_count_missing_or_failed"] == 0 else 1
     summary = run(args)
@@ -872,7 +1140,8 @@ def main() -> int:
     print(f"CST mesh-safe Huygens extrapolation written to {summary['out_dir']}")
     print(
         f"best diagnostic variant: {best['variant']} "
-        f"({best['status']}, corr={best['correlation']:.4f}, scaled_nmse={best['scaled_power_nmse']:.4e})"
+        f"({best['status']}, corr={best['correlation']:.4f}, scaled_nmse={best['scaled_power_nmse']:.4e}, "
+        f"hfield_available={summary['hfield_available']})"
     )
     return 0
 

@@ -289,10 +289,9 @@ Related entries:
 `--field-kind e|h`，工作包新增 H-field CSV 合同并把 H-field 工程生成、短路径求解和
 ResultTree 导出列入 `next_meshsafe_huygens_commands.csv` 的步骤 5-7。
 
-当前结论：CST 不是无法正常运行。E-field 短路径 ResultTree 导出已经达到
-`target_contract_complete`，短偶极子合同有 `288` 行；H-field 路径目前显示
-`blocked`，原因是 `C:\csttmp\huy_hs\h_short_hfield.cst` 还没有生成/求解，不是
-CST 启动失败。
+阶段结论：CST 不是无法正常运行。S36 将 H-field 路线整理成可执行步骤；
+该阶段结束时，H-field 仍等待 `C:\csttmp\huy_hs\h_short_hfield.cst` 生成和
+求解。S37 已继续完成短偶极子 H-field 导出和算法接入，因此当前状态见下一节。
 
 相关入口：
 
@@ -303,3 +302,31 @@ CST 启动失败。
 | `data/cst_meshsafe_huygens_workpack/next_meshsafe_huygens_commands.csv` | E/H 工程生成、solver gate 和 ResultTree 导出命令队列 |
 | `code/export_cst_meshsafe_huygens_results.py` | `--field-kind e|h` ResultTree 导出控制器 |
 | `code/run_cst_level1_required_automation.py` | `--probe-mode hfield` CST 工程生成入口 |
+
+## 2026-06-04 CST mesh-safe Huygens real E/H 外推门控
+
+本轮继续执行 S36 的 H-field 步骤，短偶极子 `L1_short_dipole_z_1p2G`
+已经完成 H-field mesh-safe CST 工程生成、短路径求解、ResultTree 导出和
+Python E/H 双场接入。新增的 H-field CSV 与既有 E-field CSV 在 `96` 个局部
+Huygens 面节点上逐点对齐，`run_cst_meshsafe_huygens_extrapolation.py`
+现在会自动寻找同名 `_local_hfield.csv`，存在时评估真实 `J = n x H_t` 与
+`M = -n x E_t` 分支，不存在时回退到 E-only 阻抗代理。
+
+当前结论：CST 能正常完成 mesh-safe 路线的建模、求解和 ResultTree 导出。
+短偶极子 H-field 单例门控显示 `hfield_available = true`，切向 E/H 阻抗约
+`425.36 ohm`（约 `1.129 eta0`）。真实 E/H 分支
+`eh_love_equivalence_minus` 已达到 `region_shape_pass`，相关性约 `0.9989`，
+scale-fitted NMSE 约 `6.96e-04`，区域主瓣误差 `0 deg`。不过当前最佳分支
+仍是 `outgoing_equivalence_minus_eta0p25` 阻抗代理，说明剩余问题是
+Huygens 面积分核、符号约定和幅度归一化的算法定标，而不是 CST 启动或
+求解失败。
+
+相关入口：
+
+| 文件/目录 | 意义 |
+|---|---|
+| `docs/stage_notes/37_g3_meshsafe_huygens_real_eh_extrapolation.md` | S37 阶段说明，记录短偶极子 H-field 导出、E/H 接入和当前算法边界 |
+| `data/cst_exports/level1_meshsafe_huygens/L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_hfield.csv` | 真实 CST 局部 H-field probe CSV，`96 * 3 = 288` 行 |
+| `code/run_cst_meshsafe_huygens_extrapolation.py` | 自动加载 H-field、E/H 几何对齐、真实双场等效电流和 batch 汇总 |
+| `data/sampling_layouts/cst_meshsafe_huygens_extrapolation/` | 短偶极子单例 E/H 外推门控 |
+| `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/` | 两例 batch 门控；`2/2` completed，`1/2` H-field loaded，`0/2` best real-H |

@@ -13,26 +13,29 @@ cross-case pass/fail picture.
 - Best strict/physics-proxy cases: `0`
 - Best region-shape cases: `2`
 - Best strict/physics-proxy/region cases: `2`
+- Cases with real H-field loaded: `1`
+- Best variants using real H-field: `0`
 - Impedance scan enabled: `True`
 - Best non-eta0 impedance cases: `2`
 
 ## Case Table
 
-| Sample | Best status | Best variant | Eta/eta0 | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |
-|---|---|---|---:|---:|---:|---:|---:|---:|
-| L1_halfwave_dipole_z_1p2G | region_shape_pass | outgoing_equivalence_minus_eta0p25 | 0.25 | 0.9990 | 8.4827e-04 | 19.99 | 0.00 | 0.910 |
-| L1_short_dipole_z_1p2G | region_shape_pass | outgoing_equivalence_minus_eta0p25 | 0.25 | 0.9989 | 6.9621e-04 | 139.52 | 0.00 | 0.919 |
+| Sample | H-field | Best status | Best variant | Eta/eta0 | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |
+|---|---:|---|---|---:|---:|---:|---:|---:|---:|
+| L1_halfwave_dipole_z_1p2G | False | region_shape_pass | outgoing_equivalence_minus_eta0p25 | 0.25 | 0.9990 | 8.4827e-04 | 19.99 | 0.00 | 0.910 |
+| L1_short_dipole_z_1p2G | True | region_shape_pass | outgoing_equivalence_minus_eta0p25 | 0.25 | 0.9989 | 6.9621e-04 | 139.52 | 0.00 | 0.919 |
 
 ## Reading
 
 This is a batch data-chain gate, not the final Huygens physics proof. The
 region-lobe metrics compare the overlap of the top-power directional regions,
-which is more stable than a single argmax for broad or ring-like patterns. Final
-claims still require a stricter vector surface-integral operator and independent
-H-field support. The scalar impedance scan is a calibration proxy: it tunes the
-relative weight of electric and magnetic equivalent currents against the current
-Level 1 far-field reference and keeps the selected `eta_eff/eta0` visible in
-every row.
+which is more stable than a single argmax for broad or ring-like patterns. When
+matching H-field rows are present, the gate evaluates real dual-field surface
+currents `J = n x H_t` and `M = -n x E_t`; when H-field rows are missing, it
+falls back to the older E-only impedance proxy. Final claims still require a
+stricter vector surface-integral operator and source-family cross-checks. The
+scalar impedance scan remains visible because it is useful as a calibration
+baseline against the Level 1 far-field reference.
 
 ## Command
 

@@ -371,8 +371,10 @@ E-field and `C:\csttmp\huy_hs` for H-field to avoid CST internal result-path
 limits. Keep both project generation and solver trials on short ASCII paths;
 the Chinese desktop path can make CST API save/close calls report
 `RuntimeError()` even when the `.cst` file appears. Current evidence says CST
-can run the mesh-safe project without the 4.6B-cell blocker. The current
-non-proxy blocker is the missing H-field probe export, not CST startup.
+can run the mesh-safe project without the 4.6B-cell blocker. The short-dipole
+H-field probe export is now present; the current non-proxy blocker is stricter
+E/H Huygens operator calibration plus half-wave H-field coverage, not CST
+startup.
 
 `export_cst_meshsafe_huygens_results.py` is the next audit/export controller.
 It inventories the short-path CST result artifacts, checks whether the local
@@ -399,10 +401,10 @@ Current E-field status after the first short-path solver gate is
 `target_contract_complete`: the short-dipole 1.2 GHz local Huygens contract has
 `96 * 3 = 288` complex E-field component rows in
 `data/cst_exports/level1_meshsafe_huygens/L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv`.
-The H-field controller is wired but intentionally reports `blocked` until
-`C:\csttmp\huy_hs\h_short_hfield.cst` exists and exposes matching local H-field
-probe curves. Generate that project with `--probe-mode hfield`, solve it on a
-short path, then run:
+The short-dipole H-field route now also reaches `target_contract_complete`:
+`data/cst_exports/level1_meshsafe_huygens/L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_hfield.csv`
+contains the matching `96 * 3 = 288` complex H-field rows. To repeat that export
+after solving `C:\csttmp\huy_hs\h_short_hfield.cst`, run:
 
 ```powershell
 python code\export_cst_meshsafe_huygens_results.py --field-kind h --attempt-export --project C:\csttmp\huy_hs\h_short_hfield.cst
@@ -522,10 +524,11 @@ python code\export_cst_meshsafe_huygens_results.py --field-kind h
 
 The default E-field path is still `C:\csttmp\huy_s\h_short.cst`; the default
 H-field path is `C:\csttmp\huy_hs\h_short_hfield.cst`. The E-field route is
-complete for the short-dipole contract (`288` rows). The H-field route is
-prepared but currently blocked by the missing solved H-field CST project and
-matching ResultTree probe curves. This is the next concrete CST action, not a
-general CST failure.
+complete for the short-dipole contract (`288` rows). The H-field route has now
+also completed for the short-dipole contract (`288` rows) through the short-path
+project `C:\csttmp\huy_hs\h_short_hfield.cst`. The half-wave H-field export is
+still pending, so the remaining work is case coverage and algorithmic
+calibration, not general CST failure.
 
 The generated workpack now includes:
 
@@ -534,5 +537,32 @@ The generated workpack now includes:
   steps 5-7 for H-field project generation, short-path solver gate, and
   ResultTree export
 
-Once `*_local_hfield.csv` exists, the Python Huygens model can replace the
-scalar impedance proxy with E/H-backed equivalent-current validation.
+`run_cst_meshsafe_huygens_extrapolation.py` now auto-loads a matching
+`*_local_hfield.csv` when it exists, checks E/H surface alignment, and evaluates
+real E/H variants based on `J = n x H_t` and `M = -n x E_t`.
+
+## CST mesh-safe Huygens real E/H addendum
+
+The short-dipole local H-field CSV now exists:
+
+```powershell
+python code\run_cst_meshsafe_huygens_extrapolation.py
+python code\run_cst_meshsafe_huygens_extrapolation.py --batch
+```
+
+Current E/H status:
+
+- `L1_short_dipole_z_1p2G` loads real E-field and H-field rows, `96 * 3 = 288`
+  components for each field.
+- The measured tangential E/H impedance is about `425.36 ohm`, or `1.129 eta0`.
+- The real E/H branch `eh_love_equivalence_minus` reaches `region_shape_pass`
+  with correlation about `0.9989`, scale-fitted NMSE about `6.96e-04`, and
+  region-lobe error `0 deg`.
+- The batch gate completes `2/2` cases, with `1/2` H-field loaded. The best row
+  still selects the scalar impedance proxy `outgoing_equivalence_minus_eta0p25`,
+  so the next algorithm work is stricter Huygens/Stratton-Chu normalization and
+  sign-convention calibration.
+
+This means CST is currently runnable on the mesh-safe path. The active blocker
+is not CST startup or solver failure; it is turning the now-available real E/H
+probe data into a report-level vector surface-integral proof.

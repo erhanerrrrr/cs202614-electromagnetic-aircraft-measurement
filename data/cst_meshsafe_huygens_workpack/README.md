@@ -69,22 +69,23 @@ project and run the HF Time Domain solver without the `4.6` billion-cell mesh
 limit. The 600 s gate ended as `aborted_keeping_results`, with CST keeping one
 nearfield `.m3d` artifact and one farfield `.ffm/.fme` pair. The ResultTree
 controller has now extracted `96 * 3 = 288` complex Cartesian E-field probe
-rows from the kept results. The current non-proxy blocker is the matching
-H-field probe export; without it, the local Huygens route remains calibrated
-E-field/impedance proxy evidence rather than full E/H equivalent-current proof.
+rows from the kept results. The follow-up H-field short-path route has also
+extracted the matching `96 * 3 = 288` complex H-field rows for the short-dipole
+case. The remaining non-proxy blocker is stricter E/H Huygens operator
+calibration and half-wave H-field coverage, not CST startup.
 
 ## Boundary
 
 This is not final 13 m near-field evidence. It is a solver-feasible CST
 observation package intended to replace the infeasible remote-probe solve.
-Final G3 claims still require the H-field-backed equivalent-current handoff, or
-an independently stable impedance closure, before the local Huygens route
-becomes report-level physics evidence.
+Final G3 claims still require a stricter H-field-backed vector surface-integral
+operator, source-family cross-checks, or an independently stable impedance
+closure before the local Huygens route becomes report-level physics evidence.
 
 ## Current Export Boundary
 
-The cached CST ResultTree inspections currently expose local E-field probe
-curves, but no matching H-field probe curves yet. The CST popup from the
-`Field Monitors` 3D view is an export-interface limitation, not a CST solver
-failure. Use ResultTree probe curves for the current E-field handoff, then run
-the H-field project/export route before final Huygens wording.
+The working CST export interface is ResultTree probe-curve extraction. The CST
+popup from the `Field Monitors` 3D view is an export-interface limitation, not a
+CST solver failure. For the short-dipole case, both local E-field and H-field
+contracts are now complete; for remaining cases, repeat the same H-field
+project/solver/export route before final Huygens wording.

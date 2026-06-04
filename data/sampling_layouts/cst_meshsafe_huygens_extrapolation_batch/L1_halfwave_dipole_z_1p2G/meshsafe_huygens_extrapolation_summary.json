@@ -1,7 +1,11 @@
 {
-  "generated_at": "2026-06-04T04:34:15+00:00",
+  "generated_at": "2026-06-04T06:29:03+00:00",
   "generated_by": "code/run_cst_meshsafe_huygens_extrapolation.py",
   "local_nearfield": "data\\cst_exports\\level1_meshsafe_huygens\\L1_halfwave_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv",
+  "local_hfield": "data\\cst_exports\\level1_meshsafe_huygens\\L1_halfwave_dipole_z_1p2G_level1_local_sphere_r0p35_local_hfield.csv",
+  "hfield_load_status": "missing",
+  "hfield_load_error": "",
+  "hfield_available": false,
   "farfield": "data\\cst_exports\\level1\\all_farfield.csv",
   "out_dir": "data\\sampling_layouts\\cst_meshsafe_huygens_extrapolation_batch\\L1_halfwave_dipole_z_1p2G",
   "sample_id": "L1_halfwave_dipole_z_1p2G",
@@ -24,7 +28,8 @@
     "min_sensor_field_abs": 0.42311875945179084,
     "max_sensor_field_abs": 1.8080042496249928,
     "median_sensor_field_abs": 1.477994176320158,
-    "dynamic_range_db": 12.614743324600571
+    "dynamic_range_db": 12.614743324600571,
+    "hfield_available": false
   },
   "best_setting": {
     "sample_id": "L1_halfwave_dipole_z_1p2G",
@@ -34,6 +39,7 @@
     "impedance_ohm": 94.182578417,
     "impedance_factor_to_eta0": 0.25,
     "calibration_mode": "scalar_impedance_scan",
+    "uses_real_hfield": false,
     "model_note": "J=-E_t/eta_eff, eta_eff=94.1826 ohm, M sign flipped",
     "sensor_count": 96,
     "farfield_points": 2664,
@@ -86,5 +92,5 @@
     ],
     "candidate_count": 19
   },
-  "interpretation": "diagnostic Huygens/Kirchhoff proxy; use to verify the real CST local probe export and directionality, then replace with a stricter vector surface-integral operator and independent H-field support before final report claims"
+  "interpretation": "diagnostic Huygens/Kirchhoff proxy; use to verify the real CST local E-field probe export and directionality, then replace with real H-field currents and a stricter vector surface-integral operator before final report claims"
 }
