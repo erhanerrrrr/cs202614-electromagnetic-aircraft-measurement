@@ -68,8 +68,9 @@ The short-path Level 1 trials confirm that CST can open the projects and run
 the HF Time Domain solver without the `4.6` billion-cell mesh limit. The
 ResultTree controller has extracted matched `96 * 3 = 288` complex Cartesian
 E-field and H-field probe rows for both `L1_short_dipole_z_1p2G` and
-`L1_halfwave_dipole_z_1p2G`. The remaining non-proxy blocker is stricter E/H
-Huygens operator calibration, not CST startup or H-field export coverage.
+`L1_halfwave_dipole_z_1p2G`. The real E/H J-scale scan now produces strict-pass
+best branches for both cases. The remaining non-proxy blocker is cross-source
+J-scale/sign stability, not CST startup or H-field export coverage.
 
 ## Boundary
 
@@ -84,4 +85,5 @@ closure before the local Huygens route becomes report-level physics evidence.
 The working CST export interface is ResultTree probe-curve extraction. The CST
 popup from the `Field Monitors` 3D view is an export-interface limitation, not a
 CST solver failure. Both Level 1 local E-field and H-field contracts are now
-complete; the next Huygens wording gate is real E/H operator calibration.
+complete; the next Huygens wording gate is cross-source real E/H J-scale/sign
+stability.

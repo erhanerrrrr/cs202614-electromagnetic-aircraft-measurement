@@ -419,16 +419,44 @@ def build_rows() -> list[dict[str, Any]]:
         meshsafe_requested = requested
         completed = int(meshsafe_batch.get("case_count_completed", 0))
         missing = int(meshsafe_batch.get("case_count_missing_or_failed", 0))
+        strict_or_proxy_count = int(meshsafe_batch.get("case_count_strict_or_proxy", 0))
         pass_like = int(meshsafe_batch.get("case_count_strict_proxy_or_region", 0))
         impedance_scan_enabled = bool(meshsafe_batch.get("impedance_scan_enabled", False))
         non_eta0_count = int(meshsafe_batch.get("case_count_best_non_eta0_impedance", 0))
         hfield_available_count = int(meshsafe_batch.get("case_count_hfield_available", 0))
         real_eh_accepted_count = int(meshsafe_batch.get("case_count_real_eh_accepted", 0))
         best_real_hfield_count = int(meshsafe_batch.get("case_count_best_real_hfield", 0))
+        real_eh_calibration_status = str(
+            meshsafe_batch.get("real_eh_operator_calibration_status", "unknown")
+        )
+        best_real_eh_j_scales = meshsafe_batch.get("best_real_eh_j_scale_values", [])
+        best_real_eh_families = meshsafe_batch.get("best_real_eh_variant_families", [])
+        best_real_eh_j_ratio = meshsafe_batch.get("best_real_eh_j_scale_ratio", math.nan)
+        best_real_eh_j_scale_text = (
+            ", ".join(format_float(value, 4) for value in best_real_eh_j_scales)
+            if isinstance(best_real_eh_j_scales, list)
+            else str(best_real_eh_j_scales)
+        )
+        best_real_eh_family_text = (
+            ", ".join(str(value) for value in best_real_eh_families)
+            if isinstance(best_real_eh_families, list)
+            else str(best_real_eh_families)
+        )
         meshsafe_hfield_available = hfield_available_count
         meshsafe_real_eh_accepted = real_eh_accepted_count
         meshsafe_best_real_hfield = best_real_hfield_count
-        if completed == requested and requested > 0 and pass_like == requested:
+        if (
+            completed == requested
+            and requested > 0
+            and strict_or_proxy_count == requested
+            and best_real_hfield_count == requested
+        ):
+            batch_status = (
+                "real_eh_strict_batch_pass"
+                if real_eh_calibration_status == "stable_for_current_level1_cases"
+                else "real_eh_strict_batch_calibration_needed"
+            )
+        elif completed == requested and requested > 0 and pass_like == requested:
             batch_status = "impedance_region_proxy_batch_pass" if impedance_scan_enabled else "region_proxy_batch_pass"
         elif completed == requested and pass_like > 0:
             batch_status = "physics_proxy_pass"
@@ -446,6 +474,7 @@ def build_rows() -> list[dict[str, Any]]:
             (
                 f"{item.get('sample_id', '')}:{item.get('status', '')}/{item.get('variant', '')}"
                 f"/eta={format_float(item.get('impedance_factor_to_eta0'), 3)}eta0"
+                f"/J={format_float(item.get('hfield_j_scale'), 4)}"
                 f"/H={item.get('hfield_load_status', 'unknown')}"
             )
             for item in case_rows
@@ -466,17 +495,19 @@ def build_rows() -> list[dict[str, Any]]:
                 sensor_count=96,
                 interpretation=(
                     "The mesh-safe route now uses real CST local probe curves for two Level 1 sources and "
-                    "passes the data-chain/region-lobe gate with scalar impedance calibration "
+                    "the best diagnostic branches now use real E/H currents rather than the scalar eta_eff proxy "
                     f"({non_eta0_count}/{requested} best settings use non-eta0 eta_eff). "
                     f"Matching H-field is now loaded for {hfield_available_count}/{requested} cases and "
                     f"real E/H candidates are accepted for {real_eh_accepted_count}/{requested} cases; "
                     f"{best_real_hfield_count}/{requested} best settings currently select a real-H branch, "
-                    "so this remains E/H-operator-calibration work rather than a CST export blocker."
+                    f"with J-scale values {best_real_eh_j_scale_text}, families {best_real_eh_family_text}, "
+                    f"ratio {format_float(best_real_eh_j_ratio, 4)}, and calibration status "
+                    f"{real_eh_calibration_status}. This is now an operator-stability question rather than a CST export blocker."
                 ),
                 next_action=(
-                    "Calibrate the real E/H Love-equivalence operator against the CST far field, compare it "
-                    "against the scalar eta_eff proxy baseline, and then propagate the accepted branch to the "
-                    "13 m measurement shell."
+                    "Close the cross-source real E/H calibration gate: decide whether the plus/minus convention "
+                    "and J-scale can be tied to source geometry, then test the accepted rule on a broader CST "
+                    "source-family set before propagating it to the 13 m measurement shell."
                 ),
             )
         )
@@ -615,7 +646,15 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
     meshsafe_ready = bool(
         (
             status["artifact"].eq("meshsafe_huygens_real_cst_batch")
-            & status["status"].isin(["impedance_region_proxy_batch_pass", "region_proxy_batch_pass", "physics_proxy_pass"])
+            & status["status"].isin(
+                [
+                    "real_eh_strict_batch_pass",
+                    "real_eh_strict_batch_calibration_needed",
+                    "impedance_region_proxy_batch_pass",
+                    "region_proxy_batch_pass",
+                    "physics_proxy_pass",
+                ]
+            )
         ).any()
     )
     impedance_extension_needed = bool(
@@ -624,19 +663,26 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             & status["status"].isin(["needs_impedance_extension", "cross_case_impedance_disagreement"])
         ).any()
     )
+    real_eh_calibration_needed = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_real_cst_batch")
+            & status["status"].eq("real_eh_strict_batch_calibration_needed")
+        ).any()
+    )
     actions = [
         {
             "priority": 1,
             "owner": "Independent workflow",
             "gate": "meshsafe_huygens_physics",
-            "action": "Complete the real E/H Huygens closure: calibrate the Love-equivalence surface-integral operator, compare it with the scalar eta_eff proxy baseline, and propagate the accepted branch toward the 13 m shell.",
+            "action": "Close the real E/H Huygens operator-stability gate: tie the plus/minus convention and J-scale normalization to source geometry, then propagate the accepted rule toward the 13 m shell.",
             "trigger": (
+                "Mesh-safe real CST batch gate now reaches strict/proxy status with real E/H currents, but the best J-scale/sign is source-dependent." if real_eh_calibration_needed else
                 "Mesh-safe real CST batch gate is region/proxy ready, but the stability gate still shows "
                 "source-dependent impedance sensitivity." if impedance_extension_needed else
                 "Mesh-safe real CST batch gate is region/proxy ready and the impedance stability gate is available."
             ),
             "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv and data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/",
-            "proof_to_close": "Batch summary reports H-field loaded for all required cases and a real E/H branch is accepted by the vector-operator gate.",
+            "proof_to_close": "Batch summary reports H-field loaded for all required cases, best branches use real E/H currents, and real_eh_operator_calibration_status is stable_for_current_level1_cases or explained by a geometry rule.",
             "blocked_by": "" if meshsafe_ready else "Mesh-safe batch gate",
         },
         {
@@ -712,8 +758,9 @@ def write_markdown(status: pd.DataFrame, actions: pd.DataFrame, summary: dict[st
     meshsafe_rows = status.loc[status["artifact"] == "meshsafe_huygens_real_cst_batch"]
     if not meshsafe_rows.empty:
         lines.append(
-            "- Mesh-safe Huygens is no longer blocked at CST export: both Level 1 E/H local-field paths are loaded. "
-            "The current bottleneck is real E/H operator calibration versus the scalar eta_eff proxy baseline."
+            "- Mesh-safe Huygens is no longer blocked at CST export: both Level 1 E/H local-field paths are loaded, "
+            "and the best batch branches now use real H-field currents. The current bottleneck is cross-source "
+            "J-scale/sign stability before the operator is safe to propagate."
         )
 
     lines.extend(

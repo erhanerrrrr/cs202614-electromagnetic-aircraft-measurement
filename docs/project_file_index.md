@@ -350,3 +350,19 @@ Tracked entries:
 | `code/run_cst_meshsafe_huygens_extrapolation.py` | Adds `vector_gate` summary and batch counts for accepted real-H and real E/H candidates. |
 | `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/` | Refreshed two-case batch: `2/2` H-field loaded, `2/2` real E/H accepted, `0/2` best settings using real-H. |
 | `outputs/g3_model_dashboard/` | Dashboard now states that the current mesh-safe Huygens task is E/H operator calibration, not CST export recovery. |
+
+## 2026-06-04 CST mesh-safe Huygens real E/H J-scale gate
+
+S39 moves the mesh-safe Huygens line from "real E/H candidates are accepted" to
+"real E/H branches are the best strict-pass diagnostic branches, but cross-source
+operator stability is not yet closed." The batch now scans a global scale on
+`J = n x H_t` while keeping the measured CST H-field distribution.
+
+Tracked entries:
+
+| File/directory | Meaning |
+|---|---|
+| `docs/stage_notes/39_g3_meshsafe_huygens_real_eh_jscale_gate.md` | S39 note covering the real E/H J-scale scan, strict-pass best branches, and the remaining cross-source sign/scale disagreement. |
+| `code/run_cst_meshsafe_huygens_extrapolation.py` | Adds `--eh-j-scale-factors`, calibrated real E/H variants, and `real_eh_operator_calibration_status`. |
+| `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/` | Refreshed two-case batch: `2/2` H-field loaded, `2/2` best real-H branches, `2/2` strict/proxy, best J scales `96.0` and `256.0`. |
+| `outputs/g3_model_dashboard/` | Dashboard now reports `real_eh_strict_batch_calibration_needed` and makes cross-source J-scale/sign stability the first next action. |

@@ -59,6 +59,28 @@ FIELD_CONFIG = {
     },
 }
 DEFAULT_IMPEDANCE_FACTORS = (0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0)
+DEFAULT_EH_J_SCALE_FACTORS = (
+    0.25,
+    0.5,
+    1.0,
+    2.0,
+    4.0,
+    8.0,
+    12.0,
+    16.0,
+    24.0,
+    32.0,
+    48.0,
+    64.0,
+    96.0,
+    128.0,
+    192.0,
+    256.0,
+    384.0,
+    512.0,
+)
+REAL_EH_J_SCALE_CALIBRATION_MODE = "real_eh_j_scale_scan"
+REAL_EH_CALIBRATION_MODES = {REAL_EH_CALIBRATION_MODE, REAL_EH_J_SCALE_CALIBRATION_MODE}
 
 
 def now_iso() -> str:
@@ -357,7 +379,7 @@ def field_quality(
     return quality, arrays
 
 
-def parse_impedance_factors(value: str) -> list[float]:
+def parse_positive_factors(value: str, label: str, include_one: bool = True) -> list[float]:
     factors: list[float] = []
     for item in value.split(","):
         stripped = item.strip()
@@ -365,14 +387,22 @@ def parse_impedance_factors(value: str) -> list[float]:
             continue
         factor = float(stripped)
         if factor <= 0:
-            raise ValueError(f"impedance factor must be positive, got {factor}")
+            raise ValueError(f"{label} must be positive, got {factor}")
         if not any(math.isclose(factor, existing, rel_tol=1e-9, abs_tol=1e-12) for existing in factors):
             factors.append(factor)
     if not factors:
-        raise ValueError("at least one impedance factor is required")
-    if not any(math.isclose(factor, 1.0, rel_tol=1e-9, abs_tol=1e-12) for factor in factors):
+        raise ValueError(f"at least one {label} is required")
+    if include_one and not any(math.isclose(factor, 1.0, rel_tol=1e-9, abs_tol=1e-12) for factor in factors):
         factors.append(1.0)
     return sorted(factors)
+
+
+def parse_impedance_factors(value: str) -> list[float]:
+    return parse_positive_factors(value, "impedance factor")
+
+
+def parse_eh_j_scale_factors(value: str) -> list[float]:
+    return parse_positive_factors(value, "real E/H J scale factor")
 
 
 def impedance_label(factor: float) -> str:
@@ -380,7 +410,12 @@ def impedance_label(factor: float) -> str:
     return text.rstrip("0").rstrip("p") if "p" in text else text
 
 
-def candidate_settings(impedance_factors: list[float], include_hfield: bool = False) -> list[dict[str, Any]]:
+def candidate_settings(
+    impedance_factors: list[float],
+    include_hfield: bool = False,
+    eh_j_scale_factors: list[float] | None = None,
+) -> list[dict[str, Any]]:
+    eh_j_scale_factors = eh_j_scale_factors or [1.0]
     settings: list[dict[str, Any]] = [
         {
             "variant": "electric_only_outgoing",
@@ -388,6 +423,7 @@ def candidate_settings(impedance_factors: list[float], include_hfield: bool = Fa
             "impedance_factor_to_eta0": 1.0,
             "impedance_ohm": ETA0,
             "calibration_mode": "fixed_eta0",
+            "hfield_j_scale": "",
         },
         {
             "variant": "magnetic_only_plus",
@@ -395,6 +431,7 @@ def candidate_settings(impedance_factors: list[float], include_hfield: bool = Fa
             "impedance_factor_to_eta0": 1.0,
             "impedance_ohm": ETA0,
             "calibration_mode": "not_used",
+            "hfield_j_scale": "",
         },
         {
             "variant": "magnetic_only_minus",
@@ -402,34 +439,35 @@ def candidate_settings(impedance_factors: list[float], include_hfield: bool = Fa
             "impedance_factor_to_eta0": 1.0,
             "impedance_ohm": ETA0,
             "calibration_mode": "not_used",
+            "hfield_j_scale": "",
         },
     ]
     if include_hfield:
-        settings.extend(
-            [
-                {
-                    "variant": "hfield_electric_only",
-                    "variant_family": "hfield_electric_only",
-                    "impedance_factor_to_eta0": 1.0,
-                    "impedance_ohm": ETA0,
-                    "calibration_mode": "real_hfield_only",
-                },
-                {
-                    "variant": "eh_love_equivalence_plus",
-                    "variant_family": "eh_love_equivalence_plus",
-                    "impedance_factor_to_eta0": 1.0,
-                    "impedance_ohm": ETA0,
-                    "calibration_mode": "real_eh_surface_currents",
-                },
-                {
-                    "variant": "eh_love_equivalence_minus",
-                    "variant_family": "eh_love_equivalence_minus",
-                    "impedance_factor_to_eta0": 1.0,
-                    "impedance_ohm": ETA0,
-                    "calibration_mode": "real_eh_surface_currents",
-                },
-            ]
+        settings.append(
+            {
+                "variant": "hfield_electric_only",
+                "variant_family": "hfield_electric_only",
+                "impedance_factor_to_eta0": 1.0,
+                "impedance_ohm": ETA0,
+                "calibration_mode": "real_hfield_only",
+                "hfield_j_scale": 1.0,
+            }
         )
+        for family in ("eh_love_equivalence_plus", "eh_love_equivalence_minus"):
+            for factor in eh_j_scale_factors:
+                unscaled = math.isclose(factor, 1.0, rel_tol=1e-9, abs_tol=1e-12)
+                settings.append(
+                    {
+                        "variant": family if unscaled else f"{family}_j{impedance_label(factor)}",
+                        "variant_family": family,
+                        "impedance_factor_to_eta0": 1.0,
+                        "impedance_ohm": ETA0,
+                        "calibration_mode": (
+                            REAL_EH_CALIBRATION_MODE if unscaled else REAL_EH_J_SCALE_CALIBRATION_MODE
+                        ),
+                        "hfield_j_scale": float(factor),
+                    }
+                )
     for family in ("outgoing_equivalence_plus", "outgoing_equivalence_minus"):
         for factor in impedance_factors:
             fixed_eta0 = math.isclose(factor, 1.0, rel_tol=1e-9, abs_tol=1e-12)
@@ -440,6 +478,7 @@ def candidate_settings(impedance_factors: list[float], include_hfield: bool = Fa
                     "impedance_factor_to_eta0": float(factor),
                     "impedance_ohm": float(ETA0 * factor),
                     "calibration_mode": "fixed_eta0" if fixed_eta0 else "scalar_impedance_scan",
+                    "hfield_j_scale": "",
                 }
             )
     return settings
@@ -449,6 +488,7 @@ def equivalent_currents(
     arrays: dict[str, np.ndarray],
     variant: str,
     impedance_ohm: float = ETA0,
+    hfield_j_scale: float = 1.0,
 ) -> tuple[np.ndarray, np.ndarray, float, str]:
     normals = arrays["normals"]
     tangential = arrays["tangential"]
@@ -456,7 +496,7 @@ def equivalent_currents(
     h_tangential = arrays.get("h_tangential")
     electric_current_from_h = None
     if h_tangential is not None:
-        electric_current_from_h = np.cross(normals, h_tangential)
+        electric_current_from_h = np.cross(normals, h_tangential) * float(hfield_j_scale)
     eta_eff = max(float(impedance_ohm), 1e-30)
     electric_current = -tangential / eta_eff
     zeros = np.zeros_like(tangential)
@@ -471,7 +511,7 @@ def equivalent_currents(
             electric_current_from_h,
             magnetic_current,
             1.0,
-            "J=n_cross_H_t from real CST H-field, M=-n_cross_E_t from real CST E-field",
+            f"J={float(hfield_j_scale):.6g}*(n_cross_H_t) from real CST H-field, M=-n_cross_E_t from real CST E-field",
         )
     if variant == "eh_love_equivalence_minus":
         if electric_current_from_h is None:
@@ -480,7 +520,7 @@ def equivalent_currents(
             electric_current_from_h,
             magnetic_current,
             -1.0,
-            "J=n_cross_H_t from real CST H-field, M contribution sign flipped for convention check",
+            f"J={float(hfield_j_scale):.6g}*(n_cross_H_t) from real CST H-field, M contribution sign flipped for convention check",
         )
     if variant == "electric_only_outgoing":
         return electric_current, zeros, 1.0, f"J=-E_t/eta_eff, eta_eff={eta_eff:.6g} ohm, M=0"
@@ -651,7 +691,7 @@ def vector_gate_summary(results: pd.DataFrame) -> dict[str, Any]:
             "best_real_eh": {},
         }
     real_hfield = results.loc[results["uses_real_hfield"].fillna(False).astype(bool)]
-    real_eh = real_hfield.loc[real_hfield["calibration_mode"].eq(REAL_EH_CALIBRATION_MODE)]
+    real_eh = real_hfield.loc[real_hfield["calibration_mode"].isin(REAL_EH_CALIBRATION_MODES)]
     return {
         "accepted_statuses": sorted(ACCEPTED_VECTOR_GATE_STATUSES),
         "real_hfield_candidate_count": int(real_hfield.shape[0]),
@@ -672,6 +712,64 @@ def finite_non_eta0_impedance(value: Any) -> bool:
         return not math.isclose(float(value), 1.0, rel_tol=1e-9, abs_tol=1e-12)
     except (TypeError, ValueError):
         return False
+
+
+def real_eh_calibration_stability(rows: pd.DataFrame, j_scale_factors: list[float]) -> dict[str, Any]:
+    if rows.empty or "best_real_eh_j_scale" not in rows.columns:
+        return {
+            "status": "missing",
+            "j_scale_values": [],
+            "variant_families": [],
+            "j_scale_ratio": math.nan,
+            "j_scale_log10_span": math.nan,
+            "boundary_case_count": 0,
+        }
+    scale_series = pd.to_numeric(rows["best_real_eh_j_scale"], errors="coerce").dropna()
+    scales = [float(value) for value in scale_series.to_list() if float(value) > 0.0]
+    families = sorted(
+        {
+            str(value)
+            for value in rows.get("best_real_eh_variant_family", pd.Series(dtype=str)).dropna().to_list()
+            if str(value).strip()
+        }
+    )
+    if not scales:
+        return {
+            "status": "missing",
+            "j_scale_values": [],
+            "variant_families": families,
+            "j_scale_ratio": math.nan,
+            "j_scale_log10_span": math.nan,
+            "boundary_case_count": 0,
+        }
+    min_factor = min(j_scale_factors)
+    max_factor = max(j_scale_factors)
+    boundary_count = sum(
+        1
+        for scale in scales
+        if math.isclose(scale, min_factor, rel_tol=1e-9, abs_tol=1e-12)
+        or math.isclose(scale, max_factor, rel_tol=1e-9, abs_tol=1e-12)
+    )
+    scale_ratio = max(scales) / max(min(scales), 1e-30)
+    log_span = math.log10(scale_ratio) if scale_ratio > 0 else math.nan
+    if boundary_count:
+        status = "j_scale_scan_boundary"
+    elif len(families) > 1 and scale_ratio > 2.0:
+        status = "cross_case_sign_and_scale_disagreement"
+    elif len(families) > 1:
+        status = "cross_case_sign_disagreement"
+    elif scale_ratio > 2.0:
+        status = "cross_case_scale_disagreement"
+    else:
+        status = "stable_for_current_level1_cases"
+    return {
+        "status": status,
+        "j_scale_values": scales,
+        "variant_families": families,
+        "j_scale_ratio": float(scale_ratio),
+        "j_scale_log10_span": float(log_span),
+        "boundary_case_count": int(boundary_count),
+    }
 
 
 def batch_summary_row(summary: dict[str, Any], local_nearfield: Path, out_dir: Path) -> dict[str, Any]:
@@ -701,14 +799,20 @@ def batch_summary_row(summary: dict[str, Any], local_nearfield: Path, out_dir: P
         "best_impedance_factor_to_eta0": best.get("impedance_factor_to_eta0", ""),
         "best_calibration_mode": best.get("calibration_mode", ""),
         "best_uses_real_hfield": bool(best.get("uses_real_hfield", False)),
+        "best_hfield_j_scale": best.get("hfield_j_scale", ""),
         "real_hfield_candidate_count": int(gate.get("real_hfield_candidate_count", 0)) if isinstance(gate, dict) else 0,
         "real_hfield_accepted_count": int(gate.get("real_hfield_accepted_count", 0)) if isinstance(gate, dict) else 0,
         "real_eh_candidate_count": int(gate.get("real_eh_candidate_count", 0)) if isinstance(gate, dict) else 0,
         "real_eh_accepted_count": int(gate.get("real_eh_accepted_count", 0)) if isinstance(gate, dict) else 0,
         "best_real_hfield_variant": best_real_hfield.get("variant", ""),
+        "best_real_hfield_calibration_mode": best_real_hfield.get("calibration_mode", ""),
+        "best_real_hfield_j_scale": best_real_hfield.get("hfield_j_scale", ""),
         "best_real_hfield_status": best_real_hfield.get("status", ""),
         "best_real_hfield_scaled_power_nmse": best_real_hfield.get("scaled_power_nmse", ""),
         "best_real_eh_variant": best_real_eh.get("variant", ""),
+        "best_real_eh_variant_family": best_real_eh.get("variant_family", ""),
+        "best_real_eh_calibration_mode": best_real_eh.get("calibration_mode", ""),
+        "best_real_eh_j_scale": best_real_eh.get("hfield_j_scale", ""),
         "best_real_eh_status": best_real_eh.get("status", ""),
         "best_real_eh_scaled_power_nmse": best_real_eh.get("scaled_power_nmse", ""),
         "best_status": best["status"],
@@ -734,7 +838,7 @@ def write_batch_readme(out_dir: Path, rows: pd.DataFrame, summary: dict[str, Any
                 continue
             real_eh_gate = f"{int(row.real_eh_accepted_count)}/{int(row.real_eh_candidate_count)}"
             best_real_eh = (
-                f"{row.best_real_eh_status}:{row.best_real_eh_variant}"
+                f"{row.best_real_eh_status}:{row.best_real_eh_variant}/J={row.best_real_eh_j_scale}"
                 if str(row.best_real_eh_variant)
                 else "-"
             )
@@ -773,6 +877,12 @@ cross-case pass/fail picture.
 - Best variants using real H-field: `{summary['case_count_best_real_hfield']}`
 - Impedance scan enabled: `{summary['impedance_scan_enabled']}`
 - Best non-eta0 impedance cases: `{summary['case_count_best_non_eta0_impedance']}`
+- Real E/H J-scale scan factors: `{summary['eh_j_scale_scan_factors']}`
+- Real E/H operator calibration status: `{summary['real_eh_operator_calibration_status']}`
+- Best real E/H J-scale values: `{summary['best_real_eh_j_scale_values']}`
+- Best real E/H variant families: `{summary['best_real_eh_variant_families']}`
+- Best real E/H J-scale ratio: `{summary['best_real_eh_j_scale_ratio']:.4g}`
+- Best real E/H boundary cases: `{summary['case_count_best_real_eh_j_scale_boundary']}`
 
 ## Case Table
 
@@ -783,11 +893,19 @@ This is a batch data-chain gate, not the final Huygens physics proof. The
 region-lobe metrics compare the overlap of the top-power directional regions,
 which is more stable than a single argmax for broad or ring-like patterns. When
 matching H-field rows are present, the gate evaluates real dual-field surface
-currents `J = n x H_t` and `M = -n x E_t`; when H-field rows are missing, it
-falls back to the older E-only impedance proxy. Final claims still require a
-stricter vector surface-integral operator and source-family cross-checks. The
-scalar impedance scan remains visible because it is useful as a calibration
-baseline against the Level 1 far-field reference.
+currents `J = n x H_t` and `M = -n x E_t`, plus a controlled global J-scale
+scan that keeps the measured H-field distribution but tests the operator
+normalization; when H-field rows are missing, it falls back to the older E-only
+impedance proxy. Final claims still require a stricter vector surface-integral
+operator and source-family cross-checks. The scalar impedance scan remains
+visible because it is useful as a calibration baseline against the Level 1
+far-field reference.
+
+The best real E/H branches should not be treated as a final source-independent
+operator until the J-scale values and plus/minus convention are stable across
+source families. A strict or proxy pass with
+`cross_case_sign_and_scale_disagreement` is useful algorithm evidence, but it
+still calls for a broader CST source-family gate before final wording.
 
 ## Command
 
@@ -804,6 +922,7 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
     case_table = read_table(resolve_path(args.case_csv))
     selected_ids = parse_sample_ids(args.sample_ids)
     impedance_factors = parse_impedance_factors(args.impedance_factors)
+    eh_j_scale_factors = parse_eh_j_scale_factors(args.eh_j_scale_factors)
     rows: list[dict[str, Any]] = []
     completed_summaries: list[dict[str, Any]] = []
 
@@ -834,6 +953,7 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
             sample_id=sample_id,
             frequency_hz=frequency_hz,
             impedance_factors=args.impedance_factors,
+            eh_j_scale_factors=args.eh_j_scale_factors,
         )
         try:
             case_summary = run(case_args)
@@ -886,6 +1006,7 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
         best_non_eta0_impedance = int(
             ok_rows["best_impedance_factor_to_eta0"].map(finite_non_eta0_impedance).fillna(False).sum()
         )
+    real_eh_stability = real_eh_calibration_stability(ok_rows, eh_j_scale_factors)
     summary = {
         "generated_at": now_iso(),
         "generated_by": "code/run_cst_meshsafe_huygens_extrapolation.py --batch",
@@ -905,6 +1026,14 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
         "impedance_scan_factors": impedance_factors,
         "impedance_scan_ohms": [float(ETA0 * factor) for factor in impedance_factors],
         "impedance_scan_enabled": any(not math.isclose(factor, 1.0) for factor in impedance_factors),
+        "eh_j_scale_scan_factors": eh_j_scale_factors,
+        "eh_j_scale_scan_enabled": any(not math.isclose(factor, 1.0) for factor in eh_j_scale_factors),
+        "real_eh_operator_calibration_status": real_eh_stability["status"],
+        "best_real_eh_j_scale_values": real_eh_stability["j_scale_values"],
+        "best_real_eh_variant_families": real_eh_stability["variant_families"],
+        "best_real_eh_j_scale_ratio": real_eh_stability["j_scale_ratio"],
+        "best_real_eh_j_scale_log10_span": real_eh_stability["j_scale_log10_span"],
+        "case_count_best_real_eh_j_scale_boundary": real_eh_stability["boundary_case_count"],
         "case_count_best_non_eta0_impedance": best_non_eta0_impedance,
         "case_summaries": completed_summaries,
     }
@@ -934,8 +1063,13 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     theta, phi, true_power, farfield_shape = farfield_power_from_table(farfield, args.sample_id, float(args.frequency_hz))
 
     impedance_factors = parse_impedance_factors(args.impedance_factors)
+    eh_j_scale_factors = parse_eh_j_scale_factors(getattr(args, "eh_j_scale_factors", "1.0"))
     hfield_available = bool(quality["hfield_available"])
-    settings = candidate_settings(impedance_factors, include_hfield=hfield_available)
+    settings = candidate_settings(
+        impedance_factors,
+        include_hfield=hfield_available,
+        eh_j_scale_factors=eh_j_scale_factors,
+    )
     result_rows: list[dict[str, Any]] = []
     prediction_cache: dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]] = {}
     for setting in settings:
@@ -945,6 +1079,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             arrays,
             variant_family,
             float(setting["impedance_ohm"]),
+            float(setting.get("hfield_j_scale") or 1.0),
         )
         predicted_power, e_theta_value, e_phi_value = farfield_from_currents(
             arrays["positions"],
@@ -968,6 +1103,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "impedance_ohm": float(setting["impedance_ohm"]),
             "impedance_factor_to_eta0": float(setting["impedance_factor_to_eta0"]),
             "calibration_mode": str(setting["calibration_mode"]),
+            "hfield_j_scale": setting.get("hfield_j_scale", ""),
             "uses_real_hfield": bool(str(setting["calibration_mode"]).startswith("real_")),
             "model_note": model_note,
             "sensor_count": int(quality["sensor_count"]),
@@ -1038,6 +1174,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "ohms": [float(ETA0 * factor) for factor in impedance_factors],
             "candidate_count": int(len(settings)),
         },
+        "eh_j_scale_scan": {
+            "enabled": any(not math.isclose(factor, 1.0) for factor in eh_j_scale_factors),
+            "factors": eh_j_scale_factors,
+        },
         "interpretation": (
             "real E/H CST local probe export is used for Love-equivalence current diagnostics when H-field rows are available; "
             "E-only impedance proxy variants are retained as calibration baselines until a stricter vector surface-integral operator is implemented"
@@ -1065,7 +1205,8 @@ def write_readme(out_dir: Path, summary: dict[str, Any], results: pd.DataFrame) 
 | Tangential E/H eta0 ratio | `{quality['tangential_e_to_h_eta0_ratio']:.4f}` |"""
     hfield_reading = (
         "- This Python gate consumes matched real CST local E-field and H-field probe values.\n"
-        "- Real dual-field variants evaluate `J = n x H_t` and `M = -n x E_t`, while the older E-only impedance scan remains as a calibration baseline."
+        "- Real dual-field variants evaluate `J = n x H_t` and `M = -n x E_t`; J-scale variants keep the measured H-field distribution and scan only a global operator normalization."
+        "\n- The older E-only impedance scan remains as a calibration baseline."
         if hfield_available
         else "- This Python gate currently consumes real CST local E-field probe values only.\n"
         "- H-field rows were not loaded, so the equivalent-current formulas remain an E-only impedance proxy for this run."
@@ -1079,7 +1220,7 @@ def write_readme(out_dir: Path, summary: dict[str, Any], results: pd.DataFrame) 
     rows = []
     for row in results.itertuples(index=False):
         rows.append(
-            f"| {row.variant} | {row.calibration_mode} | {row.uses_real_hfield} | {row.impedance_factor_to_eta0:.3g} | "
+            f"| {row.variant} | {row.calibration_mode} | {row.uses_real_hfield} | {row.impedance_factor_to_eta0:.3g} | {row.hfield_j_scale} | "
             f"{row.status} | {row.correlation:.4f} | {row.nmse:.4e} | "
             f"{row.scaled_power_nmse:.4e} | {row.main_lobe_error_deg:.2f} | "
             f"{row.main_lobe_region_error_deg:.2f} | {row.main_lobe_region_jaccard:.3f} | "
@@ -1123,6 +1264,7 @@ against the existing Level 1 CST far-field reference.
 | Uses real H-field | `{best.get('uses_real_hfield', False)}` |
 | Eta_eff / eta0 | `{best.get('impedance_factor_to_eta0', '')}` |
 | Eta_eff / ohm | `{best.get('impedance_ohm', '')}` |
+| H-field J scale | `{best.get('hfield_j_scale', '')}` |
 | Status | `{best['status']}` |
 | Correlation | `{best['correlation']:.4f}` |
 | Normalized NMSE | `{best['nmse']:.4e}` |
@@ -1134,8 +1276,8 @@ against the existing Level 1 CST far-field reference.
 
 ## Variant Ranking
 
-| Variant | Calibration | Real H | Eta/eta0 | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
-|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| Variant | Calibration | Real H | Eta/eta0 | J scale | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
+|---|---|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|
 {chr(10).join(rows)}
 
 ## Reading
@@ -1143,8 +1285,8 @@ against the existing Level 1 CST far-field reference.
 {hfield_reading}
 - The equivalent-current formulas are still a diagnostic Huygens/Kirchhoff
   operator rather than final report-level Stratton-Chu evidence. Treat the
-  scalar impedance scan as a calibration baseline and the real E/H variants as
-  the next physics gate to refine.
+  scalar impedance scan as a calibration baseline and the real E/H J-scale
+  variants as the next operator-normalization gate to refine.
 - Broad, ring-like, or multi-peak reference patterns can make the single-point
   main-lobe metric stricter than the whole-pattern shape metrics. Treat
   `region_shape_pass` or `shape_pass_lobe_ambiguous` as good data-chain
@@ -1198,6 +1340,14 @@ def parse_args() -> argparse.Namespace:
         help=(
             "Comma-separated eta_eff/eta0 factors for outgoing equivalence current scans; "
             "1.0 is always included."
+        ),
+    )
+    parser.add_argument(
+        "--eh-j-scale-factors",
+        default=",".join(str(item) for item in DEFAULT_EH_J_SCALE_FACTORS),
+        help=(
+            "Comma-separated global scale factors for the real E/H J=n_cross_H_t current scan; "
+            "1.0 is always included as the unscaled Love-equivalence baseline."
         ),
     )
     parser.add_argument("--batch", action="store_true", help="Run every available mesh-safe case from --case-csv.")

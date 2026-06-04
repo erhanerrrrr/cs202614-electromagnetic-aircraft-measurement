@@ -371,10 +371,10 @@ E-field and `C:\csttmp\huy_hs` for H-field to avoid CST internal result-path
 limits. Keep both project generation and solver trials on short ASCII paths;
 the Chinese desktop path can make CST API save/close calls report
 `RuntimeError()` even when the `.cst` file appears. Current evidence says CST
-can run the mesh-safe project without the 4.6B-cell blocker. The short-dipole
-H-field probe export is now present; the current non-proxy blocker is stricter
-E/H Huygens operator calibration plus half-wave H-field coverage, not CST
-startup.
+can run the mesh-safe project without the 4.6B-cell blocker. Both short-dipole
+and half-wave H-field probe exports are now present; the current non-proxy
+blocker is cross-source real E/H J-scale and sign stability, not CST startup or
+H-field coverage.
 
 `export_cst_meshsafe_huygens_results.py` is the next audit/export controller.
 It inventories the short-path CST result artifacts, checks whether the local
@@ -558,13 +558,15 @@ Current E/H status:
   again `96 * 3 = 288` components for each field.
 - The measured tangential E/H impedances are about `425.36 ohm` (`1.129 eta0`)
   for the short dipole and `370.38 ohm` (`0.983 eta0`) for the half-wave dipole.
-- The real E/H branch `eh_love_equivalence_minus` reaches `region_shape_pass`
-  for both cases, with correlations about `0.9989` and region-lobe error `0 deg`.
-- The batch gate completes `2/2` cases, with `2/2` H-field loaded and `2/2`
-  accepted real E/H candidate sets. The best row still selects the scalar
-  impedance proxy `outgoing_equivalence_minus_eta0p25`, so the next algorithm
-  work is stricter Huygens/Stratton-Chu normalization and sign-convention
-  calibration.
+- The real E/H J-scale scan now reaches `strict_pass` for both cases. The best
+  branches are `eh_love_equivalence_minus_j96` for the half-wave dipole
+  (`scaled_power_nmse = 7.131984e-04`) and `eh_love_equivalence_plus_j256` for
+  the short dipole (`scaled_power_nmse = 9.953152e-04`).
+- The batch gate completes `2/2` cases, with `2/2` H-field loaded, `2/2`
+  accepted real E/H candidate sets, and `0/2` best rows using a non-eta0 scalar
+  impedance proxy. The remaining gate is `cross_case_sign_and_scale_disagreement`
+  (`J = 96` vs `256`, `minus` vs `plus`), so the next algorithm work is a
+  source-family or geometry-aware Huygens/Stratton-Chu normalization rule.
 
 This means CST is currently runnable on the mesh-safe path. The active blocker
 is not CST startup or solver failure; it is turning the now-available real E/H
