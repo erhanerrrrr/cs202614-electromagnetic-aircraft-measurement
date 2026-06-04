@@ -32,23 +32,24 @@ python code\build_g3_model_dashboard.py
 
 Current status:
 
-- `source_family_solver_safe_ladder_partial`.
+- `source_family_solver_safe_full_efield_finished`.
 - Planned diagnostic trials: `6`.
-- Executed diagnostic trials: `4`.
-- Finished diagnostic trials: `4`.
+- Executed diagnostic trials: `6`.
+- Finished diagnostic trials: `6`.
 - Timed-out diagnostic trials: `0`.
-- Completed rows: `none` in `78.7 s`, `efarfield96` in `114.0 s`, `efield24` in `343.4 s`, and `hfield24` in `333.3 s`.
-- G3 dashboard now keeps the S44 timeout row and adds a separate S45 solver-safe plan row.
+- Completed rows: `none` in `78.7 s`, `efarfield96` in `114.0 s`, `efield24` in `343.4 s`, `hfield24` in `333.3 s`, `efield48` in `946.5 s`, and `efield96` in `3564.2 s`.
+- The `efield48` retry wrote the expected artifacts but carried an `aborted_keeping_results` warning; the full `efield96` row completed cleanly with far-field and near-field artifacts.
+- G3 dashboard now keeps the S44 timeout row and adds a separate S45 solver-safe row with full E-field completion.
 
 ## Current Limits
 
-- The 48-probe and 96-probe local E-field rows have not been executed yet.
 - This is not a frozen-rule Huygens physics pass; matched local E/H CSV and far-field references are still required.
-- The full 96-probe E-field retry should only run after the cheaper ladder rows have given a clear runtime signal.
+- The current evidence proves that full local E-field probes are runtime-feasible for the short x case, but the matched 96-point H-field case still needs a long-window pilot before expanding the full source-family queue.
+- The first successful full E-field run needed about 56 minutes, so future full-probe CST runs need a wider controller timeout than the original 600-second wrapper.
 
 ## Next Step
 
-1. Run the `efield48` ladder row from `solver_safe_status.md`.
-2. Rebuild `solver_safe_status_summary.json` and the G3 dashboard.
-3. If `efield48` finishes within the timeout, decide whether to attempt `efield96` or first tune probe export/runtime settings.
-4. Stop at the first repeated timeout and decide whether to tune CST solver settings, switch to a validated frequency-domain path, or split export responsibilities.
+1. Add a matching long-window `hfield96` pilot for `L1_short_dipole_x_1p2G`.
+2. Export matched local E/H data plus far-field references from the successful short x case.
+3. Apply the frozen `eh_love_equivalence_minus_j96` Huygens rule without retuning.
+4. Only after the matched E/H gate passes, expand from the short x pilot to the remaining source-family cases.

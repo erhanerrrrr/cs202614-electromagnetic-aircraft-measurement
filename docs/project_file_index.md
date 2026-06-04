@@ -469,19 +469,22 @@ Tracked entries:
 ## 2026-06-04 CST mesh-safe Huygens source-family solver-safe pilot
 
 S45 turns the S44 source-family timeout into an ordered diagnostic ladder for
-the same short x-oriented case. Four rows have now finished: `none` in
-`78.7 s`, `efarfield96` in `114.0 s`, `efield24` in `343.4 s`, and `hfield24`
-in `333.3 s`. The base solve and far-field angular probe path are fast enough;
-local Cartesian probes are the current runtime pressure point. This is still a
-solver/export diagnostic, not a new Huygens physics pass.
+the same short x-oriented case. All six rows have now finished: `none` in
+`78.7 s`, `efarfield96` in `114.0 s`, `efield24` in `343.4 s`, `hfield24` in
+`333.3 s`, `efield48` in `946.5 s`, and `efield96` in `3564.2 s`. The base
+solve, far-field angular probe path, and full 96-point local E-field probe path
+are runtime-feasible on this case, provided the controller timeout allows an
+hour-scale solve. This is still a solver/export diagnostic, not a new Huygens
+physics pass; matched H-field export and frozen-rule validation remain the next
+gate.
 
 Tracked entries:
 
 | File/directory | Meaning |
 |---|---|
-| `docs/stage_notes/45_g3_huygens_source_family_solver_safe_pilot.md` | S45 note covering the diagnostic ladder, current plan-ready status, and remaining solve/export boundary. |
+| `docs/stage_notes/45_g3_huygens_source_family_solver_safe_pilot.md` | S45 note covering the diagnostic ladder, full E-field completion, and remaining matched H-field/export boundary. |
 | `code/prepare_cst_source_family_solver_safe_pilot.py` | Generates the one-case solver-safe workpack and ordered CST generation/solve command queue. |
 | `code/build_cst_source_family_solver_safe_status.py` | Summarizes executed ladder rows and writes dashboard-ready status outputs. |
 | `data/cst_meshsafe_huygens_source_family_solver_safe_pilot/` | Generated one-case input, probe subsets, command queue, README, and plan summary. |
-| `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/` | Current status summary, trial table, next `efield48` command, and Markdown report; currently `source_family_solver_safe_ladder_partial`. |
-| `outputs/g3_model_dashboard/` | Dashboard now includes `meshsafe_huygens_source_family_solver_safe_pilot = source_family_solver_safe_ladder_partial`. |
+| `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/` | Current status summary, trial table, next matched H-field gate, and Markdown report; currently `source_family_solver_safe_full_efield_finished`. |
+| `outputs/g3_model_dashboard/` | Dashboard now includes `meshsafe_huygens_source_family_solver_safe_pilot = source_family_solver_safe_full_efield_finished`. |

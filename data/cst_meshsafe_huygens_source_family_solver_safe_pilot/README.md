@@ -19,8 +19,8 @@ The current blocker is not CST startup. The previous pilot started through the r
 | 2 | `efarfield96` | `efarfield` | 96 | 300 | Preserve angular sampling with CST far-field probes before local Cartesian E probes. |
 | 3 | `efield24` | `efield` | 24 | 360 | Small local Cartesian E-field probe subset on the same 0.35 m Huygens sphere. |
 | 4 | `hfield24` | `hfield` | 24 | 360 | Small local Cartesian H-field probe subset using the same sample and nodes as efield24. |
-| 5 | `efield48` | `efield` | 48 | 480 | Intermediate local E-field probe count. |
-| 6 | `efield96` | `efield` | 96 | 720 | Full local E-field source-family pilot, matching the frozen-rule export contract. |
+| 5 | `efield48` | `efield` | 48 | 1800 | Intermediate local E-field probe count with a long window calibrated by the 48-probe pilot. |
+| 6 | `efield96` | `efield` | 96 | 5400 | Full local E-field source-family pilot with a ninety-minute diagnostic window. |
 
 ## Run order
 

@@ -135,18 +135,23 @@ def planned_ladder() -> list[dict[str, Any]]:
             "ladder_id": "efield48",
             "probe_mode": "efield",
             "probe_rows": 48,
-            "timeout_seconds": 480,
-            "purpose": "Intermediate local E-field probe count.",
-            "gate_interpretation": "Use this as the scaling bridge between 24-probe and full 96-probe local export.",
+            "timeout_seconds": 1800,
+            "purpose": "Intermediate local E-field probe count with a long window calibrated by the 48-probe pilot.",
+            "gate_interpretation": (
+                "Use this as the scaling bridge between 24-probe and full 96-probe local export; "
+                "the first successful run needed about 15.8 minutes."
+            ),
         },
         {
             "ladder_id": "efield96",
             "probe_mode": "efield",
             "probe_rows": 96,
-            "timeout_seconds": 720,
-            "purpose": "Full local E-field source-family pilot, matching the frozen-rule export contract.",
+            "timeout_seconds": 5400,
+            "purpose": "Full local E-field source-family pilot with a ninety-minute diagnostic window.",
             "gate_interpretation": (
-                "Only run this after the lower-cost gates have shown that the base solve and reduced probes finish."
+                "Only run this after the lower-cost gates have shown that the base solve and reduced probes finish; "
+                "the first successful full E run needed about 56 minutes, so future runs need margin. "
+                "If it still fails, split local probes or change CST solver/export strategy."
             ),
         },
     ]

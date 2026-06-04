@@ -67,6 +67,14 @@ def jsonable(value: Any) -> Any:
     return str(value)
 
 
+def timeout_output_text(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return str(value)
+
+
 def safe_call(obj: Any, name: str, *args: Any) -> dict[str, Any]:
     if not hasattr(obj, name):
         return {"ok": False, "error": f"missing method {name}"}
@@ -357,28 +365,40 @@ def worker_run(args: argparse.Namespace) -> int:
         "timeout_seconds": args.timeout_seconds,
         "poll_seconds": args.poll_seconds,
     }
+    summary["checkpoint"] = "before_design_environment"
     write_json(summary_out, summary)
 
     de = cst.interface.DesignEnvironment()
+    summary["checkpoint"] = "before_open_project"
+    write_json(summary_out, summary)
     prj = de.open_project(str(project))
     try:
+        summary["checkpoint"] = "before_model3d"
+        write_json(summary_out, summary)
         model = prj.model3d
+        summary["checkpoint"] = "before_initial_tree_query"
+        write_json(summary_out, summary)
         before_items = safe_call(model, "get_tree_items")
         before_tree_items = before_items.get("value", []) if before_items.get("ok") else []
         summary["tree_count_before"] = len(before_tree_items) if isinstance(before_tree_items, list) else 0
         summary["result_tree_roots_before"] = result_tree_roots(before_tree_items)
         summary["result_tree_count_before"] = len(result_tree_items(before_tree_items))
         summary["farfield_items_before"] = farfield_tree_items(before_tree_items)
+        summary["checkpoint"] = "before_solver_start"
+        write_json(summary_out, summary)
 
         start_result = safe_call(model, "start_solver")
         if not start_result["ok"]:
             start_result = safe_call(model, "RunSolver")
         summary["solver_start_result"] = start_result
+        summary["checkpoint"] = "solver_start_returned"
+        write_json(summary_out, summary)
         if not start_result["ok"]:
             summary.update(
                 {
                     "completed_at": now_iso(),
                     "status": "failed_to_start",
+                    "checkpoint": "failed_to_start",
                     "elapsed_seconds": time.monotonic() - started_at,
                 }
             )
@@ -397,6 +417,10 @@ def worker_run(args: argparse.Namespace) -> int:
                     "solver_info": solver_info,
                 }
             )
+            summary["checkpoint"] = "solver_polling"
+            summary["poll_count"] = len(poll_log)
+            summary["last_poll"] = poll_log[-1]
+            write_json(summary_out, summary)
             running = bool(running_result.get("value")) if running_result.get("ok") else False
             if not running:
                 break
@@ -445,6 +469,7 @@ def worker_run(args: argparse.Namespace) -> int:
             {
                 "completed_at": now_iso(),
                 "status": status,
+                "checkpoint": "completed",
                 "elapsed_seconds": time.monotonic() - started_at,
                 "poll_count": len(poll_log),
                 "poll_log_tail": poll_log[-20:],
@@ -506,17 +531,43 @@ def controller_run(args: argparse.Namespace) -> int:
         "--poll-seconds",
         str(args.poll_seconds),
     ]
-    completed = subprocess.run(
-        command,
-        cwd=ROOT,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        timeout=args.timeout_seconds + 120,
-    )
     stdout_log.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=args.timeout_seconds + 120,
+        )
+    except subprocess.TimeoutExpired as exc:
+        stdout_log.write_text(
+            timeout_output_text(exc.stdout) + timeout_output_text(exc.stderr),
+            encoding="utf-8",
+        )
+        summary = {}
+        if summary_out.exists():
+            try:
+                summary = json.loads(summary_out.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                summary = {}
+        summary.update(
+            {
+                "completed_at": now_iso(),
+                "status": "controller_timeout",
+                "controller_timeout_seconds": args.timeout_seconds + 120,
+                "controller_timeout_error": repr(exc),
+                "source_project": display_path(source_project),
+                "trial_project": display_path(trial_project),
+                "stdout_log": display_path(stdout_log),
+            }
+        )
+        write_json(summary_out, summary)
+        write_trial_readme(trial_dir, summary)
+        return 124
     stdout_log.write_text(completed.stdout, encoding="utf-8")
     summary = {}
     if summary_out.exists():

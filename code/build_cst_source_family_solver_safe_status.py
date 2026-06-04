@@ -11,6 +11,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PLAN_DIR = ROOT / "data" / "cst_meshsafe_huygens_source_family_solver_safe_pilot"
 DEFAULT_OUT_DIR = ROOT / "outputs" / "cst_meshsafe_huygens_source_family_solver_safe_status"
+FINISHED_STATUSES = {"finished", "aborted_keeping_results"}
+TIMEOUT_STATUSES = {"timed_out", "controller_timeout"}
 
 
 def display_path(path: Path) -> str:
@@ -67,7 +69,8 @@ def resolve_repo_path(text: str) -> Path:
 def summarize_trial(plan_row: dict[str, str]) -> dict[str, Any]:
     summary_path = resolve_repo_path(plan_row.get("summary_out", ""))
     summary = read_json(summary_path)
-    artifacts = summary.get("solver_logs", {}).get("result_artifacts", {}) if summary else {}
+    solver_logs = summary.get("solver_logs", {}) if summary else {}
+    artifacts = solver_logs.get("result_artifacts", {}) if summary else {}
     solver_start = summary.get("solver_start_result", {}) if summary else {}
     return {
         "execution_order": plan_row.get("execution_order", ""),
@@ -76,9 +79,11 @@ def summarize_trial(plan_row: dict[str, str]) -> dict[str, Any]:
         "probe_mode": plan_row.get("probe_mode", ""),
         "probe_rows": plan_row.get("probe_rows", ""),
         "planned_timeout_seconds": plan_row.get("timeout_seconds", ""),
+        "actual_timeout_seconds": as_int(summary.get("timeout_seconds")) if summary else None,
         "summary_path": display_path(summary_path),
         "summary_exists": summary_path.exists(),
         "status": str(summary.get("status", "not_run")) if summary else "not_run",
+        "checkpoint": str(summary.get("checkpoint", "")) if summary else "",
         "real_cst_api_used": bool(summary.get("real_cst_api_used", False)) if summary else False,
         "solver_start_ok": bool(solver_start.get("ok", False) and solver_start.get("value", False)),
         "elapsed_seconds": as_float(summary.get("elapsed_seconds")) if summary else None,
@@ -86,6 +91,7 @@ def summarize_trial(plan_row: dict[str, str]) -> dict[str, Any]:
         "artifact_count": as_int(artifacts.get("artifact_count")) if artifacts else 0,
         "has_nearfield_artifact": bool(artifacts.get("has_nearfield_artifact", False)),
         "has_farfield_artifact": bool(artifacts.get("has_farfield_artifact", False)),
+        "aborted_keeping_results_detected": bool(solver_logs.get("aborted_keeping_results_detected", False)),
         "generate_command": plan_row.get("generate_command", ""),
         "solve_command": plan_row.get("solve_command", ""),
         "gate_interpretation": plan_row.get("gate_interpretation", ""),
@@ -97,9 +103,9 @@ def determine_stage(plan_exists: bool, rows: list[dict[str, Any]]) -> str:
         return "source_family_solver_safe_plan_missing"
     if not rows or not any(row["summary_exists"] for row in rows):
         return "source_family_solver_safe_pilot_plan_ready"
-    finished = [row for row in rows if row["status"] == "finished"]
-    timed_out = [row for row in rows if row["status"] == "timed_out"]
-    full_finished = any(row["ladder_id"] == "efield96" and row["status"] == "finished" for row in rows)
+    finished = [row for row in rows if row["status"] in FINISHED_STATUSES]
+    timed_out = [row for row in rows if row["status"] in TIMEOUT_STATUSES]
+    full_finished = any(row["ladder_id"] == "efield96" and row["status"] in FINISHED_STATUSES for row in rows)
     all_run = all(row["summary_exists"] for row in rows)
     if full_finished:
         return "source_family_solver_safe_full_efield_finished"
@@ -128,14 +134,17 @@ def write_markdown(path: Path, summary: dict[str, Any], rows: list[dict[str, Any
         "",
         "## Trial rows",
         "",
-        "| Order | Ladder | Mode | Probes | Status | Elapsed / s | Artifacts |",
-        "|---:|---|---|---:|---|---:|---:|",
+        "| Order | Ladder | Mode | Probes | Timeout / s | Status | Elapsed / s | Artifacts | Abort warn |",
+        "|---:|---|---|---:|---:|---|---:|---:|---|",
     ]
     for row in rows:
         elapsed = "" if row["elapsed_seconds"] is None else f"{float(row['elapsed_seconds']):.1f}"
+        timeout_seconds = row["actual_timeout_seconds"] or row["planned_timeout_seconds"]
+        abort_warn = "yes" if row["aborted_keeping_results_detected"] else ""
         lines.append(
             f"| {row['execution_order']} | `{row['ladder_id']}` | `{row['probe_mode']}` | "
-            f"{row['probe_rows']} | `{row['status']}` | {elapsed} | {row['artifact_count']} |"
+            f"{row['probe_rows']} | {timeout_seconds} | `{row['status']}` | {elapsed} | "
+            f"{row['artifact_count']} | {abort_warn} |"
         )
     lines.extend(["", "## Next command", ""])
     if summary.get("next_ladder_id"):
@@ -155,7 +164,9 @@ def write_markdown(path: Path, summary: dict[str, Any], rows: list[dict[str, Any
     else:
         lines.extend(
             [
-                "All planned diagnostic rows have a trial summary. Refresh status and inspect failures before running broader queues.",
+                "All planned diagnostic rows have a trial summary.",
+                "",
+                f"Next gate: {summary.get('next_gate', '')}.",
                 "",
                 "```powershell",
                 "python code\\build_cst_source_family_solver_safe_status.py",
@@ -186,7 +197,11 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         next_generate_command = next_row["generate_command"]
         next_solve_command = next_row["solve_command"]
     else:
-        next_gate = "all planned solver-safe diagnostic rows have summaries; inspect pass/fail pattern before expanding the source-family queue"
+        next_gate = (
+            "full local E-field probe solve is now runtime-feasible on the short x case; "
+            "next run a matching long-window H-field pilot for the same sample, then export matched E/H and far-field "
+            "references before applying the frozen Huygens rule"
+        )
         next_ladder_id = ""
         next_generate_command = ""
         next_solve_command = ""
@@ -200,12 +215,13 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         "full_probe_row_count": plan_summary.get("full_probe_row_count", ""),
         "planned_trial_count": len(plan_rows),
         "trial_count": trial_count,
-        "finished_count": sum(1 for row in trial_rows if row["status"] == "finished"),
-        "timed_out_count": sum(1 for row in trial_rows if row["status"] == "timed_out"),
+        "finished_count": sum(1 for row in trial_rows if row["status"] in FINISHED_STATUSES),
+        "timed_out_count": sum(1 for row in trial_rows if row["status"] in TIMEOUT_STATUSES),
         "solver_start_ok_count": sum(1 for row in trial_rows if row["solver_start_ok"]),
         "artifact_ready_count": sum(
             1 for row in trial_rows if row["has_nearfield_artifact"] or row["has_farfield_artifact"]
         ),
+        "abort_warning_count": sum(1 for row in trial_rows if row["aborted_keeping_results_detected"]),
         "next_gate": next_gate,
         "next_ladder_id": next_ladder_id,
         "next_generate_command": next_generate_command,
@@ -241,9 +257,11 @@ def main() -> int:
             "probe_mode",
             "probe_rows",
             "planned_timeout_seconds",
+            "actual_timeout_seconds",
             "summary_path",
             "summary_exists",
             "status",
+            "checkpoint",
             "real_cst_api_used",
             "solver_start_ok",
             "elapsed_seconds",
@@ -251,6 +269,7 @@ def main() -> int:
             "artifact_count",
             "has_nearfield_artifact",
             "has_farfield_artifact",
+            "aborted_keeping_results_detected",
             "generate_command",
             "solve_command",
             "gate_interpretation",

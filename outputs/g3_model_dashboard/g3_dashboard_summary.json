@@ -8,7 +8,7 @@
     "rotation_covariance_strict_pass": 1,
     "real_eh_frozen_rule_region_pass": 1,
     "source_family_solver_pilot_timed_out": 1,
-    "source_family_solver_safe_ladder_partial": 1,
+    "source_family_solver_safe_full_efield_finished": 1,
     "cross_case_impedance_disagreement": 1
   },
   "true_monitor_status": "pending_source",
