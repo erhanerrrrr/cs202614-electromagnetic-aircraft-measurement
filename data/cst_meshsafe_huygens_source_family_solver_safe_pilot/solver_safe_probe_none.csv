@@ -1,0 +1,1 @@
+﻿sample_id,sensor_id,node_id,prior_id,surface_type,x_m,y_m,z_m,radius_m,theta_deg,phi_deg,local_radius_m,normal_x,normal_y,normal_z,tangent1_x,tangent1_y,tangent1_z,tangent2_x,tangent2_y,tangent2_z,weight_m2,cst_probe_field,cst_coordinate_system,workflow_role,source_center_x_m,source_center_y_m,source_center_z_m,source_family_role

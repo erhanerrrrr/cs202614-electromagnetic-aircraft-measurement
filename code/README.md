@@ -677,3 +677,31 @@ This is not a CST startup failure. It is a solver/runtime settings gate. Keep
 the same short x-oriented case as the pilot, repair the time-domain settings or
 validate a frequency-domain/fast-path variant, and only then run the remaining
 source-family queue.
+
+## CST mesh-safe Huygens source-family solver-safe pilot addendum
+
+The S44 timeout is now split into an ordered diagnostic ladder:
+
+```powershell
+python code\prepare_cst_source_family_solver_safe_pilot.py
+python code\build_cst_source_family_solver_safe_status.py
+python code\build_g3_model_dashboard.py
+```
+
+Current status: `source_family_solver_safe_ladder_partial`.
+
+- Target sample: `L1_short_dipole_x_1p2G`.
+- Planned CST diagnostic trials: `6`.
+- Executed CST diagnostic trials: `4`.
+- Finished rows: `none` (`78.7 s`), `efarfield96` (`114.0 s`),
+  `efield24` (`343.4 s`), and `hfield24` (`333.3 s`).
+- Next row: `efield48`.
+- Ladder: `none -> efarfield96 -> efield24 -> hfield24 -> efield48 -> efield96`.
+- Workpack: `data/cst_meshsafe_huygens_source_family_solver_safe_pilot/`.
+- Status output: `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/`.
+
+This is still not a new physics pass. It is the execution queue needed to
+determine whether the source-family timeout is caused by the base CST solve,
+far-field angular probes, or local Cartesian Huygens probe count. The current
+evidence points to local Cartesian probe runtime pressure rather than a base CST
+model failure.

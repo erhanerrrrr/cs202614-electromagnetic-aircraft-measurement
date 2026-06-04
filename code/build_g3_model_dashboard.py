@@ -640,9 +640,16 @@ def build_rows() -> list[dict[str, Any]]:
         / "cst_meshsafe_huygens_source_family_solver_status"
         / "source_family_solver_status_summary.json"
     )
+    source_family_safe_path = (
+        ROOT
+        / "outputs"
+        / "cst_meshsafe_huygens_source_family_solver_safe_status"
+        / "solver_safe_status_summary.json"
+    )
     source_family = read_json(source_family_path)
     source_family_generation = read_json(source_family_generation_path)
     source_family_solver = read_json(source_family_solver_path)
+    source_family_safe = read_json(source_family_safe_path)
     if source_family:
         solver_status = str(source_family_solver.get("stage_status", ""))
         if solver_status in (
@@ -750,6 +757,50 @@ def build_rows() -> list[dict[str, Any]]:
                 blocker=source_family_blocker,
             )
         )
+        if source_family_safe:
+            planned_count = int(source_family_safe.get("planned_trial_count", 0) or 0)
+            trial_count = int(source_family_safe.get("trial_count", 0) or 0)
+            finished_count = int(source_family_safe.get("finished_count", 0) or 0)
+            timed_out_count = int(source_family_safe.get("timed_out_count", 0) or 0)
+            artifact_ready_count = int(source_family_safe.get("artifact_ready_count", 0) or 0)
+            safe_status = str(source_family_safe.get("stage_status", ""))
+            if trial_count:
+                safe_trust = "solver_diagnostic_evidence_not_huygens_proof"
+                safe_interpretation = (
+                    "The source-family timeout is now being isolated with a staged CST diagnostic ladder. "
+                    "Executed rows are runtime evidence only; frozen-rule electromagnetic validation still "
+                    "requires export-ready matched local E/H CSVs and far-field references."
+                )
+            else:
+                safe_trust = "solver_diagnostic_plan_not_physics_proof"
+                safe_interpretation = (
+                    "A solver-safe diagnostic ladder is ready for the blocked short x-oriented source-family "
+                    "case: no-probe, efarfield96, efield24, hfield24, efield48, then full efield96. "
+                    "This is a controlled execution plan, not a solved CST physics result."
+                )
+            rows.append(
+                row(
+                    category="rerun_priority",
+                    artifact="meshsafe_huygens_source_family_solver_safe_pilot",
+                    scope=(
+                        f"{planned_count} planned CST diagnostic trial(s); {trial_count} executed; "
+                        f"{finished_count} finished; {timed_out_count} timed out"
+                    ),
+                    evidence_path=source_family_safe_path,
+                    command="python code\\build_cst_source_family_solver_safe_status.py",
+                    best_setting=(
+                        f"target={source_family_safe.get('target_sample_id', '')}; "
+                        f"artifact_ready={artifact_ready_count}; "
+                        "ladder=none->efarfield96->efield24->hfield24->efield48->efield96"
+                    ),
+                    status=safe_status,
+                    trust_level=safe_trust,
+                    sensor_count=source_family_safe.get("full_probe_row_count"),
+                    interpretation=safe_interpretation,
+                    next_action=str(source_family_safe.get("next_gate", "")),
+                    blocker="" if safe_status == "source_family_solver_safe_full_efield_finished" else "diagnostic ladder not yet complete",
+                )
+            )
     else:
         rows.append(
             missing_row(

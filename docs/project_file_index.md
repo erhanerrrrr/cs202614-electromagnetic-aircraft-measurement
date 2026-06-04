@@ -465,3 +465,23 @@ Tracked entries:
 | `outputs/cst_solver_trials/meshsafe_huygens_source_family/L1_short_dipole_x_1p2G_efield_solver_summary.json` | Raw solver pilot summary: real CST start OK, ResultTree populated, timed out before export. |
 | `outputs/cst_meshsafe_huygens_source_family_solver_status/` | Machine-readable solver status summary, trial CSV, and human-readable report. |
 | `outputs/g3_model_dashboard/` | Dashboard reports the source-family gate as `source_family_solver_pilot_timed_out` once refreshed. |
+
+## 2026-06-04 CST mesh-safe Huygens source-family solver-safe pilot
+
+S45 turns the S44 source-family timeout into an ordered diagnostic ladder for
+the same short x-oriented case. Four rows have now finished: `none` in
+`78.7 s`, `efarfield96` in `114.0 s`, `efield24` in `343.4 s`, and `hfield24`
+in `333.3 s`. The base solve and far-field angular probe path are fast enough;
+local Cartesian probes are the current runtime pressure point. This is still a
+solver/export diagnostic, not a new Huygens physics pass.
+
+Tracked entries:
+
+| File/directory | Meaning |
+|---|---|
+| `docs/stage_notes/45_g3_huygens_source_family_solver_safe_pilot.md` | S45 note covering the diagnostic ladder, current plan-ready status, and remaining solve/export boundary. |
+| `code/prepare_cst_source_family_solver_safe_pilot.py` | Generates the one-case solver-safe workpack and ordered CST generation/solve command queue. |
+| `code/build_cst_source_family_solver_safe_status.py` | Summarizes executed ladder rows and writes dashboard-ready status outputs. |
+| `data/cst_meshsafe_huygens_source_family_solver_safe_pilot/` | Generated one-case input, probe subsets, command queue, README, and plan summary. |
+| `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/` | Current status summary, trial table, next `efield48` command, and Markdown report; currently `source_family_solver_safe_ladder_partial`. |
+| `outputs/g3_model_dashboard/` | Dashboard now includes `meshsafe_huygens_source_family_solver_safe_pilot = source_family_solver_safe_ladder_partial`. |

@@ -1,0 +1,453 @@
+{
+  "created_at": "2026-06-04T14:38:14+00:00",
+  "status": "finished",
+  "real_cst_api_used": true,
+  "project": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96.cst",
+  "project_exists": true,
+  "timeout_seconds": 300,
+  "poll_seconds": 10.0,
+  "tree_count_before": 139,
+  "result_tree_roots_before": [
+    "1D Results",
+    "2D/3D Results",
+    "Farfields",
+    "Tables"
+  ],
+  "result_tree_count_before": 0,
+  "farfield_items_before": [],
+  "solver_start_result": {
+    "ok": true,
+    "value": true
+  },
+  "completed_at": "2026-06-04T14:40:08+00:00",
+  "elapsed_seconds": 114.0,
+  "poll_count": 11,
+  "poll_log_tail": [
+    {
+      "elapsed_seconds": 12.875,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 22.875,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 32.891,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 42.891,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 52.907,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 62.922,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 72.922,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 82.938,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 92.953,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 102.985,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 112.985,
+      "is_solver_running": {
+        "ok": true,
+        "value": false
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    }
+  ],
+  "last_solver_info": {
+    "ok": false,
+    "error": "missing method get_solver_info"
+  },
+  "timeout_stop_solver": {},
+  "save_project": {
+    "ok": true,
+    "value": null
+  },
+  "tree_count_after": 766,
+  "result_tree_roots_after": [
+    "1D Results",
+    "2D/3D Results",
+    "Farfields",
+    "Tables"
+  ],
+  "result_tree_count_after": 600,
+  "result_items_after_summary": {
+    "count": 600,
+    "category_counts": {
+      "1D Results\\Discrete Ports": 1,
+      "1D Results\\Discrete Ports\\Currents": 4,
+      "1D Results\\Discrete Ports\\Impedances": 2,
+      "1D Results\\Discrete Ports\\Voltages": 4,
+      "1D Results\\Energy": 1,
+      "1D Results\\Energy\\Energy [1]": 1,
+      "1D Results\\Port signals": 1,
+      "1D Results\\Port signals\\i1": 1,
+      "1D Results\\Power": 1,
+      "1D Results\\Power\\Excitation [1]": 2,
+      "1D Results\\Probes": 1,
+      "1D Results\\Probes\\E-Farfield": 578,
+      "2D/3D Results\\E-Field": 1,
+      "2D/3D Results\\E-Field\\nearfield_local_huygens_r0p35_1200MHz [1]": 1,
+      "Farfields\\farfield_1200MHz [1]": 1
+    },
+    "sample": [
+      "1D Results\\Discrete Ports",
+      "1D Results\\Discrete Ports\\Currents",
+      "1D Results\\Discrete Ports\\Currents\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Currents\\Signals",
+      "1D Results\\Discrete Ports\\Currents\\Signals\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Impedances",
+      "1D Results\\Discrete Ports\\Impedances\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Voltages",
+      "1D Results\\Discrete Ports\\Voltages\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Voltages\\Signals",
+      "1D Results\\Discrete Ports\\Voltages\\Signals\\Port 1 [1]",
+      "1D Results\\Energy",
+      "1D Results\\Energy\\Energy [1]",
+      "1D Results\\Port signals",
+      "1D Results\\Port signals\\i1",
+      "1D Results\\Power",
+      "1D Results\\Power\\Excitation [1]",
+      "1D Results\\Power\\Excitation [1]\\Power Radiated",
+      "1D Results\\Probes",
+      "1D Results\\Probes\\E-Farfield",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (0.664189 0 4.34665)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (0.664189 0 4.34665)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (0.664189 0 4.34665)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (0.7901 103.238 3.65399)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (0.7901 103.238 3.65399)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (0.7901 103.238 3.65399)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.14619 137.508 4.33993)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.14619 137.508 4.33993)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.14619 137.508 4.33993)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.35843 325.73 3.66197)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.35843 325.73 3.66197)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.35843 325.73 3.66197)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.47423 275.016 4.33321)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.47423 275.016 4.33321)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.47423 275.016 4.33321)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.73775 52.5233 4.32647)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.73775 52.5233 4.32647)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.73775 52.5233 4.32647)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.74074 188.222 3.66992)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.74074 188.222 3.66992)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.74074 188.222 3.66992)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.96289 190.031 4.31972)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.96289 190.031 4.31972)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (1.96289 190.031 4.31972)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.04433 50.7143 3.67786)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.04433 50.7143 3.67786)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.04433 50.7143 3.67786)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.16163 327.539 4.31296)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.16163 327.539 4.31296)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.16163 327.539 4.31296)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.30066 273.207 3.68578)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.30066 273.207 3.68578)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.30066 273.207 3.68578)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.34069 105.047 4.3062)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.34069 105.047 4.3062)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.34069 105.047 4.3062)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.50426 242.554 4.29942)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.50426 242.554 4.29942)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.50426 242.554 4.29942)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.52427 135.699 3.69369)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.52427 135.699 3.69369)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.52427 135.699 3.69369)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.65519 20.0621 4.29263)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.65519 20.0621 4.29263)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.65519 20.0621 4.29263)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.72329 358.191 3.70158)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.72329 358.191 3.70158)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.72329 358.191 3.70158)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.79548 157.57 4.28583)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.79548 157.57 4.28583)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.79548 157.57 4.28583)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.90287 220.683 3.70945)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.90287 220.683 3.70945)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.90287 220.683 3.70945)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.92666 295.078 4.27902)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.92666 295.078 4.27902)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (2.92666 295.078 4.27902)(Theta) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (3.04986 72.5854 4.2722)(Abs) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (3.04986 72.5854 4.2722)(Phi) [1]",
+      "1D Results\\Probes\\E-Farfield\\E_Field (Farfield) (Spherical) (3.04986 72.5854 4.2722)(Theta) [1]"
+    ],
+    "omitted_count": 520
+  },
+  "farfield_items_after": [
+    "Farfields\\farfield_1200MHz [1]"
+  ],
+  "project_size_bytes": 39604,
+  "solver_logs": {
+    "project_result_dir": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96",
+    "log_files": [
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96\\Result\\Model.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 32958,
+        "tail": [
+          "                        Calculation time for excitation:  \t0 \ts",
+          "                        Number of calculated pulse widths:\t1.00578",
+          "                        Steady state accuracy limit:      \t-40\tdB",
+          "                        Simulated number of time steps:   \t53218",
+          "                        Maximum number of time steps:     \t1058246",
+          "                        Time step width:",
+          "                           without subcycles:             \t5.598175734e-004 ns",
+          "                           used:                          \t5.598175734e-004 ns",
+          "                        CAD preparation time:             \t1      \ts",
+          "                        Matrix calculation time:          \t10 \ts",
+          "                        Solver setup time:                \t1 \ts",
+          "                        Solver loop time:                 \t72 \ts",
+          "                        Solver post-processing time:      \t2 \ts",
+          "                                                          \t------------",
+          "                        Total solver time:                \t86 \ts  ( = 0 h, 1 m, 26 s )",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-04 22:39:56",
+          "                        Total solver time (all cycles):      \t86     \ts  ( = 0 h, 1 m, 26 s )",
+          "                        Solver initialization and clean-up:  \t2      \ts",
+          "                                                             \t------------",
+          "                        Total simulation time:               \t88     \ts  ( = 0 h, 1 m, 28 s )",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-04 22:39:56   Solver finished at: 2026-06-04 22:39:56 +0800",
+          "                      ------------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96\\Result\\output.txt",
+        "exists": false
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96\\Result\\outputDS.txt",
+        "exists": false
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96\\Result\\hexmeshengine.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 457,
+        "tail": [
+          ">2026-06-04 22:38:27.00772< :  Configuring HexMeshEngine...",
+          ">2026-06-04 22:38:27.00778< :  Locals Configured.",
+          ">2026-06-04 22:38:27.00779< :  Globals Configured.",
+          ">2026-06-04 22:38:27.00780< :  Configuration Done.",
+          ">2026-06-04 22:38:27.00780< :  HexMeshEngine correctly configured.",
+          ">2026-06-04 22:38:27.00780< :  Generating Mesh Line...",
+          ">2026-06-04 22:38:27.00785< :  Done.",
+          ">2026-06-04 22:38:27.00786< :  Postprocessing...",
+          ">2026-06-04 22:38:27.00786< :  Done."
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96\\Result\\ml_info.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 211,
+        "tail": [
+          "Layer Detection Run At: Thu Jun  4 22:38:27 2026",
+          "Layer Detection Version: 20180416",
+          "No Result from User Configuration (No Auto-Detection attempted).",
+          "Result from Auto-Detection.",
+          "Stack Detection Failed."
+        ]
+      }
+    ],
+    "result_jsons": {
+      "simulation_overview.json": {
+        "path": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96\\Result\\simulation_overview.json",
+        "exists": true,
+        "data": {
+          "date": "2026-06-04, 10:39:58 PM, ??????",
+          "solver_runs_and_tasks": {
+            "module_name": "standard simulation project",
+            "solver_run": {
+              "license_and_hardware_request": {
+                "in_use": true,
+                "license_type": "CST legacy token",
+                "mpi": {
+                  "consistency_check": true,
+                  "num_different_mpi_nodes": 0,
+                  "num_local_mpi_nodes": 0,
+                  "num_mpi_nodes": 0
+                },
+                "num_cpu_sockets": 1,
+                "num_dc_nodes": 0,
+                "num_gpus": 0,
+                "num_physical_cores": -1,
+                "num_threads": 1024
+              },
+              "opt_par_run_id": 0,
+              "return_code": 1,
+              "solver_hwacc_usage": {
+                "info": "gathered from solver run",
+                "mpi": {
+                  "consistency_check": true,
+                  "num_different_mpi_nodes": 0,
+                  "num_local_mpi_nodes": 0,
+                  "num_mpi_nodes": 0
+                },
+                "num_cpu_sockets": 1,
+                "num_dc_nodes": 0,
+                "num_gpus": 0,
+                "num_threads_or_physical_cores": 8
+              },
+              "solver_used": "HF Time Domain (Hex)",
+              "task_name": "solver run",
+              "time_info": {
+                "details": {
+                  "discretizer": 11,
+                  "solver": 72
+                },
+                "run_time": 88
+              }
+            }
+          },
+          "studio-version": "2025.2 Release from 2024-12-16 (change 1361105)",
+          "version": 1
+        }
+      },
+      "output.json": {
+        "path": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96\\Result\\output.json",
+        "exists": false,
+        "data": {}
+      }
+    },
+    "result_artifacts": {
+      "result_dir": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96",
+      "artifact_count": 3,
+      "suffix_counts": {
+        ".ffm": 1,
+        ".fme": 1,
+        ".m3d": 1
+      },
+      "has_farfield_artifact": true,
+      "has_nearfield_artifact": true,
+      "artifacts": [
+        {
+          "path": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96\\Result\\farfield_1200MHz_1.ffm",
+          "name": "farfield_1200MHz_1.ffm",
+          "suffix": ".ffm",
+          "size_bytes": 23003
+        },
+        {
+          "path": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96\\Result\\farfield_1200MHz_1.fme",
+          "name": "farfield_1200MHz_1.fme",
+          "suffix": ".fme",
+          "size_bytes": 57584
+        },
+        {
+          "path": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96\\Result\\nearfield_local_huygens_r0p35_1200MHz_1,1.m3d",
+          "name": "nearfield_local_huygens_r0p35_1200MHz_1,1.m3d",
+          "suffix": ".m3d",
+          "size_bytes": 8670652
+        }
+      ],
+      "omitted_count": 0
+    },
+    "error_lines": [],
+    "mesh_cell_count_billion": null,
+    "required_mpi_nodes": null,
+    "mesh_limit_detected": false,
+    "path_length_limit_detected": false,
+    "encoding_warning_detected": false,
+    "aborted_keeping_results_detected": false,
+    "solver_return_code": 1,
+    "solver_used": "HF Time Domain (Hex)",
+    "solver_run_time_seconds": 88
+  },
+  "controller_returncode": 0,
+  "source_project": "C:\\csttmp\\huy_sf_safe_efarfield96\\projects\\CST_L1_short_dipole_x_1p2G_meshsafe_huygens_r0p35.cst",
+  "trial_project": "C:\\csttmp\\huy_sf_safe_efarfield96_s\\L1_short_dipole_x_1p2G_efarfield96.cst",
+  "stdout_log": "outputs\\cst_solver_trials\\meshsafe_huygens_source_family_solver_safe\\L1_short_dipole_x_1p2G_efarfield96_stdout.log"
+}

@@ -1,0 +1,406 @@
+{
+  "created_at": "2026-06-04T14:35:03+00:00",
+  "status": "finished",
+  "real_cst_api_used": true,
+  "project": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none.cst",
+  "project_exists": true,
+  "timeout_seconds": 240,
+  "poll_seconds": 10.0,
+  "tree_count_before": 43,
+  "result_tree_roots_before": [
+    "1D Results",
+    "2D/3D Results",
+    "Farfields",
+    "Tables"
+  ],
+  "result_tree_count_before": 0,
+  "farfield_items_before": [],
+  "solver_start_result": {
+    "ok": true,
+    "value": true
+  },
+  "completed_at": "2026-06-04T14:36:22+00:00",
+  "elapsed_seconds": 78.71800000000076,
+  "poll_count": 8,
+  "poll_log_tail": [
+    {
+      "elapsed_seconds": 7.968,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 17.984,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 28.0,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 38.015,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 48.015,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 58.031,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 68.047,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 78.047,
+      "is_solver_running": {
+        "ok": true,
+        "value": false
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    }
+  ],
+  "last_solver_info": {
+    "ok": false,
+    "error": "missing method get_solver_info"
+  },
+  "timeout_stop_solver": {},
+  "save_project": {
+    "ok": true,
+    "value": null
+  },
+  "tree_count_after": 91,
+  "result_tree_roots_after": [
+    "1D Results",
+    "2D/3D Results",
+    "Farfields",
+    "Tables"
+  ],
+  "result_tree_count_after": 21,
+  "result_items_after_summary": {
+    "count": 21,
+    "category_counts": {
+      "1D Results\\Discrete Ports": 1,
+      "1D Results\\Discrete Ports\\Currents": 4,
+      "1D Results\\Discrete Ports\\Impedances": 2,
+      "1D Results\\Discrete Ports\\Voltages": 4,
+      "1D Results\\Energy": 1,
+      "1D Results\\Energy\\Energy [1]": 1,
+      "1D Results\\Port signals": 1,
+      "1D Results\\Port signals\\i1": 1,
+      "1D Results\\Power": 1,
+      "1D Results\\Power\\Excitation [1]": 2,
+      "2D/3D Results\\E-Field": 1,
+      "2D/3D Results\\E-Field\\nearfield_local_huygens_r0p35_1200MHz [1]": 1,
+      "Farfields\\farfield_1200MHz [1]": 1
+    },
+    "sample": [
+      "1D Results\\Discrete Ports",
+      "1D Results\\Discrete Ports\\Currents",
+      "1D Results\\Discrete Ports\\Currents\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Currents\\Signals",
+      "1D Results\\Discrete Ports\\Currents\\Signals\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Impedances",
+      "1D Results\\Discrete Ports\\Impedances\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Voltages",
+      "1D Results\\Discrete Ports\\Voltages\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Voltages\\Signals",
+      "1D Results\\Discrete Ports\\Voltages\\Signals\\Port 1 [1]",
+      "1D Results\\Energy",
+      "1D Results\\Energy\\Energy [1]",
+      "1D Results\\Port signals",
+      "1D Results\\Port signals\\i1",
+      "1D Results\\Power",
+      "1D Results\\Power\\Excitation [1]",
+      "1D Results\\Power\\Excitation [1]\\Power Radiated",
+      "2D/3D Results\\E-Field",
+      "2D/3D Results\\E-Field\\nearfield_local_huygens_r0p35_1200MHz [1]",
+      "Farfields\\farfield_1200MHz [1]"
+    ],
+    "omitted_count": 0
+  },
+  "farfield_items_after": [
+    "Farfields\\farfield_1200MHz [1]"
+  ],
+  "project_size_bytes": 40453,
+  "solver_logs": {
+    "project_result_dir": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none",
+    "log_files": [
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none\\Result\\Model.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 9598,
+        "tail": [
+          "                        Calculation time for excitation:  \t0 \ts",
+          "                        Number of calculated pulse widths:\t1.00578",
+          "                        Steady state accuracy limit:      \t-40\tdB",
+          "                        Simulated number of time steps:   \t53218",
+          "                        Maximum number of time steps:     \t1058246",
+          "                        Time step width:",
+          "                           without subcycles:             \t5.598175734e-004 ns",
+          "                           used:                          \t5.598175734e-004 ns",
+          "                        CAD preparation time:             \t1      \ts",
+          "                        Matrix calculation time:          \t8 \ts",
+          "                        Solver setup time:                \t0 \ts",
+          "                        Solver loop time:                 \t54 \ts",
+          "                        Solver post-processing time:      \t1 \ts",
+          "                                                          \t------------",
+          "                        Total solver time:                \t64 \ts  ( = 0 h, 1 m, 4 s )",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-04 22:36:17",
+          "                        Total solver time (all cycles):      \t64     \ts  ( = 0 h, 1 m, 4 s )",
+          "                        Solver initialization and clean-up:  \t1      \ts",
+          "                                                             \t------------",
+          "                        Total simulation time:               \t65     \ts  ( = 0 h, 1 m, 5 s )",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-04 22:36:17   Solver finished at: 2026-06-04 22:36:17 +0800",
+          "                      ------------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none\\Result\\output.txt",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 3415,
+        "tail": [
+          "_______________________________________________________________________________________________________________________",
+          "Virtual radius setting will not be considered for the distributed discrete port 1.",
+          "_______________________________________________________________________________________________________________________",
+          "Solver Settings:",
+          "Excited discrete port: 1",
+          "[Frequency domain results normalized to default signal]",
+          "Excitation duration: 2.96212396e+001 ns",
+          "Steady state accuracy limit: -40 dB",
+          "Maximum number of time steps: 1058246",
+          "Time step width:",
+          "     without subcycles: 5.598175734e-004 ns",
+          "     used: 5.598175734e-004 ns",
+          "Number of threads used: 8",
+          "_______________________________________________________________________________________________________________________",
+          "Steady state energy criterion met, solver finished successfully.",
+          "_______________________________________________________________________________________________________________________",
+          "Balance is not available for all excitations.",
+          "_______________________________________________________________________________________________________________________",
+          "Successfully finished Secondary Quantity Evaluation.",
+          "_______________________________________________________________________________________________________________________",
+          "Successfully finished Secondary Quantity Evaluation.",
+          "_______________________________________________________________________________________________________________________",
+          "WARNING:",
+          "2 warnings occurred."
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none\\Result\\outputDS.txt",
+        "exists": false
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none\\Result\\hexmeshengine.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 457,
+        "tail": [
+          ">2026-06-04 22:35:11.00684< :  Configuring HexMeshEngine...",
+          ">2026-06-04 22:35:11.00690< :  Locals Configured.",
+          ">2026-06-04 22:35:11.00690< :  Globals Configured.",
+          ">2026-06-04 22:35:11.00690< :  Configuration Done.",
+          ">2026-06-04 22:35:11.00691< :  HexMeshEngine correctly configured.",
+          ">2026-06-04 22:35:11.00691< :  Generating Mesh Line...",
+          ">2026-06-04 22:35:11.00695< :  Done.",
+          ">2026-06-04 22:35:11.00696< :  Postprocessing...",
+          ">2026-06-04 22:35:11.00696< :  Done."
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none\\Result\\ml_info.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 211,
+        "tail": [
+          "Layer Detection Run At: Thu Jun  4 22:35:11 2026",
+          "Layer Detection Version: 20180416",
+          "No Result from User Configuration (No Auto-Detection attempted).",
+          "Result from Auto-Detection.",
+          "Stack Detection Failed."
+        ]
+      }
+    ],
+    "result_jsons": {
+      "simulation_overview.json": {
+        "path": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none\\Result\\simulation_overview.json",
+        "exists": true,
+        "data": {
+          "date": "2026-06-04, 10:36:19 PM, ??????",
+          "solver_runs_and_tasks": {
+            "module_name": "standard simulation project",
+            "solver_run": {
+              "license_and_hardware_request": {
+                "in_use": true,
+                "license_type": "CST legacy token",
+                "mpi": {
+                  "consistency_check": true,
+                  "num_different_mpi_nodes": 0,
+                  "num_local_mpi_nodes": 0,
+                  "num_mpi_nodes": 0
+                },
+                "num_cpu_sockets": 1,
+                "num_dc_nodes": 0,
+                "num_gpus": 0,
+                "num_physical_cores": -1,
+                "num_threads": 1024
+              },
+              "opt_par_run_id": 0,
+              "return_code": 1,
+              "solver_hwacc_usage": {
+                "info": "gathered from solver run",
+                "mpi": {
+                  "consistency_check": true,
+                  "num_different_mpi_nodes": 0,
+                  "num_local_mpi_nodes": 0,
+                  "num_mpi_nodes": 0
+                },
+                "num_cpu_sockets": 1,
+                "num_dc_nodes": 0,
+                "num_gpus": 0,
+                "num_threads_or_physical_cores": 8
+              },
+              "solver_used": "HF Time Domain (Hex)",
+              "task_name": "solver run",
+              "time_info": {
+                "details": {
+                  "discretizer": 9,
+                  "solver": 54
+                },
+                "run_time": 65
+              }
+            }
+          },
+          "studio-version": "2025.2 Release from 2024-12-16 (change 1361105)",
+          "version": 1
+        }
+      },
+      "output.json": {
+        "path": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none\\Result\\output.json",
+        "exists": true,
+        "data": {
+          "messages": [
+            {
+              "message": "The diagonal of the calculation domain has a very small value. This may lead to errors while calculating the system matrix. In this case, magnify the dimensions of the structure and use the next smaller unit.",
+              "severity": "warning"
+            },
+            {
+              "message": "After rescaling the structure, use \"Objects->Heal All Shapes\" in order to repair any scaling errors.",
+              "severity": "warning"
+            },
+            {
+              "message": "2 warnings occurred.",
+              "severity": "warning"
+            }
+          ],
+          "version": {
+            "build": "2025.2 Release from 2024-12-16 (change 1361105)",
+            "project name": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none"
+          }
+        }
+      }
+    },
+    "result_artifacts": {
+      "result_dir": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none",
+      "artifact_count": 3,
+      "suffix_counts": {
+        ".ffm": 1,
+        ".fme": 1,
+        ".m3d": 1
+      },
+      "has_farfield_artifact": true,
+      "has_nearfield_artifact": true,
+      "artifacts": [
+        {
+          "path": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none\\Result\\farfield_1200MHz_1.ffm",
+          "name": "farfield_1200MHz_1.ffm",
+          "suffix": ".ffm",
+          "size_bytes": 23003
+        },
+        {
+          "path": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none\\Result\\farfield_1200MHz_1.fme",
+          "name": "farfield_1200MHz_1.fme",
+          "suffix": ".fme",
+          "size_bytes": 57584
+        },
+        {
+          "path": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none\\Result\\nearfield_local_huygens_r0p35_1200MHz_1,1.m3d",
+          "name": "nearfield_local_huygens_r0p35_1200MHz_1,1.m3d",
+          "suffix": ".m3d",
+          "size_bytes": 8670652
+        }
+      ],
+      "omitted_count": 0
+    },
+    "error_lines": [],
+    "mesh_cell_count_billion": null,
+    "required_mpi_nodes": null,
+    "mesh_limit_detected": false,
+    "path_length_limit_detected": false,
+    "encoding_warning_detected": false,
+    "aborted_keeping_results_detected": false,
+    "solver_return_code": 1,
+    "solver_used": "HF Time Domain (Hex)",
+    "solver_run_time_seconds": 65
+  },
+  "controller_returncode": 0,
+  "source_project": "C:\\csttmp\\huy_sf_safe_none\\projects\\CST_L1_short_dipole_x_1p2G_meshsafe_huygens_r0p35.cst",
+  "trial_project": "C:\\csttmp\\huy_sf_safe_none_s\\L1_short_dipole_x_1p2G_none.cst",
+  "stdout_log": "outputs\\cst_solver_trials\\meshsafe_huygens_source_family_solver_safe\\L1_short_dipole_x_1p2G_none_stdout.log"
+}
