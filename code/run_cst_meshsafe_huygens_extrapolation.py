@@ -25,6 +25,13 @@ DEFAULT_LOCAL_NEARFIELD = (
 )
 DEFAULT_FARFIELD = ROOT / "data" / "cst_exports" / "level1" / "all_farfield.csv"
 DEFAULT_OUT_DIR = ROOT / "data" / "sampling_layouts" / "cst_meshsafe_huygens_extrapolation"
+DEFAULT_CASE_CSV = (
+    ROOT
+    / "data"
+    / "cst_meshsafe_huygens_workpack"
+    / "level1_required_meshsafe_huygens_cases.csv"
+)
+DEFAULT_BATCH_OUT_DIR = ROOT / "data" / "sampling_layouts" / "cst_meshsafe_huygens_extrapolation_batch"
 ETA0 = 376.730313668
 COMPONENTS = ("Ex", "Ey", "Ez")
 
@@ -38,6 +45,13 @@ def display_path(path: Path) -> str:
         return str(path.resolve().relative_to(ROOT))
     except Exception:
         return str(path)
+
+
+def resolve_path(path: str | Path) -> Path:
+    candidate = Path(path)
+    if candidate.is_absolute():
+        return candidate
+    return ROOT / candidate
 
 
 def write_json(path: Path, data: dict[str, Any]) -> None:
@@ -276,6 +290,162 @@ def status_rank(status: str) -> int:
     }.get(status, 99)
 
 
+def parse_sample_ids(value: str) -> set[str]:
+    return {item.strip() for item in value.split(",") if item.strip()}
+
+
+def batch_summary_row(summary: dict[str, Any], local_nearfield: Path, out_dir: Path) -> dict[str, Any]:
+    best = summary["best_setting"]
+    quality = summary["quality"]
+    return {
+        "sample_id": summary["sample_id"],
+        "frequency_hz": summary["frequency_hz"],
+        "status": "ok",
+        "local_nearfield": display_path(local_nearfield),
+        "out_dir": display_path(out_dir),
+        "sensor_count": quality["sensor_count"],
+        "tangential_to_total_l2_ratio": quality["tangential_to_total_l2_ratio"],
+        "normal_to_total_l2_ratio": quality["normal_to_total_l2_ratio"],
+        "dynamic_range_db": quality["dynamic_range_db"],
+        "best_variant": best["variant"],
+        "best_status": best["status"],
+        "correlation": best["correlation"],
+        "nmse": best["nmse"],
+        "scaled_power_nmse": best["scaled_power_nmse"],
+        "main_lobe_error_deg": best["main_lobe_error_deg"],
+        "best_power_scale": best["best_power_scale"],
+    }
+
+
+def write_batch_readme(out_dir: Path, rows: pd.DataFrame, summary: dict[str, Any]) -> None:
+    if rows.empty:
+        table = "| Sample | Status |\n|---|---|\n"
+    else:
+        table_rows = []
+        for row in rows.itertuples(index=False):
+            if row.status != "ok":
+                table_rows.append(f"| {row.sample_id} | {row.status} | - | - | - | - |")
+                continue
+            table_rows.append(
+                f"| {row.sample_id} | {row.best_status} | {row.best_variant} | "
+                f"{row.correlation:.4f} | {row.scaled_power_nmse:.4e} | {row.main_lobe_error_deg:.2f} |"
+            )
+        table = (
+            "| Sample | Best status | Best variant | Corr | Scaled NMSE | Main-lobe error / deg |\n"
+            "|---|---|---|---:|---:|---:|\n"
+            + "\n".join(table_rows)
+            + "\n"
+        )
+    content = f"""# CST Mesh-Safe Huygens Batch Gate
+
+This directory aggregates the local Huygens extrapolation diagnostics for all
+available mesh-safe Level 1 CST exports. Each case keeps its own detailed
+single-case report in a child directory, while this folder records the
+cross-case pass/fail picture.
+
+## Summary
+
+- Cases requested: `{summary['case_count_requested']}`
+- Cases completed: `{summary['case_count_completed']}`
+- Missing/failed cases: `{summary['case_count_missing_or_failed']}`
+- Best strict/physics-proxy cases: `{summary['case_count_strict_or_proxy']}`
+
+## Case Table
+
+{table}
+## Reading
+
+This is a batch data-chain gate, not the final Huygens physics proof. A case is
+useful here when the local CST probe CSV is complete, the farfield reference can
+be matched, and the diagnostic equivalent-current variants preserve the main
+directional structure. Final claims still require a stricter vector
+surface-integral operator and H-field or calibrated impedance support.
+
+## Command
+
+```powershell
+python code\\run_cst_meshsafe_huygens_extrapolation.py --batch
+```
+"""
+    (out_dir / "README.md").write_text(content, encoding="utf-8")
+
+
+def run_batch(args: argparse.Namespace) -> dict[str, Any]:
+    batch_out_dir = resolve_path(args.batch_out_dir)
+    batch_out_dir.mkdir(parents=True, exist_ok=True)
+    case_table = read_table(resolve_path(args.case_csv))
+    selected_ids = parse_sample_ids(args.sample_ids)
+    rows: list[dict[str, Any]] = []
+    completed_summaries: list[dict[str, Any]] = []
+
+    for case in case_table.to_dict(orient="records"):
+        sample_id = str(case.get("sample_id", "")).strip()
+        if selected_ids and sample_id not in selected_ids:
+            continue
+        frequency_hz = float(case.get("frequency_hz", args.frequency_hz))
+        local_nearfield = resolve_path(str(case.get("nearfield_export", "")))
+        case_out_dir = batch_out_dir / sample_id
+        if not local_nearfield.exists():
+            rows.append(
+                {
+                    "sample_id": sample_id,
+                    "frequency_hz": frequency_hz,
+                    "status": "missing_local_nearfield",
+                    "local_nearfield": display_path(local_nearfield),
+                    "out_dir": display_path(case_out_dir),
+                }
+            )
+            continue
+        case_args = argparse.Namespace(
+            local_nearfield=local_nearfield,
+            farfield=resolve_path(args.farfield),
+            out_dir=case_out_dir,
+            sample_id=sample_id,
+            frequency_hz=frequency_hz,
+        )
+        try:
+            case_summary = run(case_args)
+            rows.append(batch_summary_row(case_summary, local_nearfield, case_out_dir))
+            completed_summaries.append(case_summary)
+        except Exception as exc:  # noqa: BLE001 - batch mode should report all cases.
+            rows.append(
+                {
+                    "sample_id": sample_id,
+                    "frequency_hz": frequency_hz,
+                    "status": "failed",
+                    "local_nearfield": display_path(local_nearfield),
+                    "out_dir": display_path(case_out_dir),
+                    "error": repr(exc),
+                }
+            )
+
+    rows_df = pd.DataFrame(rows)
+    if not rows_df.empty and "best_status" in rows_df.columns:
+        rows_df["_status_rank"] = rows_df["best_status"].fillna("").map(status_rank).fillna(99)
+        rows_df = rows_df.sort_values(["_status_rank", "sample_id"]).drop(columns=["_status_rank"])
+    rows_df.to_csv(batch_out_dir / "meshsafe_huygens_batch_summary.csv", index=False, encoding="utf-8-sig")
+
+    ok_rows = rows_df.loc[rows_df.get("status", pd.Series(dtype=str)) == "ok"] if not rows_df.empty else rows_df
+    strict_or_proxy = 0
+    if not ok_rows.empty and "best_status" in ok_rows.columns:
+        strict_or_proxy = int(ok_rows["best_status"].isin(["strict_pass", "physics_proxy_pass"]).sum())
+    summary = {
+        "generated_at": now_iso(),
+        "generated_by": "code/run_cst_meshsafe_huygens_extrapolation.py --batch",
+        "case_csv": display_path(resolve_path(args.case_csv)),
+        "farfield": display_path(resolve_path(args.farfield)),
+        "out_dir": display_path(batch_out_dir),
+        "case_count_requested": int(len(rows)),
+        "case_count_completed": int(len(completed_summaries)),
+        "case_count_missing_or_failed": int(len(rows) - len(completed_summaries)),
+        "case_count_strict_or_proxy": strict_or_proxy,
+        "case_summaries": completed_summaries,
+    }
+    write_json(batch_out_dir / "meshsafe_huygens_batch_summary.json", summary)
+    write_batch_readme(batch_out_dir, rows_df, summary)
+    return summary
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -382,6 +552,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 def write_readme(out_dir: Path, summary: dict[str, Any], results: pd.DataFrame) -> None:
     best = summary["best_setting"]
     quality = summary["quality"]
+    command = (
+        "python code\\run_cst_meshsafe_huygens_extrapolation.py "
+        f"--local-nearfield {summary['local_nearfield']} "
+        f"--sample-id {summary['sample_id']} "
+        f"--out-dir {summary['out_dir']}"
+    )
     rows = []
     for row in results.itertuples(index=False):
         rows.append(
@@ -390,7 +566,7 @@ def write_readme(out_dir: Path, summary: dict[str, Any], results: pd.DataFrame) 
         )
     content = f"""# CST Mesh-Safe Huygens Extrapolation Gate
 
-This directory evaluates the first real CST local Huygens-surface probe export.
+This directory evaluates one real CST local Huygens-surface probe export.
 It consumes the `96 * 3 = 288` complex Cartesian E-field probe rows exported
 through CST `ResultTree` and compares a diagnostic equivalent-current far-field
 proxy against the existing Level 1 CST far-field reference.
@@ -438,13 +614,12 @@ proxy against the existing Level 1 CST far-field reference.
   `J ~= -E_t/eta0` and `M = -n x E_t`. They are good enough to expose data
   quality, directionality, and sign conventions, but not final report-level
   Stratton-Chu/Huygens evidence.
-- The short-dipole reference has broad/ring-like high-power regions, so the
-  single-point main-lobe error can be large even when whole-pattern correlation
-  and scale-fitted NMSE are strong. Treat `shape_pass_lobe_ambiguous` as a good
-  data-chain signal, not as a final physics pass.
-- Final G3 evidence still needs a stricter vector surface-integral operator,
-  an H-field or impedance-backed current estimate, and repetition on the
-  second Level 1 source case.
+- Broad, ring-like, or multi-peak reference patterns can make the single-point
+  main-lobe metric stricter than the whole-pattern shape metrics. Treat
+  `shape_pass_lobe_ambiguous` as a good data-chain signal, not as a final
+  physics pass.
+- Final G3 evidence still needs a stricter vector surface-integral operator
+  plus H-field or impedance-backed current estimates.
 
 ## Generated Files
 
@@ -458,7 +633,7 @@ proxy against the existing Level 1 CST far-field reference.
 ## Command
 
 ```powershell
-python code\\run_cst_meshsafe_huygens_extrapolation.py
+{command}
 ```
 """
     (out_dir / "README.md").write_text(content, encoding="utf-8")
@@ -471,11 +646,23 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     parser.add_argument("--sample-id", default="L1_short_dipole_z_1p2G")
     parser.add_argument("--frequency-hz", type=float, default=1.2e9)
+    parser.add_argument("--batch", action="store_true", help="Run every available mesh-safe case from --case-csv.")
+    parser.add_argument("--case-csv", type=Path, default=DEFAULT_CASE_CSV)
+    parser.add_argument("--batch-out-dir", type=Path, default=DEFAULT_BATCH_OUT_DIR)
+    parser.add_argument("--sample-ids", default="", help="Optional comma-separated subset for --batch.")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    if args.batch:
+        summary = run_batch(args)
+        print(f"CST mesh-safe Huygens batch gate written to {summary['out_dir']}")
+        print(
+            f"completed {summary['case_count_completed']}/{summary['case_count_requested']} cases; "
+            f"strict_or_proxy={summary['case_count_strict_or_proxy']}"
+        )
+        return 0 if summary["case_count_missing_or_failed"] == 0 else 1
     summary = run(args)
     best = summary["best_setting"]
     print(f"CST mesh-safe Huygens extrapolation written to {summary['out_dir']}")

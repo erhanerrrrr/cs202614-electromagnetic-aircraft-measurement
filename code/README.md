@@ -402,3 +402,37 @@ scale-fitted power NMSE about `6.96e-4`, while the single-point main-lobe index
 is still ambiguous for the broad short-dipole pattern. The next model work is
 operator/convention calibration and a second source-case repeat, not CST
 startup repair.
+
+## CST mesh-safe Huygens two-case batch gate addendum
+
+The second Level 1 mesh-safe source case now has the same real CST data-chain
+coverage as the first one. The half-wave dipole short-path trial uses
+`C:\csttmp\huy_h\h_half.cst`; CST finishes cleanly, the result tree contains
+the expected probe curves, and the local Huygens E-field export reaches the
+`96 * 3 = 288` row contract.
+
+Use the half-wave export and batch gate commands below after the corresponding
+short-path CST project has been solved:
+
+```powershell
+python code\export_cst_meshsafe_huygens_results.py --project C:\csttmp\huy_h\h_half.cst --sample-id L1_halfwave_dipole_z_1p2G --out-dir outputs\cst_meshsafe_huygens_result_export_halfwave --attempt-export --overwrite
+python code\run_cst_meshsafe_huygens_extrapolation.py --batch
+```
+
+Current batch status is `2/2` completed with no missing local-field exports.
+`L1_halfwave_dipole_z_1p2G` reaches `physics_proxy_pass`
+(`electric_only_outgoing`, correlation about `0.9868`, scale-fitted power NMSE
+about `1.41e-2`, main-lobe error `0 deg`). `L1_short_dipole_z_1p2G` remains a
+strong data-chain case but is labeled `shape_pass_lobe_ambiguous` because its
+broad ring-like pattern makes a single-point main-lobe metric unstable.
+
+Run the batch manually with:
+
+```powershell
+python code\run_cst_meshsafe_huygens_extrapolation.py --batch
+```
+
+The tracked batch outputs live in
+`data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/`. Large CST
+solver caches and result-tree export logs stay under `C:\csttmp` and
+`outputs/`; they are audit caches rather than Git payloads.
