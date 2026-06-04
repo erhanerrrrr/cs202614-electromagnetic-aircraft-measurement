@@ -714,6 +714,15 @@ def finite_non_eta0_impedance(value: Any) -> bool:
         return False
 
 
+def finite_float(value: Any) -> float:
+    if value in ("", None):
+        return math.nan
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return math.nan
+
+
 def real_eh_calibration_stability(rows: pd.DataFrame, j_scale_factors: list[float]) -> dict[str, Any]:
     if rows.empty or "best_real_eh_j_scale" not in rows.columns:
         return {
@@ -769,6 +778,155 @@ def real_eh_calibration_stability(rows: pd.DataFrame, j_scale_factors: list[floa
         "j_scale_ratio": float(scale_ratio),
         "j_scale_log10_span": float(log_span),
         "boundary_case_count": int(boundary_count),
+    }
+
+
+def frozen_real_eh_rule_summary(batch_out_dir: Path, case_summaries: list[dict[str, Any]]) -> dict[str, Any]:
+    requested_case_ids = [str(item.get("sample_id", "")).strip() for item in case_summaries]
+    requested_case_ids = [item for item in requested_case_ids if item]
+    requested_count = len(set(requested_case_ids))
+    frames: list[pd.DataFrame] = []
+    for case_summary in case_summaries:
+        sample_id = str(case_summary.get("sample_id", "")).strip()
+        if not sample_id:
+            continue
+        case_out_dir = resolve_path(case_summary.get("out_dir", batch_out_dir / sample_id))
+        result_path = case_out_dir / "meshsafe_huygens_extrapolation_results.csv"
+        if not result_path.exists():
+            continue
+        results = read_table(result_path)
+        if results.empty:
+            continue
+        results = results.copy()
+        results["sample_id"] = sample_id
+        frames.append(results)
+
+    empty = {
+        "status": "missing",
+        "candidate_count": 0,
+        "complete_candidate_count": 0,
+        "requested_case_count": requested_count,
+        "best_rule": {},
+        "best_rule_case_rows": [],
+    }
+    if not frames or requested_count <= 0:
+        return empty
+
+    all_results = pd.concat(frames, ignore_index=True)
+    real_eh = all_results.loc[all_results["calibration_mode"].isin(REAL_EH_CALIBRATION_MODES)].copy()
+    if real_eh.empty:
+        return empty
+
+    numeric_columns = [
+        "hfield_j_scale",
+        "correlation",
+        "scaled_power_nmse",
+        "nmse",
+        "main_lobe_error_deg",
+        "main_lobe_region_error_deg",
+        "main_lobe_region_jaccard",
+        "main_lobe_region_min_capture",
+    ]
+    for column in numeric_columns:
+        if column in real_eh.columns:
+            real_eh[column] = pd.to_numeric(real_eh[column], errors="coerce")
+    candidate_rows: list[dict[str, Any]] = []
+    for variant, group in real_eh.groupby("variant", dropna=False):
+        group = group.copy()
+        group["_status_rank"] = group["status"].map(status_rank).fillna(99)
+        case_count = int(group["sample_id"].nunique())
+        accepted_count = int(group["status"].isin(ACCEPTED_VECTOR_GATE_STATUSES).sum())
+        strict_count = int(group["status"].eq("strict_pass").sum())
+        region_count = int(group["status"].eq("region_shape_pass").sum())
+        proxy_count = int(group["status"].eq("physics_proxy_pass").sum())
+        worst = group.sort_values(["_status_rank", "scaled_power_nmse"], ascending=[False, False]).iloc[0]
+        sample_statuses = "; ".join(
+            f"{item.sample_id}:{item.status}" for item in group.sort_values("sample_id").itertuples(index=False)
+        )
+        first = group.iloc[0]
+        candidate_rows.append(
+            {
+                "variant": str(variant),
+                "variant_family": str(first.get("variant_family", "")),
+                "calibration_mode": str(first.get("calibration_mode", "")),
+                "hfield_j_scale": finite_float(first.get("hfield_j_scale", math.nan)),
+                "requested_case_count": requested_count,
+                "present_case_count": case_count,
+                "accepted_case_count": accepted_count,
+                "strict_case_count": strict_count,
+                "region_shape_case_count": region_count,
+                "physics_proxy_case_count": proxy_count,
+                "worst_status": str(worst.get("status", "")),
+                "worst_status_rank": int(worst.get("_status_rank", 99)),
+                "min_correlation": float(group["correlation"].min()),
+                "mean_correlation": float(group["correlation"].mean()),
+                "max_scaled_power_nmse": float(group["scaled_power_nmse"].max()),
+                "mean_scaled_power_nmse": float(group["scaled_power_nmse"].mean()),
+                "max_nmse": float(group["nmse"].max()),
+                "mean_nmse": float(group["nmse"].mean()),
+                "max_main_lobe_error_deg": float(group["main_lobe_error_deg"].max()),
+                "max_main_lobe_region_error_deg": float(group["main_lobe_region_error_deg"].max()),
+                "min_main_lobe_region_jaccard": float(group["main_lobe_region_jaccard"].min()),
+                "min_main_lobe_region_capture": float(group["main_lobe_region_min_capture"].min()),
+                "sample_statuses": sample_statuses,
+            }
+        )
+
+    candidates = pd.DataFrame(candidate_rows)
+    if candidates.empty:
+        return empty
+    candidates["_complete_all"] = candidates["present_case_count"].eq(requested_count)
+    candidates["_accepted_all"] = candidates["accepted_case_count"].eq(requested_count)
+    candidates = candidates.sort_values(
+        [
+            "_complete_all",
+            "_accepted_all",
+            "strict_case_count",
+            "worst_status_rank",
+            "min_correlation",
+            "max_scaled_power_nmse",
+            "max_nmse",
+            "variant",
+        ],
+        ascending=[False, False, False, True, False, True, True, True],
+    )
+    export_candidates = candidates.drop(columns=["_complete_all", "_accepted_all"])
+    export_candidates.to_csv(
+        batch_out_dir / "meshsafe_huygens_frozen_real_eh_rule_summary.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
+    best = export_candidates.iloc[0].to_dict()
+    best_variant = str(best.get("variant", ""))
+    best_cases = real_eh.loc[real_eh["variant"].astype(str).eq(best_variant)].copy()
+    best_cases = best_cases.sort_values("sample_id")
+    best_cases.to_csv(
+        batch_out_dir / "meshsafe_huygens_frozen_real_eh_rule_cases.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
+    accepted_count = int(best.get("accepted_case_count", 0))
+    strict_count = int(best.get("strict_case_count", 0))
+    present_count = int(best.get("present_case_count", 0))
+    if present_count < requested_count:
+        status = "frozen_real_eh_missing_cases"
+    elif accepted_count == requested_count and strict_count == requested_count:
+        status = "frozen_real_eh_strict_pass"
+    elif accepted_count == requested_count and strict_count > 0:
+        status = "frozen_real_eh_mixed_strict_region_pass"
+    elif accepted_count == requested_count:
+        status = "frozen_real_eh_region_or_proxy_pass"
+    elif accepted_count > 0:
+        status = "frozen_real_eh_partial_pass"
+    else:
+        status = "frozen_real_eh_diagnostic_only"
+    return {
+        "status": status,
+        "candidate_count": int(export_candidates.shape[0]),
+        "complete_candidate_count": int(export_candidates["present_case_count"].eq(requested_count).sum()),
+        "requested_case_count": requested_count,
+        "best_rule": candidate_snapshot(best),
+        "best_rule_case_rows": [candidate_snapshot(item) for item in best_cases.to_dict(orient="records")],
     }
 
 
@@ -883,10 +1041,23 @@ cross-case pass/fail picture.
 - Best real E/H variant families: `{summary['best_real_eh_variant_families']}`
 - Best real E/H J-scale ratio: `{summary['best_real_eh_j_scale_ratio']:.4g}`
 - Best real E/H boundary cases: `{summary['case_count_best_real_eh_j_scale_boundary']}`
+- Frozen real E/H rule status: `{summary.get('frozen_real_eh_rule_status', 'missing')}`
+- Frozen real E/H best rule: `{summary.get('frozen_real_eh_best_rule', {}).get('variant', '')}`
+- Frozen real E/H accepted cases: `{summary.get('frozen_real_eh_best_rule', {}).get('accepted_case_count', 0)}/{summary.get('frozen_real_eh_best_rule', {}).get('requested_case_count', 0)}`
+- Frozen real E/H strict cases: `{summary.get('frozen_real_eh_best_rule', {}).get('strict_case_count', 0)}/{summary.get('frozen_real_eh_best_rule', {}).get('requested_case_count', 0)}`
 
 ## Case Table
 
 {table}
+## Frozen Real E/H Rule Gate
+
+`meshsafe_huygens_frozen_real_eh_rule_summary.csv` ranks each single real E/H
+candidate under the stricter rule that the same `variant`, plus/minus
+convention, and J-scale must be used for every completed Level 1 case. This is
+not a replacement for the per-case best table; it is a guard against accidental
+source-by-source tuning. `meshsafe_huygens_frozen_real_eh_rule_cases.csv`
+records the per-case rows for the selected frozen candidate.
+
 ## Reading
 
 This is a batch data-chain gate, not the final Huygens physics proof. The
@@ -901,11 +1072,12 @@ operator and source-family cross-checks. The scalar impedance scan remains
 visible because it is useful as a calibration baseline against the Level 1
 far-field reference.
 
-The best real E/H branches should not be treated as a final source-independent
-operator until the J-scale values and plus/minus convention are stable across
-source families. A strict or proxy pass with
-`cross_case_sign_and_scale_disagreement` is useful algorithm evidence, but it
-still calls for a broader CST source-family gate before final wording.
+The per-case best real E/H branches should not be treated as a final
+source-independent operator until the J-scale values and plus/minus convention
+are stable across source families. The frozen real E/H rule gate narrows the
+question: if a single candidate passes every current case, the next task is to
+explain why that frozen sign/J-scale is physically acceptable and then test it
+on a broader CST source-family set before final wording.
 
 ## Command
 
@@ -1007,6 +1179,7 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
             ok_rows["best_impedance_factor_to_eta0"].map(finite_non_eta0_impedance).fillna(False).sum()
         )
     real_eh_stability = real_eh_calibration_stability(ok_rows, eh_j_scale_factors)
+    frozen_real_eh = frozen_real_eh_rule_summary(batch_out_dir, completed_summaries)
     summary = {
         "generated_at": now_iso(),
         "generated_by": "code/run_cst_meshsafe_huygens_extrapolation.py --batch",
@@ -1035,6 +1208,11 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
         "best_real_eh_j_scale_log10_span": real_eh_stability["j_scale_log10_span"],
         "case_count_best_real_eh_j_scale_boundary": real_eh_stability["boundary_case_count"],
         "case_count_best_non_eta0_impedance": best_non_eta0_impedance,
+        "frozen_real_eh_rule_status": frozen_real_eh["status"],
+        "frozen_real_eh_candidate_count": frozen_real_eh["candidate_count"],
+        "frozen_real_eh_complete_candidate_count": frozen_real_eh["complete_candidate_count"],
+        "frozen_real_eh_best_rule": frozen_real_eh["best_rule"],
+        "frozen_real_eh_best_rule_cases": frozen_real_eh["best_rule_case_rows"],
         "case_summaries": completed_summaries,
     }
     write_json(batch_out_dir / "meshsafe_huygens_batch_summary.json", summary)

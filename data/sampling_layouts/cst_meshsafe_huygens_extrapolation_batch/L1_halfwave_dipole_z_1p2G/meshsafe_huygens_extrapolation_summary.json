@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-04T10:36:02+00:00",
+  "generated_at": "2026-06-04T10:50:47+00:00",
   "generated_by": "code/run_cst_meshsafe_huygens_extrapolation.py",
   "local_nearfield": "data\\cst_exports\\level1_meshsafe_huygens\\L1_halfwave_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv",
   "local_hfield": "data\\cst_exports\\level1_meshsafe_huygens\\L1_halfwave_dipole_z_1p2G_level1_local_sphere_r0p35_local_hfield.csv",

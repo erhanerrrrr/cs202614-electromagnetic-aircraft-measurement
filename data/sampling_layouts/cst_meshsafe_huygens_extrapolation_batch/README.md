@@ -25,6 +25,10 @@ cross-case pass/fail picture.
 - Best real E/H variant families: `['eh_love_equivalence_minus', 'eh_love_equivalence_plus']`
 - Best real E/H J-scale ratio: `2.667`
 - Best real E/H boundary cases: `0`
+- Frozen real E/H rule status: `frozen_real_eh_mixed_strict_region_pass`
+- Frozen real E/H best rule: `eh_love_equivalence_minus_j96`
+- Frozen real E/H accepted cases: `2/2`
+- Frozen real E/H strict cases: `1/2`
 
 ## Case Table
 
@@ -32,6 +36,15 @@ cross-case pass/fail picture.
 |---|---:|---:|---|---|---|---:|---:|---:|---:|---:|---:|
 | L1_halfwave_dipole_z_1p2G | True | 36/36 | strict_pass | eh_love_equivalence_minus_j96 | strict_pass:eh_love_equivalence_minus_j96/J=96.0 | 1 | 0.9991 | 7.1320e-04 | 0.00 | 0.00 | 0.924 |
 | L1_short_dipole_z_1p2G | True | 36/36 | strict_pass | eh_love_equivalence_plus_j256 | strict_pass:eh_love_equivalence_plus_j256/J=256.0 | 1 | 0.9985 | 9.9532e-04 | 0.00 | 0.00 | 0.902 |
+
+## Frozen Real E/H Rule Gate
+
+`meshsafe_huygens_frozen_real_eh_rule_summary.csv` ranks each single real E/H
+candidate under the stricter rule that the same `variant`, plus/minus
+convention, and J-scale must be used for every completed Level 1 case. This is
+not a replacement for the per-case best table; it is a guard against accidental
+source-by-source tuning. `meshsafe_huygens_frozen_real_eh_rule_cases.csv`
+records the per-case rows for the selected frozen candidate.
 
 ## Reading
 
@@ -47,11 +60,12 @@ operator and source-family cross-checks. The scalar impedance scan remains
 visible because it is useful as a calibration baseline against the Level 1
 far-field reference.
 
-The best real E/H branches should not be treated as a final source-independent
-operator until the J-scale values and plus/minus convention are stable across
-source families. A strict or proxy pass with
-`cross_case_sign_and_scale_disagreement` is useful algorithm evidence, but it
-still calls for a broader CST source-family gate before final wording.
+The per-case best real E/H branches should not be treated as a final
+source-independent operator until the J-scale values and plus/minus convention
+are stable across source families. The frozen real E/H rule gate narrows the
+question: if a single candidate passes every current case, the next task is to
+explain why that frozen sign/J-scale is physically acceptable and then test it
+on a broader CST source-family set before final wording.
 
 ## Command
 

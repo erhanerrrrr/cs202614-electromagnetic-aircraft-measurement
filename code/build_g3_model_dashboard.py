@@ -53,11 +53,15 @@ def format_float(value: Any, digits: int = 4) -> str:
 def status_rank(status: str) -> int:
     return {
         "strict_pass": 0,
+        "real_eh_strict_batch_pass": 1,
+        "real_eh_frozen_rule_strict_pass": 1,
         "physics_proxy_pass": 1,
         "corr_pass_nmse_near": 1,
+        "real_eh_frozen_rule_region_pass": 2,
         "impedance_region_proxy_batch_pass": 2,
         "region_proxy_batch_pass": 2,
         "region_shape_pass": 2,
+        "real_eh_strict_batch_calibration_needed": 3,
         "stable_impedance_candidate": 3,
         "corr_lobe_pass_nmse_open": 2,
         "reference_match": 3,
@@ -429,6 +433,15 @@ def build_rows() -> list[dict[str, Any]]:
         real_eh_calibration_status = str(
             meshsafe_batch.get("real_eh_operator_calibration_status", "unknown")
         )
+        frozen_real_eh_status = str(meshsafe_batch.get("frozen_real_eh_rule_status", "missing"))
+        frozen_real_eh_rule = meshsafe_batch.get("frozen_real_eh_best_rule", {})
+        if not isinstance(frozen_real_eh_rule, dict):
+            frozen_real_eh_rule = {}
+        frozen_rule_requested = int(frozen_real_eh_rule.get("requested_case_count", 0) or 0)
+        frozen_rule_accepted = int(frozen_real_eh_rule.get("accepted_case_count", 0) or 0)
+        frozen_rule_strict = int(frozen_real_eh_rule.get("strict_case_count", 0) or 0)
+        frozen_rule_variant = str(frozen_real_eh_rule.get("variant", ""))
+        frozen_rule_j_scale = frozen_real_eh_rule.get("hfield_j_scale", "")
         best_real_eh_j_scales = meshsafe_batch.get("best_real_eh_j_scale_values", [])
         best_real_eh_families = meshsafe_batch.get("best_real_eh_variant_families", [])
         best_real_eh_j_ratio = meshsafe_batch.get("best_real_eh_j_scale_ratio", math.nan)
@@ -454,6 +467,13 @@ def build_rows() -> list[dict[str, Any]]:
             batch_status = (
                 "real_eh_strict_batch_pass"
                 if real_eh_calibration_status == "stable_for_current_level1_cases"
+                else "real_eh_frozen_rule_strict_pass"
+                if frozen_real_eh_status == "frozen_real_eh_strict_pass"
+                else "real_eh_frozen_rule_region_pass"
+                if frozen_real_eh_status in (
+                    "frozen_real_eh_mixed_strict_region_pass",
+                    "frozen_real_eh_region_or_proxy_pass",
+                )
                 else "real_eh_strict_batch_calibration_needed"
             )
         elif completed == requested and requested > 0 and pass_like == requested:
@@ -464,12 +484,17 @@ def build_rows() -> list[dict[str, Any]]:
             batch_status = "pending_source"
         else:
             batch_status = "diagnostic_only"
-        max_scaled_nmse = max((finite_float(item.get("scaled_power_nmse")) for item in case_rows), default=math.nan)
-        max_region_error = max(
-            (finite_float(item.get("main_lobe_region_error_deg")) for item in case_rows),
-            default=math.nan,
-        )
-        min_corr = min((finite_float(item.get("correlation")) for item in case_rows), default=math.nan)
+        if batch_status.startswith("real_eh_frozen_rule") and frozen_real_eh_rule:
+            max_scaled_nmse = finite_float(frozen_real_eh_rule.get("max_scaled_power_nmse"))
+            max_region_error = finite_float(frozen_real_eh_rule.get("max_main_lobe_region_error_deg"))
+            min_corr = finite_float(frozen_real_eh_rule.get("min_correlation"))
+        else:
+            max_scaled_nmse = max((finite_float(item.get("scaled_power_nmse")) for item in case_rows), default=math.nan)
+            max_region_error = max(
+                (finite_float(item.get("main_lobe_region_error_deg")) for item in case_rows),
+                default=math.nan,
+            )
+            min_corr = min((finite_float(item.get("correlation")) for item in case_rows), default=math.nan)
         best_settings = "; ".join(
             (
                 f"{item.get('sample_id', '')}:{item.get('status', '')}/{item.get('variant', '')}"
@@ -479,6 +504,13 @@ def build_rows() -> list[dict[str, Any]]:
             )
             for item in case_rows
         )
+        if frozen_rule_variant:
+            best_settings = (
+                f"{best_settings}; frozen:{frozen_real_eh_status}/{frozen_rule_variant}"
+                f"/J={format_float(frozen_rule_j_scale, 4)}"
+                f"/accepted={frozen_rule_accepted}/{frozen_rule_requested}"
+                f"/strict={frozen_rule_strict}/{frozen_rule_requested}"
+            )
         rows.append(
             row(
                 category="trusted_sanity",
@@ -502,11 +534,15 @@ def build_rows() -> list[dict[str, Any]]:
                     f"{best_real_hfield_count}/{requested} best settings currently select a real-H branch, "
                     f"with J-scale values {best_real_eh_j_scale_text}, families {best_real_eh_family_text}, "
                     f"ratio {format_float(best_real_eh_j_ratio, 4)}, and calibration status "
-                    f"{real_eh_calibration_status}. This is now an operator-stability question rather than a CST export blocker."
+                    f"{real_eh_calibration_status}. The frozen-rule gate selects {frozen_rule_variant or 'no candidate'} "
+                    f"with status {frozen_real_eh_status}, accepted {frozen_rule_accepted}/{frozen_rule_requested}, "
+                    f"strict {frozen_rule_strict}/{frozen_rule_requested}, min Corr "
+                    f"{format_float(frozen_real_eh_rule.get('min_correlation'))}, and max scaled NMSE "
+                    f"{format_float(frozen_real_eh_rule.get('max_scaled_power_nmse'))}. This is now an operator-stability "
+                    "question rather than a CST export blocker."
                 ),
                 next_action=(
-                    "Close the cross-source real E/H calibration gate: decide whether the plus/minus convention "
-                    "and J-scale can be tied to source geometry, then test the accepted rule on a broader CST "
+                    "Promote the frozen real E/H candidate into a geometry/physics rule, then test the accepted rule on a broader CST "
                     "source-family set before propagating it to the 13 m measurement shell."
                 ),
             )
@@ -649,6 +685,8 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             & status["status"].isin(
                 [
                     "real_eh_strict_batch_pass",
+                    "real_eh_frozen_rule_strict_pass",
+                    "real_eh_frozen_rule_region_pass",
                     "real_eh_strict_batch_calibration_needed",
                     "impedance_region_proxy_batch_pass",
                     "region_proxy_batch_pass",
@@ -669,6 +707,12 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             & status["status"].eq("real_eh_strict_batch_calibration_needed")
         ).any()
     )
+    frozen_real_eh_needs_validation = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_real_cst_batch")
+            & status["status"].isin(["real_eh_frozen_rule_strict_pass", "real_eh_frozen_rule_region_pass"])
+        ).any()
+    )
     actions = [
         {
             "priority": 1,
@@ -676,13 +720,14 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             "gate": "meshsafe_huygens_physics",
             "action": "Close the real E/H Huygens operator-stability gate: tie the plus/minus convention and J-scale normalization to source geometry, then propagate the accepted rule toward the 13 m shell.",
             "trigger": (
+                "Mesh-safe real CST batch now has a frozen real E/H candidate accepted by every current Level 1 case; it still needs a physics/geometry explanation and broader source-family validation." if frozen_real_eh_needs_validation else
                 "Mesh-safe real CST batch gate now reaches strict/proxy status with real E/H currents, but the best J-scale/sign is source-dependent." if real_eh_calibration_needed else
                 "Mesh-safe real CST batch gate is region/proxy ready, but the stability gate still shows "
                 "source-dependent impedance sensitivity." if impedance_extension_needed else
                 "Mesh-safe real CST batch gate is region/proxy ready and the impedance stability gate is available."
             ),
             "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv and data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/",
-            "proof_to_close": "Batch summary reports H-field loaded for all required cases, best branches use real E/H currents, and real_eh_operator_calibration_status is stable_for_current_level1_cases or explained by a geometry rule.",
+            "proof_to_close": "Batch summary reports H-field loaded for all required cases, best branches use real E/H currents, and frozen_real_eh_rule_status is strict/accepted with a documented geometry rule or real_eh_operator_calibration_status is stable_for_current_level1_cases.",
             "blocked_by": "" if meshsafe_ready else "Mesh-safe batch gate",
         },
         {
@@ -757,10 +802,15 @@ def write_markdown(status: pd.DataFrame, actions: pd.DataFrame, summary: dict[st
         )
     meshsafe_rows = status.loc[status["artifact"] == "meshsafe_huygens_real_cst_batch"]
     if not meshsafe_rows.empty:
+        meshsafe_status = str(meshsafe_rows.iloc[0].get("status", ""))
+        frozen_note = (
+            " A frozen real E/H candidate is now accepted by every current Level 1 case, so the remaining bottleneck is explaining and validating that frozen operator."
+            if meshsafe_status.startswith("real_eh_frozen_rule")
+            else " The current bottleneck is cross-source J-scale/sign stability before the operator is safe to propagate."
+        )
         lines.append(
             "- Mesh-safe Huygens is no longer blocked at CST export: both Level 1 E/H local-field paths are loaded, "
-            "and the best batch branches now use real H-field currents. The current bottleneck is cross-source "
-            "J-scale/sign stability before the operator is safe to propagate."
+            f"and the best batch branches now use real H-field currents.{frozen_note}"
         )
 
     lines.extend(

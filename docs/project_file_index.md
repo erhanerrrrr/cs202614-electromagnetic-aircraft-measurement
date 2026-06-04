@@ -366,3 +366,23 @@ Tracked entries:
 | `code/run_cst_meshsafe_huygens_extrapolation.py` | Adds `--eh-j-scale-factors`, calibrated real E/H variants, and `real_eh_operator_calibration_status`. |
 | `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/` | Refreshed two-case batch: `2/2` H-field loaded, `2/2` best real-H branches, `2/2` strict/proxy, best J scales `96.0` and `256.0`. |
 | `outputs/g3_model_dashboard/` | Dashboard now reports `real_eh_strict_batch_calibration_needed` and makes cross-source J-scale/sign stability the first next action. |
+
+## 2026-06-04 CST mesh-safe Huygens frozen real E/H rule gate
+
+S40 adds a stricter cross-case diagnostic: a single real E/H candidate must use
+the same plus/minus convention and the same J-scale for every completed Level 1
+case. The best frozen candidate is `eh_love_equivalence_minus_j96`, accepted for
+`2/2` cases and strict for `1/2`, with minimum correlation `0.9988956628` and
+maximum scaled power NMSE `7.303417569844e-04`. This moves the mesh-safe Huygens
+line from free per-source calibration toward a frozen operator candidate that
+still needs a geometry/physics explanation and broader source-family validation.
+
+Tracked entries:
+
+| File/directory | Meaning |
+|---|---|
+| `docs/stage_notes/40_g3_meshsafe_huygens_frozen_real_eh_rule.md` | S40 note covering the frozen real E/H rule gate and dashboard status. |
+| `code/run_cst_meshsafe_huygens_extrapolation.py` | Adds the frozen real E/H rule aggregation and summary outputs. |
+| `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/meshsafe_huygens_frozen_real_eh_rule_summary.csv` | Ranked frozen real E/H candidates across current Level 1 cases. |
+| `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/meshsafe_huygens_frozen_real_eh_rule_cases.csv` | Per-case rows for the selected frozen candidate. |
+| `outputs/g3_model_dashboard/` | Dashboard now reports `real_eh_frozen_rule_region_pass` and makes physics/geometry validation of the frozen candidate the next gate. |
