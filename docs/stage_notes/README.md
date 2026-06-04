@@ -47,6 +47,7 @@
 | S38 | `38_g3_meshsafe_huygens_full_hfield_coverage.md` | G3 mesh-safe Huygens full Level 1 H-field coverage and real E/H acceptance gate |
 | S39 | `39_g3_meshsafe_huygens_real_eh_jscale_gate.md` | G3 mesh-safe Huygens real E/H J-scale gate and cross-source operator-stability status |
 | S40 | `40_g3_meshsafe_huygens_frozen_real_eh_rule.md` | G3 mesh-safe Huygens frozen real E/H rule gate and dashboard status |
+| S41 | `41_g3_huygens_rotation_covariance.md` | G3 Huygens frozen real E/H rotation-covariance gate and independent CST source-family boundary |
 
 后续规则：
 

@@ -2,9 +2,10 @@
   "generated_by": "code/build_g3_model_dashboard.py",
   "status_counts": {
     "diagnostic_only": 4,
-    "strict_pass": 2,
     "corr_pass_nmse_near": 2,
+    "strict_pass": 2,
     "pending_source": 1,
+    "rotation_covariance_strict_pass": 1,
     "real_eh_frozen_rule_region_pass": 1,
     "cross_case_impedance_disagreement": 1
   },

@@ -386,3 +386,30 @@ Tracked entries:
 | `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/meshsafe_huygens_frozen_real_eh_rule_summary.csv` | Ranked frozen real E/H candidates across current Level 1 cases. |
 | `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/meshsafe_huygens_frozen_real_eh_rule_cases.csv` | Per-case rows for the selected frozen candidate. |
 | `outputs/g3_model_dashboard/` | Dashboard now reports `real_eh_frozen_rule_region_pass` and makes physics/geometry validation of the frozen candidate the next gate. |
+
+## 2026-06-04 CST mesh-safe Huygens rotation covariance gate
+
+S41 checks the frozen real E/H candidate `eh_love_equivalence_minus_j96` under
+rigid rotations of the measured local CST E/H surface fields. The gate uses the
+unrotated Huygens prediction evaluated at inverse-rotated far-field directions
+as the comparison reference, so it proves coordinate covariance of the
+implementation. It does not replace independent CST x/y/tilted/off-axis source
+family validation.
+
+Current result: `rotation_covariance_strict_pass`. The two current real E/H
+base cases remain accepted against CST far fields, and the rotation suite gives
+`18/18` strict covariance passes across `9` rigid rotations per case. The
+maximum covariance scaled power NMSE is `4.038192571773e-29`; the maximum
+normalized absolute error is `2.742250870824e-14`; the maximum region-lobe error
+is `1.207418269726e-06 deg`.
+
+Tracked entries:
+
+| File/directory | Meaning |
+|---|---|
+| `docs/stage_notes/41_g3_huygens_rotation_covariance.md` | S41 note covering the rotation-covariance gate, metrics, and remaining CST source-family boundary. |
+| `code/run_cst_huygens_rotation_covariance.py` | Rotation-covariance stress test for the frozen real E/H Huygens rule. |
+| `data/sampling_layouts/cst_meshsafe_huygens_rotation_covariance/huygens_rotation_covariance_summary.json` | Summary status and headline covariance metrics. |
+| `data/sampling_layouts/cst_meshsafe_huygens_rotation_covariance/huygens_rotation_base_cst_agreement.csv` | Base real CST agreement rows for the frozen candidate. |
+| `data/sampling_layouts/cst_meshsafe_huygens_rotation_covariance/huygens_rotation_covariance_cases.csv` | Per-case, per-rotation covariance metrics. |
+| `outputs/g3_model_dashboard/` | Dashboard now includes `meshsafe_huygens_rotation_covariance = rotation_covariance_strict_pass`. |

@@ -55,18 +55,22 @@ def status_rank(status: str) -> int:
         "strict_pass": 0,
         "real_eh_strict_batch_pass": 1,
         "real_eh_frozen_rule_strict_pass": 1,
+        "rotation_covariance_strict_pass": 1,
         "physics_proxy_pass": 1,
         "corr_pass_nmse_near": 1,
         "real_eh_frozen_rule_region_pass": 2,
+        "rotation_covariance_pass": 2,
         "impedance_region_proxy_batch_pass": 2,
         "region_proxy_batch_pass": 2,
         "region_shape_pass": 2,
+        "rotation_covariance_near": 3,
         "real_eh_strict_batch_calibration_needed": 3,
         "stable_impedance_candidate": 3,
         "corr_lobe_pass_nmse_open": 2,
         "reference_match": 3,
         "shape_pass_lobe_ambiguous": 4,
         "diagnostic_only": 4,
+        "rotation_covariance_diagnostic": 4,
         "needs_impedance_extension": 5,
         "cross_case_impedance_disagreement": 5,
         "pending_source": 5,
@@ -557,6 +561,60 @@ def build_rows() -> list[dict[str, Any]]:
             )
         )
 
+    rotation_covariance_path = (
+        ROOT
+        / "data"
+        / "sampling_layouts"
+        / "cst_meshsafe_huygens_rotation_covariance"
+        / "huygens_rotation_covariance_summary.json"
+    )
+    rotation_covariance = read_json(rotation_covariance_path)
+    if rotation_covariance:
+        rows.append(
+            row(
+                category="trusted_sanity",
+                artifact="meshsafe_huygens_rotation_covariance",
+                scope=(
+                    f"{rotation_covariance.get('base_case_count', 0)} real E/H base cases x "
+                    f"{rotation_covariance.get('rotation_count', 0)} rigid rotations"
+                ),
+                evidence_path=rotation_covariance_path,
+                command="python code\\run_cst_huygens_rotation_covariance.py",
+                best_setting=(
+                    f"{rotation_covariance.get('variant', '')}; "
+                    f"strict={rotation_covariance.get('covariance_strict_count', 0)}/"
+                    f"{rotation_covariance.get('covariance_test_count', 0)}; "
+                    f"base_accepted={rotation_covariance.get('base_real_cst_accepted_count', 0)}/"
+                    f"{rotation_covariance.get('base_case_count', 0)}"
+                ),
+                status=str(rotation_covariance.get("status", "missing")),
+                trust_level="operator_covariance_not_new_cst_source",
+                min_correlation=rotation_covariance.get("min_covariance_correlation"),
+                max_nmse=rotation_covariance.get("max_covariance_scaled_power_nmse"),
+                max_main_lobe_error_deg=rotation_covariance.get("max_covariance_region_error_deg"),
+                sensor_count=96,
+                interpretation=(
+                    "The frozen real E/H Huygens candidate is now checked under rigid rotations of the measured "
+                    "CST local E/H surface fields. This proves the Python current extraction and far-field "
+                    "operator are coordinate-covariant for the current vector rule; it does not replace real "
+                    "CST x/y, tilted, off-axis, or multi-source exports."
+                ),
+                next_action=(
+                    "Keep this as the prerequisite geometry-rule evidence, then add true CST source-family "
+                    "exports to test the frozen rule against independent electromagnetic solves."
+                ),
+            )
+        )
+    else:
+        rows.append(
+            missing_row(
+                "trusted_sanity",
+                "meshsafe_huygens_rotation_covariance",
+                rotation_covariance_path,
+                "python code\\run_cst_huygens_rotation_covariance.py",
+            )
+        )
+
     impedance_stability_path = (
         ROOT
         / "data"
@@ -713,21 +771,32 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             & status["status"].isin(["real_eh_frozen_rule_strict_pass", "real_eh_frozen_rule_region_pass"])
         ).any()
     )
+    rotation_covariance_ready = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_rotation_covariance")
+            & status["status"].isin(["rotation_covariance_strict_pass", "rotation_covariance_pass"])
+        ).any()
+    )
     actions = [
         {
             "priority": 1,
             "owner": "Independent workflow",
             "gate": "meshsafe_huygens_physics",
-            "action": "Close the real E/H Huygens operator-stability gate: tie the plus/minus convention and J-scale normalization to source geometry, then propagate the accepted rule toward the 13 m shell.",
+            "action": (
+                "Close the real E/H Huygens operator-stability gate: tie the plus/minus convention and J-scale "
+                "normalization to source geometry, then test true CST x/y, tilted, off-axis, or multi-source cases "
+                "before propagating the accepted rule toward the 13 m shell."
+            ),
             "trigger": (
+                "Mesh-safe real CST batch has a frozen real E/H candidate and the rotation-covariance gate passes; the remaining proof is independent CST source-family validation." if frozen_real_eh_needs_validation and rotation_covariance_ready else
                 "Mesh-safe real CST batch now has a frozen real E/H candidate accepted by every current Level 1 case; it still needs a physics/geometry explanation and broader source-family validation." if frozen_real_eh_needs_validation else
                 "Mesh-safe real CST batch gate now reaches strict/proxy status with real E/H currents, but the best J-scale/sign is source-dependent." if real_eh_calibration_needed else
                 "Mesh-safe real CST batch gate is region/proxy ready, but the stability gate still shows "
                 "source-dependent impedance sensitivity." if impedance_extension_needed else
                 "Mesh-safe real CST batch gate is region/proxy ready and the impedance stability gate is available."
             ),
-            "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv and data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/",
-            "proof_to_close": "Batch summary reports H-field loaded for all required cases, best branches use real E/H currents, and frozen_real_eh_rule_status is strict/accepted with a documented geometry rule or real_eh_operator_calibration_status is stable_for_current_level1_cases.",
+            "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv and data/sampling_layouts/cst_meshsafe_huygens_*/",
+            "proof_to_close": "Batch summary reports H-field loaded for all required cases, frozen_real_eh_rule_status is accepted, rotation_covariance status is pass, and independent CST source-family rows keep the same frozen rule accepted.",
             "blocked_by": "" if meshsafe_ready else "Mesh-safe batch gate",
         },
         {
@@ -811,6 +880,12 @@ def write_markdown(status: pd.DataFrame, actions: pd.DataFrame, summary: dict[st
         lines.append(
             "- Mesh-safe Huygens is no longer blocked at CST export: both Level 1 E/H local-field paths are loaded, "
             f"and the best batch branches now use real H-field currents.{frozen_note}"
+        )
+    covariance_rows = status.loc[status["artifact"] == "meshsafe_huygens_rotation_covariance"]
+    if not covariance_rows.empty and str(covariance_rows.iloc[0].get("status", "")).startswith("rotation_covariance"):
+        lines.append(
+            "- The frozen Huygens rule also has a rotation-covariance operator check; treat it as geometry-rule evidence, "
+            "not as a substitute for independent CST source-family solves."
         )
 
     lines.extend(

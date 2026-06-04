@@ -579,3 +579,22 @@ Current E/H status:
 This means CST is currently runnable on the mesh-safe path. The active blocker
 is not CST startup or solver failure; it is turning the now-available real E/H
 probe data into a report-level vector surface-integral proof.
+
+## CST mesh-safe Huygens rotation-covariance addendum
+
+The frozen real E/H candidate can now be checked for coordinate covariance:
+
+```powershell
+python code\run_cst_huygens_rotation_covariance.py
+python code\build_g3_model_dashboard.py
+```
+
+Current result: `rotation_covariance_strict_pass` for
+`eh_love_equivalence_minus_j96`. The gate uses `2` real E/H base CST cases and
+`9` rigid rotations per case, giving `18/18` strict covariance passes. The
+maximum covariance scaled power NMSE is about `4.04e-29`, and the maximum
+normalized absolute error is about `2.74e-14`.
+
+This proves the implementation rotates consistently as a vector surface
+operator. It is still not an independent CST source-family proof; the remaining
+CST work is x/y/tilted/off-axis/multi-source export under the same frozen rule.
