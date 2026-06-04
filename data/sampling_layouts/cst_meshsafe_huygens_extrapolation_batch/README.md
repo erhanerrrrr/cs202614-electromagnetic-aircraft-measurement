@@ -13,17 +13,19 @@ cross-case pass/fail picture.
 - Best strict/physics-proxy cases: `0`
 - Best region-shape cases: `2`
 - Best strict/physics-proxy/region cases: `2`
-- Cases with real H-field loaded: `1`
+- Cases with real H-field loaded: `2`
+- Cases with accepted real-H candidates: `2`
+- Cases with accepted real E/H candidates: `2`
 - Best variants using real H-field: `0`
 - Impedance scan enabled: `True`
 - Best non-eta0 impedance cases: `2`
 
 ## Case Table
 
-| Sample | H-field | Best status | Best variant | Eta/eta0 | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |
-|---|---:|---|---|---:|---:|---:|---:|---:|---:|
-| L1_halfwave_dipole_z_1p2G | False | region_shape_pass | outgoing_equivalence_minus_eta0p25 | 0.25 | 0.9990 | 8.4827e-04 | 19.99 | 0.00 | 0.910 |
-| L1_short_dipole_z_1p2G | True | region_shape_pass | outgoing_equivalence_minus_eta0p25 | 0.25 | 0.9989 | 6.9621e-04 | 139.52 | 0.00 | 0.919 |
+| Sample | H-field | Real E/H accepted | Best status | Best variant | Best real E/H | Eta/eta0 | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |
+|---|---:|---:|---|---|---|---:|---:|---:|---:|---:|---:|
+| L1_halfwave_dipole_z_1p2G | True | 2/2 | region_shape_pass | outgoing_equivalence_minus_eta0p25 | region_shape_pass:eh_love_equivalence_minus | 0.25 | 0.9990 | 8.4827e-04 | 19.99 | 0.00 | 0.910 |
+| L1_short_dipole_z_1p2G | True | 2/2 | region_shape_pass | outgoing_equivalence_minus_eta0p25 | region_shape_pass:eh_love_equivalence_minus | 0.25 | 0.9989 | 6.9621e-04 | 139.52 | 0.00 | 0.919 |
 
 ## Reading
 

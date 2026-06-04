@@ -543,7 +543,7 @@ real E/H variants based on `J = n x H_t` and `M = -n x E_t`.
 
 ## CST mesh-safe Huygens real E/H addendum
 
-The short-dipole local H-field CSV now exists:
+Both Level 1 mesh-safe local H-field CSVs now exist:
 
 ```powershell
 python code\run_cst_meshsafe_huygens_extrapolation.py
@@ -554,14 +554,17 @@ Current E/H status:
 
 - `L1_short_dipole_z_1p2G` loads real E-field and H-field rows, `96 * 3 = 288`
   components for each field.
-- The measured tangential E/H impedance is about `425.36 ohm`, or `1.129 eta0`.
+- `L1_halfwave_dipole_z_1p2G` also loads matched real E-field and H-field rows,
+  again `96 * 3 = 288` components for each field.
+- The measured tangential E/H impedances are about `425.36 ohm` (`1.129 eta0`)
+  for the short dipole and `370.38 ohm` (`0.983 eta0`) for the half-wave dipole.
 - The real E/H branch `eh_love_equivalence_minus` reaches `region_shape_pass`
-  with correlation about `0.9989`, scale-fitted NMSE about `6.96e-04`, and
-  region-lobe error `0 deg`.
-- The batch gate completes `2/2` cases, with `1/2` H-field loaded. The best row
-  still selects the scalar impedance proxy `outgoing_equivalence_minus_eta0p25`,
-  so the next algorithm work is stricter Huygens/Stratton-Chu normalization and
-  sign-convention calibration.
+  for both cases, with correlations about `0.9989` and region-lobe error `0 deg`.
+- The batch gate completes `2/2` cases, with `2/2` H-field loaded and `2/2`
+  accepted real E/H candidate sets. The best row still selects the scalar
+  impedance proxy `outgoing_equivalence_minus_eta0p25`, so the next algorithm
+  work is stricter Huygens/Stratton-Chu normalization and sign-convention
+  calibration.
 
 This means CST is currently runnable on the mesh-safe path. The active blocker
 is not CST startup or solver failure; it is turning the now-available real E/H

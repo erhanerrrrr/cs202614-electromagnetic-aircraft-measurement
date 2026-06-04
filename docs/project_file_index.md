@@ -330,3 +330,23 @@ Huygens 面积分核、符号约定和幅度归一化的算法定标，而不是
 | `code/run_cst_meshsafe_huygens_extrapolation.py` | 自动加载 H-field、E/H 几何对齐、真实双场等效电流和 batch 汇总 |
 | `data/sampling_layouts/cst_meshsafe_huygens_extrapolation/` | 短偶极子单例 E/H 外推门控 |
 | `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/` | 两例 batch 门控；`2/2` completed，`1/2` H-field loaded，`0/2` best real-H |
+
+## 2026-06-04 CST mesh-safe Huygens full H-field coverage
+
+S38 closes the remaining Level 1 mesh-safe H-field coverage gap. The half-wave
+case now has a solved short-path CST H-field project, a ResultTree-exported
+local H-field CSV, and a refreshed two-case Python batch gate. CST is therefore
+not the current mesh-safe Huygens blocker; the active blocker is calibration of
+the real E/H Love-equivalence operator against the scalar `eta_eff` proxy and
+the CST far-field reference.
+
+Tracked entries:
+
+| File/directory | Meaning |
+|---|---|
+| `docs/stage_notes/38_g3_meshsafe_huygens_full_hfield_coverage.md` | S38 note covering half-wave H-field solve/export, sample-id export guard, and real E/H acceptance status. |
+| `data/cst_exports/level1_meshsafe_huygens/L1_halfwave_dipole_z_1p2G_level1_local_sphere_r0p35_local_hfield.csv` | Half-wave real CST local H-field probe CSV, `96 * 3 = 288` rows. |
+| `code/export_cst_meshsafe_huygens_results.py` | Adds project-path based sample-id inference when `--sample-id` is omitted. |
+| `code/run_cst_meshsafe_huygens_extrapolation.py` | Adds `vector_gate` summary and batch counts for accepted real-H and real E/H candidates. |
+| `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/` | Refreshed two-case batch: `2/2` H-field loaded, `2/2` real E/H accepted, `0/2` best settings using real-H. |
+| `outputs/g3_model_dashboard/` | Dashboard now states that the current mesh-safe Huygens task is E/H operator calibration, not CST export recovery. |

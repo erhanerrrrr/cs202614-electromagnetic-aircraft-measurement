@@ -412,6 +412,7 @@ def build_rows() -> list[dict[str, Any]]:
     meshsafe_requested = 0
     meshsafe_hfield_available = 0
     meshsafe_best_real_hfield = 0
+    meshsafe_real_eh_accepted = 0
     if meshsafe_batch:
         case_rows = best_batch_rows(meshsafe_batch)
         requested = int(meshsafe_batch.get("case_count_requested", 0))
@@ -422,8 +423,10 @@ def build_rows() -> list[dict[str, Any]]:
         impedance_scan_enabled = bool(meshsafe_batch.get("impedance_scan_enabled", False))
         non_eta0_count = int(meshsafe_batch.get("case_count_best_non_eta0_impedance", 0))
         hfield_available_count = int(meshsafe_batch.get("case_count_hfield_available", 0))
+        real_eh_accepted_count = int(meshsafe_batch.get("case_count_real_eh_accepted", 0))
         best_real_hfield_count = int(meshsafe_batch.get("case_count_best_real_hfield", 0))
         meshsafe_hfield_available = hfield_available_count
+        meshsafe_real_eh_accepted = real_eh_accepted_count
         meshsafe_best_real_hfield = best_real_hfield_count
         if completed == requested and requested > 0 and pass_like == requested:
             batch_status = "impedance_region_proxy_batch_pass" if impedance_scan_enabled else "region_proxy_batch_pass"
@@ -466,12 +469,14 @@ def build_rows() -> list[dict[str, Any]]:
                     "passes the data-chain/region-lobe gate with scalar impedance calibration "
                     f"({non_eta0_count}/{requested} best settings use non-eta0 eta_eff). "
                     f"Matching H-field is now loaded for {hfield_available_count}/{requested} cases and "
+                    f"real E/H candidates are accepted for {real_eh_accepted_count}/{requested} cases; "
                     f"{best_real_hfield_count}/{requested} best settings currently select a real-H branch, "
-                    "so this is upgraded from export-blocked to E/H-operator-calibration work."
+                    "so this remains E/H-operator-calibration work rather than a CST export blocker."
                 ),
                 next_action=(
-                    "Finish the missing half-wave H-field export, then calibrate the real E/H "
-                    "Love-equivalence operator against the CST far field; keep eta_eff as the proxy baseline."
+                    "Calibrate the real E/H Love-equivalence operator against the CST far field, compare it "
+                    "against the scalar eta_eff proxy baseline, and then propagate the accepted branch to the "
+                    "13 m measurement shell."
                 ),
             )
         )
@@ -507,6 +512,7 @@ def build_rows() -> list[dict[str, Any]]:
         if meshsafe_requested > 0:
             hfield_context = (
                 f"Latest batch H-field coverage is {meshsafe_hfield_available}/{meshsafe_requested} loaded and "
+                f"real E/H acceptance is {meshsafe_real_eh_accepted}/{meshsafe_requested}; "
                 f"{meshsafe_best_real_hfield}/{meshsafe_requested} best settings use a real-H branch; "
                 f"the older stability ResultTree flag is {hfield_status}."
             )
@@ -520,8 +526,8 @@ def build_rows() -> list[dict[str, Any]]:
                 "global physical impedance closure."
             )
             stability_next_action = (
-                "Complete H-field coverage and rerun the stability check through the real E/H branch before "
-                "using this route in final Huygens wording."
+                "Rerun the stability check through the accepted real E/H branch and keep scalar eta_eff as a "
+                "proxy baseline before using this route in final Huygens wording."
             )
         elif stability_status == "needs_impedance_extension":
             stability_interpretation = (
@@ -531,7 +537,7 @@ def build_rows() -> list[dict[str, Any]]:
             )
             stability_next_action = (
                 "Run the lower-eta scan listed by the stability gate only as a proxy check; prioritize full "
-                "E/H branch coverage and operator calibration before final physics wording."
+                "E/H operator calibration before final physics wording."
             )
         else:
             stability_interpretation = (
@@ -540,7 +546,7 @@ def build_rows() -> list[dict[str, Any]]:
                 "proxy until H-field-backed currents or broader CST case coverage confirm it."
             )
             stability_next_action = (
-                "Use the proxy as a baseline while completing E/H branch coverage and additional CST source-family checks."
+                "Use the proxy as a baseline while calibrating the accepted E/H branch and adding CST source-family checks."
             )
         rows.append(
             row(
@@ -623,7 +629,7 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             "priority": 1,
             "owner": "Independent workflow",
             "gate": "meshsafe_huygens_physics",
-            "action": "Complete the real E/H Huygens closure: export the remaining half-wave H-field, calibrate the Love-equivalence surface-integral operator, and keep scalar eta_eff as the proxy baseline.",
+            "action": "Complete the real E/H Huygens closure: calibrate the Love-equivalence surface-integral operator, compare it with the scalar eta_eff proxy baseline, and propagate the accepted branch toward the 13 m shell.",
             "trigger": (
                 "Mesh-safe real CST batch gate is region/proxy ready, but the stability gate still shows "
                 "source-dependent impedance sensitivity." if impedance_extension_needed else
@@ -706,8 +712,8 @@ def write_markdown(status: pd.DataFrame, actions: pd.DataFrame, summary: dict[st
     meshsafe_rows = status.loc[status["artifact"] == "meshsafe_huygens_real_cst_batch"]
     if not meshsafe_rows.empty:
         lines.append(
-            "- Mesh-safe Huygens is no longer blocked at CST export for the short-dipole H-field path; "
-            "the current bottleneck is real E/H operator calibration plus remaining half-wave H-field coverage."
+            "- Mesh-safe Huygens is no longer blocked at CST export: both Level 1 E/H local-field paths are loaded. "
+            "The current bottleneck is real E/H operator calibration versus the scalar eta_eff proxy baseline."
         )
 
     lines.extend(

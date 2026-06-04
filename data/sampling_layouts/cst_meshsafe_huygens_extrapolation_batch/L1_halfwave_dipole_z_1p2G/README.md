@@ -11,7 +11,7 @@ against the existing Level 1 CST far-field reference.
 |---|---|
 | Local Huygens E field | `data\cst_exports\level1_meshsafe_huygens\L1_halfwave_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv` |
 | Local Huygens H field | `data\cst_exports\level1_meshsafe_huygens\L1_halfwave_dipole_z_1p2G_level1_local_sphere_r0p35_local_hfield.csv` |
-| H-field load status | `missing` |
+| H-field load status | `loaded` |
 | Far-field reference | `data\cst_exports\level1\all_farfield.csv` |
 
 ## Field Quality
@@ -24,7 +24,11 @@ against the existing Level 1 CST far-field reference.
 | Tangential/total L2 ratio | `0.9866` |
 | Normal/total L2 ratio | `0.1633` |
 | Dynamic range / dB | `12.61` |
-
+| H tangential/total L2 ratio | `0.9990` |
+| H normal/total L2 ratio | `0.0442` |
+| H dynamic range / dB | `18.58` |
+| Tangential E/H impedance / ohm | `370.381` |
+| Tangential E/H eta0 ratio | `0.9831` |
 
 ## Best Diagnostic Variant
 
@@ -52,6 +56,7 @@ against the existing Level 1 CST far-field reference.
 | outgoing_equivalence_minus_eta0p25 | scalar_impedance_scan | False | 0.25 | region_shape_pass | 0.9990 | 2.7633e-03 | 8.4827e-04 | 19.99 | 0.00 | 0.910 | 2.8531e-02 |
 | outgoing_equivalence_minus_eta0p5 | scalar_impedance_scan | False | 0.5 | region_shape_pass | 0.9990 | 2.7849e-03 | 8.5369e-04 | 19.99 | 0.00 | 0.910 | 2.8533e-02 |
 | outgoing_equivalence_minus_eta0p75 | scalar_impedance_scan | False | 0.75 | region_shape_pass | 0.9990 | 2.7921e-03 | 8.5556e-04 | 19.99 | 0.00 | 0.910 | 2.8534e-02 |
+| eh_love_equivalence_minus | real_eh_surface_currents | True | 1 | region_shape_pass | 0.9990 | 2.7993e-03 | 8.5600e-04 | 19.99 | 0.00 | 0.911 | 2.8534e-02 |
 | outgoing_equivalence_minus | fixed_eta0 | False | 1 | region_shape_pass | 0.9990 | 2.7957e-03 | 8.5651e-04 | 19.99 | 0.00 | 0.910 | 2.8534e-02 |
 | outgoing_equivalence_minus_eta1p5 | scalar_impedance_scan | False | 1.5 | region_shape_pass | 0.9990 | 2.7993e-03 | 8.5746e-04 | 19.99 | 0.00 | 0.911 | 2.8534e-02 |
 | outgoing_equivalence_minus_eta2 | scalar_impedance_scan | False | 2 | region_shape_pass | 0.9990 | 2.8011e-03 | 8.5794e-04 | 19.99 | 0.00 | 0.911 | 2.8534e-02 |
@@ -64,15 +69,17 @@ against the existing Level 1 CST far-field reference.
 | outgoing_equivalence_plus_eta2 | scalar_impedance_scan | False | 2 | region_shape_pass | 0.9990 | 2.8120e-03 | 8.6086e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
 | outgoing_equivalence_plus_eta1p5 | scalar_impedance_scan | False | 1.5 | region_shape_pass | 0.9990 | 2.8138e-03 | 8.6136e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
 | outgoing_equivalence_plus | fixed_eta0 | False | 1 | region_shape_pass | 0.9989 | 2.8175e-03 | 8.6235e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| eh_love_equivalence_plus | real_eh_surface_currents | True | 1 | region_shape_pass | 0.9989 | 2.8139e-03 | 8.6283e-04 | 19.99 | 0.00 | 0.911 | 2.8536e-02 |
 | outgoing_equivalence_plus_eta0p75 | scalar_impedance_scan | False | 0.75 | region_shape_pass | 0.9989 | 2.8211e-03 | 8.6335e-04 | 19.99 | 0.00 | 0.911 | 2.8536e-02 |
 | outgoing_equivalence_plus_eta0p5 | scalar_impedance_scan | False | 0.5 | region_shape_pass | 0.9989 | 2.8283e-03 | 8.6538e-04 | 19.99 | 0.00 | 0.910 | 2.8536e-02 |
 | outgoing_equivalence_plus_eta0p25 | scalar_impedance_scan | False | 0.25 | region_shape_pass | 0.9989 | 2.8502e-03 | 8.7166e-04 | 19.99 | 0.00 | 0.910 | 2.8536e-02 |
 | electric_only_outgoing | fixed_eta0 | False | 1 | physics_proxy_pass | 0.9868 | 1.8414e-02 | 1.4090e-02 | 0.00 | 0.00 | 0.729 | 1.3574e+04 |
+| hfield_electric_only | real_hfield_only | True | 1 | physics_proxy_pass | 0.9849 | 1.6520e-02 | 1.5105e-02 | 29.98 | 0.00 | 0.864 | 1.3091e+04 |
 
 ## Reading
 
-- This Python gate currently consumes real CST local E-field probe values only.
-- H-field rows were not loaded, so the equivalent-current formulas remain an E-only impedance proxy for this run.
+- This Python gate consumes matched real CST local E-field and H-field probe values.
+- Real dual-field variants evaluate `J = n x H_t` and `M = -n x E_t`, while the older E-only impedance scan remains as a calibration baseline.
 - The equivalent-current formulas are still a diagnostic Huygens/Kirchhoff
   operator rather than final report-level Stratton-Chu evidence. Treat the
   scalar impedance scan as a calibration baseline and the real E/H variants as

@@ -40,6 +40,8 @@ DEFAULT_CASE_CSV = (
 )
 DEFAULT_BATCH_OUT_DIR = ROOT / "data" / "sampling_layouts" / "cst_meshsafe_huygens_extrapolation_batch"
 ETA0 = 376.730313668
+ACCEPTED_VECTOR_GATE_STATUSES = {"strict_pass", "region_shape_pass", "physics_proxy_pass"}
+REAL_EH_CALIBRATION_MODE = "real_eh_surface_currents"
 E_COMPONENTS = ("Ex", "Ey", "Ez")
 H_COMPONENTS = ("Hx", "Hy", "Hz")
 FIELD_CONFIG = {
@@ -611,6 +613,56 @@ def status_rank(status: str) -> int:
     }.get(status, 99)
 
 
+def json_scalar(value: Any) -> Any:
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, np.floating):
+        return float(value)
+    if isinstance(value, np.bool_):
+        return bool(value)
+    return value
+
+
+def candidate_snapshot(candidate: dict[str, Any]) -> dict[str, Any]:
+    return {key: json_scalar(value) for key, value in candidate.items()}
+
+
+def best_candidate(results: pd.DataFrame) -> dict[str, Any]:
+    if results.empty:
+        return {}
+    ranked = results.copy()
+    ranked["_status_rank"] = ranked["status"].map(status_rank)
+    ranked = ranked.sort_values(
+        ["_status_rank", "correlation", "scaled_power_nmse", "nmse", "main_lobe_error_deg"],
+        ascending=[True, False, True, True, True],
+    ).drop(columns=["_status_rank"])
+    return candidate_snapshot(ranked.iloc[0].to_dict())
+
+
+def vector_gate_summary(results: pd.DataFrame) -> dict[str, Any]:
+    if results.empty:
+        return {
+            "accepted_statuses": sorted(ACCEPTED_VECTOR_GATE_STATUSES),
+            "real_hfield_candidate_count": 0,
+            "real_hfield_accepted_count": 0,
+            "real_eh_candidate_count": 0,
+            "real_eh_accepted_count": 0,
+            "best_real_hfield": {},
+            "best_real_eh": {},
+        }
+    real_hfield = results.loc[results["uses_real_hfield"].fillna(False).astype(bool)]
+    real_eh = real_hfield.loc[real_hfield["calibration_mode"].eq(REAL_EH_CALIBRATION_MODE)]
+    return {
+        "accepted_statuses": sorted(ACCEPTED_VECTOR_GATE_STATUSES),
+        "real_hfield_candidate_count": int(real_hfield.shape[0]),
+        "real_hfield_accepted_count": int(real_hfield["status"].isin(ACCEPTED_VECTOR_GATE_STATUSES).sum()),
+        "real_eh_candidate_count": int(real_eh.shape[0]),
+        "real_eh_accepted_count": int(real_eh["status"].isin(ACCEPTED_VECTOR_GATE_STATUSES).sum()),
+        "best_real_hfield": best_candidate(real_hfield),
+        "best_real_eh": best_candidate(real_eh),
+    }
+
+
 def parse_sample_ids(value: str) -> set[str]:
     return {item.strip() for item in value.split(",") if item.strip()}
 
@@ -625,6 +677,9 @@ def finite_non_eta0_impedance(value: Any) -> bool:
 def batch_summary_row(summary: dict[str, Any], local_nearfield: Path, out_dir: Path) -> dict[str, Any]:
     best = summary["best_setting"]
     quality = summary["quality"]
+    gate = summary.get("vector_gate", {})
+    best_real_hfield = gate.get("best_real_hfield", {}) if isinstance(gate, dict) else {}
+    best_real_eh = gate.get("best_real_eh", {}) if isinstance(gate, dict) else {}
     return {
         "sample_id": summary["sample_id"],
         "frequency_hz": summary["frequency_hz"],
@@ -646,6 +701,16 @@ def batch_summary_row(summary: dict[str, Any], local_nearfield: Path, out_dir: P
         "best_impedance_factor_to_eta0": best.get("impedance_factor_to_eta0", ""),
         "best_calibration_mode": best.get("calibration_mode", ""),
         "best_uses_real_hfield": bool(best.get("uses_real_hfield", False)),
+        "real_hfield_candidate_count": int(gate.get("real_hfield_candidate_count", 0)) if isinstance(gate, dict) else 0,
+        "real_hfield_accepted_count": int(gate.get("real_hfield_accepted_count", 0)) if isinstance(gate, dict) else 0,
+        "real_eh_candidate_count": int(gate.get("real_eh_candidate_count", 0)) if isinstance(gate, dict) else 0,
+        "real_eh_accepted_count": int(gate.get("real_eh_accepted_count", 0)) if isinstance(gate, dict) else 0,
+        "best_real_hfield_variant": best_real_hfield.get("variant", ""),
+        "best_real_hfield_status": best_real_hfield.get("status", ""),
+        "best_real_hfield_scaled_power_nmse": best_real_hfield.get("scaled_power_nmse", ""),
+        "best_real_eh_variant": best_real_eh.get("variant", ""),
+        "best_real_eh_status": best_real_eh.get("status", ""),
+        "best_real_eh_scaled_power_nmse": best_real_eh.get("scaled_power_nmse", ""),
         "best_status": best["status"],
         "correlation": best["correlation"],
         "nmse": best["nmse"],
@@ -665,18 +730,25 @@ def write_batch_readme(out_dir: Path, rows: pd.DataFrame, summary: dict[str, Any
         table_rows = []
         for row in rows.itertuples(index=False):
             if row.status != "ok":
-                table_rows.append(f"| {row.sample_id} | - | {row.status} | - | - | - | - | - | - | - |")
+                table_rows.append(f"| {row.sample_id} | - | - | {row.status} | - | - | - | - | - | - | - | - |")
                 continue
+            real_eh_gate = f"{int(row.real_eh_accepted_count)}/{int(row.real_eh_candidate_count)}"
+            best_real_eh = (
+                f"{row.best_real_eh_status}:{row.best_real_eh_variant}"
+                if str(row.best_real_eh_variant)
+                else "-"
+            )
             table_rows.append(
-                f"| {row.sample_id} | {row.hfield_available} | {row.best_status} | {row.best_variant} | "
+                f"| {row.sample_id} | {row.hfield_available} | {real_eh_gate} | {row.best_status} | {row.best_variant} | "
+                f"{best_real_eh} | "
                 f"{row.best_impedance_factor_to_eta0:.3g} | "
                 f"{row.correlation:.4f} | {row.scaled_power_nmse:.4e} | "
                 f"{row.main_lobe_error_deg:.2f} | {row.main_lobe_region_error_deg:.2f} | "
                 f"{row.main_lobe_region_jaccard:.3f} |"
             )
         table = (
-            "| Sample | H-field | Best status | Best variant | Eta/eta0 | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |\n"
-            "|---|---:|---|---|---:|---:|---:|---:|---:|---:|\n"
+            "| Sample | H-field | Real E/H accepted | Best status | Best variant | Best real E/H | Eta/eta0 | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |\n"
+            "|---|---:|---:|---|---|---|---:|---:|---:|---:|---:|---:|\n"
             + "\n".join(table_rows)
             + "\n"
         )
@@ -696,6 +768,8 @@ cross-case pass/fail picture.
 - Best region-shape cases: `{summary['case_count_region_shape']}`
 - Best strict/physics-proxy/region cases: `{summary['case_count_strict_proxy_or_region']}`
 - Cases with real H-field loaded: `{summary['case_count_hfield_available']}`
+- Cases with accepted real-H candidates: `{summary['case_count_real_hfield_accepted']}`
+- Cases with accepted real E/H candidates: `{summary['case_count_real_eh_accepted']}`
 - Best variants using real H-field: `{summary['case_count_best_real_hfield']}`
 - Impedance scan enabled: `{summary['impedance_scan_enabled']}`
 - Best non-eta0 impedance cases: `{summary['case_count_best_non_eta0_impedance']}`
@@ -790,6 +864,8 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
     best_non_eta0_impedance = 0
     hfield_available_count = 0
     best_real_hfield_count = 0
+    real_hfield_accepted_count = 0
+    real_eh_accepted_count = 0
     if not ok_rows.empty and "best_status" in ok_rows.columns:
         strict_or_proxy = int(ok_rows["best_status"].isin(["strict_pass", "physics_proxy_pass"]).sum())
         region_shape = int(ok_rows["best_status"].eq("region_shape_pass").sum())
@@ -800,6 +876,12 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
         hfield_available_count = int(ok_rows["hfield_available"].fillna(False).astype(bool).sum())
     if not ok_rows.empty and "best_uses_real_hfield" in ok_rows.columns:
         best_real_hfield_count = int(ok_rows["best_uses_real_hfield"].fillna(False).astype(bool).sum())
+    if not ok_rows.empty and "real_hfield_accepted_count" in ok_rows.columns:
+        real_hfield_accepted_count = int(
+            ok_rows["real_hfield_accepted_count"].fillna(0).astype(float).gt(0).sum()
+        )
+    if not ok_rows.empty and "real_eh_accepted_count" in ok_rows.columns:
+        real_eh_accepted_count = int(ok_rows["real_eh_accepted_count"].fillna(0).astype(float).gt(0).sum())
     if not ok_rows.empty and "best_impedance_factor_to_eta0" in ok_rows.columns:
         best_non_eta0_impedance = int(
             ok_rows["best_impedance_factor_to_eta0"].map(finite_non_eta0_impedance).fillna(False).sum()
@@ -817,6 +899,8 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
         "case_count_region_shape": region_shape,
         "case_count_strict_proxy_or_region": strict_proxy_or_region,
         "case_count_hfield_available": hfield_available_count,
+        "case_count_real_hfield_accepted": real_hfield_accepted_count,
+        "case_count_real_eh_accepted": real_eh_accepted_count,
         "case_count_best_real_hfield": best_real_hfield_count,
         "impedance_scan_factors": impedance_factors,
         "impedance_scan_ohms": [float(ETA0 * factor) for factor in impedance_factors],
@@ -909,6 +993,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     ).drop(columns=["status_rank"])
     best = results.iloc[0].to_dict()
     best_power, best_e_theta, best_e_phi = prediction_cache[str(best["variant"])]
+    vector_gate = vector_gate_summary(results)
 
     pd.DataFrame([quality]).to_csv(out_dir / "meshsafe_huygens_field_quality.csv", index=False, encoding="utf-8-sig")
     results.to_csv(out_dir / "meshsafe_huygens_extrapolation_results.csv", index=False, encoding="utf-8-sig")
@@ -944,6 +1029,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "frequency_hz": float(args.frequency_hz),
         "quality": quality,
         "best_setting": best,
+        "vector_gate": vector_gate,
         "variant_count": int(results.shape[0]),
         "impedance_scan": {
             "enabled": any(not math.isclose(factor, 1.0) for factor in impedance_factors),
@@ -1132,6 +1218,7 @@ def main() -> int:
             f"region_shape={summary['case_count_region_shape']}; "
             f"strict_proxy_or_region={summary['case_count_strict_proxy_or_region']}; "
             f"hfield={summary['case_count_hfield_available']}; "
+            f"real_eh_accepted={summary['case_count_real_eh_accepted']}; "
             f"best_real_hfield={summary['case_count_best_real_hfield']}"
         )
         return 0 if summary["case_count_missing_or_failed"] == 0 else 1

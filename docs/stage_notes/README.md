@@ -44,6 +44,7 @@
 | S35 | `35_g3_meshsafe_huygens_impedance_stability.md` | G3 mesh-safe Huygens impedance stability gate and H-field readiness check |
 | S36 | `36_g3_meshsafe_huygens_hfield_workpack.md` | G3 mesh-safe Huygens H-field workpack, export contract, and CST next gate |
 | S37 | `37_g3_meshsafe_huygens_real_eh_extrapolation.md` | G3 mesh-safe Huygens short-dipole real E/H export and extrapolation gate |
+| S38 | `38_g3_meshsafe_huygens_full_hfield_coverage.md` | G3 mesh-safe Huygens full Level 1 H-field coverage and real E/H acceptance gate |
 
 后续规则：
 

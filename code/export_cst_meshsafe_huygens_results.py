@@ -297,6 +297,57 @@ def select_case(case_rows: list[dict[str, str]], sample_id: str) -> dict[str, st
     raise ValueError(f"sample_id {sample_id!r} not found in case CSV. Available: {available}")
 
 
+def normalized_token(text: str | Path) -> str:
+    return re.sub(r"[^a-z0-9]+", "", str(text).lower())
+
+
+def row_matches_project(row: dict[str, str], project: Path) -> bool:
+    text = f"{project} {project.name} {project.stem}".lower()
+    compact_text = normalized_token(text)
+    candidates = [
+        str(row.get("sample_id", "")).strip(),
+        str(row.get("cst_project", "")).strip(),
+        Path(str(row.get("cst_project", "")).strip()).stem if row.get("cst_project") else "",
+        str(row.get("source_type", "")).strip(),
+    ]
+    for candidate in candidates:
+        compact = normalized_token(candidate)
+        if candidate and (candidate.lower() in text or (compact and compact in compact_text)):
+            return True
+
+    source_type = str(row.get("source_type", "")).strip().lower()
+    aliases = {
+        "short_dipole": ("short",),
+        "halfwave_dipole": ("halfwave", "half"),
+    }.get(source_type, ())
+    return any(normalized_token(alias) in compact_text for alias in aliases)
+
+
+def infer_sample_id_from_project(case_rows: list[dict[str, str]], project: Path) -> str:
+    matches = [str(row.get("sample_id", "")).strip() for row in case_rows if row_matches_project(row, project)]
+    matches = sorted({item for item in matches if item})
+    if len(matches) == 1:
+        return matches[0]
+    if len(case_rows) == 1:
+        return str(case_rows[0].get("sample_id", "")).strip()
+    available = ", ".join(str(row.get("sample_id", "")).strip() for row in case_rows)
+    if matches:
+        raise ValueError(
+            f"Cannot infer a unique sample_id from project {project}; matches: {', '.join(matches)}. "
+            "Pass --sample-id explicitly."
+        )
+    raise ValueError(
+        f"Cannot infer sample_id from project {project}. Pass --sample-id explicitly. Available: {available}"
+    )
+
+
+def selected_sample_id(args: argparse.Namespace, case_rows: list[dict[str, str]], project: Path) -> str:
+    sample_id = str(args.sample_id or "").strip()
+    if sample_id:
+        return sample_id
+    return infer_sample_id_from_project(case_rows, project)
+
+
 def contract_columns(contract_csv: Path) -> list[str]:
     return [row["column_name"] for row in read_csv_rows(contract_csv)]
 
@@ -566,7 +617,9 @@ def inspect_project_worker(args: argparse.Namespace) -> int:
     import cst.interface as ci  # type: ignore[import-not-found]
 
     project = selected_project(args)
-    case = select_case(read_csv_rows(resolve_path(args.case_csv)), args.sample_id)
+    case_rows = read_csv_rows(resolve_path(args.case_csv))
+    sample_id = selected_sample_id(args, case_rows, project)
+    case = select_case(case_rows, sample_id)
     probe_rows = read_csv_rows(resolve_path(args.probe_csv))
     contract_csv = selected_contract_csv(args)
     monitor_name = str(case.get("nearfield_monitor", "")).strip()
@@ -869,7 +922,9 @@ def controller_run(args: argparse.Namespace) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     copy_inputs(out_dir, [case_csv, probe_csv, contract_csv])
 
-    case = select_case(read_csv_rows(case_csv), args.sample_id)
+    case_rows = read_csv_rows(case_csv)
+    sample_id = selected_sample_id(args, case_rows, project)
+    case = select_case(case_rows, sample_id)
     task = build_task(project, result_dir, case, probe_csv, contract_csv, args.field_kind, args.target_export)
     artifact_rows = inventory_artifacts(result_dir)
     artifact_summary = summarize_artifacts(artifact_rows)
@@ -895,7 +950,7 @@ def controller_run(args: argparse.Namespace) -> int:
                 "--case-csv",
                 str(case_csv),
                 "--sample-id",
-                args.sample_id,
+                sample_id,
                 "--field-kind",
                 args.field_kind,
                 "--worker-summary",
@@ -960,7 +1015,7 @@ def controller_run(args: argparse.Namespace) -> int:
     summary = {
         "created_at": now_iso(),
         "status": status,
-        "sample_id": args.sample_id,
+        "sample_id": sample_id,
         "field_kind": args.field_kind,
         "field_label": spec["label"],
         "project": rel(project),
@@ -1020,7 +1075,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--probe-csv", type=Path, default=DEFAULT_PROBE_CSV)
     parser.add_argument("--field-kind", choices=sorted(FIELD_SPECS), default="e")
     parser.add_argument("--contract-csv", type=Path, default=None)
-    parser.add_argument("--sample-id", default="L1_short_dipole_z_1p2G")
+    parser.add_argument("--sample-id", default=None, help="Sample to export. If omitted, infer it from the CST project path.")
     parser.add_argument("--target-export", type=Path, default=None)
     parser.add_argument("--out-dir", type=Path, default=None)
     parser.add_argument("--cst-python", type=Path, default=DEFAULT_CST_PYTHON)
