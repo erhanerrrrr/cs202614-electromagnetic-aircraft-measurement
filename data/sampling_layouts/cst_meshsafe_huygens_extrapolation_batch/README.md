@@ -10,23 +10,29 @@ cross-case pass/fail picture.
 - Cases requested: `2`
 - Cases completed: `2`
 - Missing/failed cases: `0`
-- Best strict/physics-proxy cases: `1`
+- Best strict/physics-proxy cases: `0`
+- Best region-shape cases: `2`
 - Best strict/physics-proxy/region cases: `2`
+- Impedance scan enabled: `True`
+- Best non-eta0 impedance cases: `2`
 
 ## Case Table
 
-| Sample | Best status | Best variant | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |
-|---|---|---|---:|---:|---:|---:|---:|
-| L1_halfwave_dipole_z_1p2G | physics_proxy_pass | electric_only_outgoing | 0.9868 | 1.4090e-02 | 0.00 | 0.00 | 0.729 |
-| L1_short_dipole_z_1p2G | region_shape_pass | outgoing_equivalence_minus | 0.9989 | 6.9646e-04 | 139.52 | 0.00 | 0.919 |
+| Sample | Best status | Best variant | Eta/eta0 | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |
+|---|---|---|---:|---:|---:|---:|---:|---:|
+| L1_halfwave_dipole_z_1p2G | region_shape_pass | outgoing_equivalence_minus_eta0p25 | 0.25 | 0.9990 | 8.4827e-04 | 19.99 | 0.00 | 0.910 |
+| L1_short_dipole_z_1p2G | region_shape_pass | outgoing_equivalence_minus_eta0p25 | 0.25 | 0.9989 | 6.9621e-04 | 139.52 | 0.00 | 0.919 |
 
 ## Reading
 
 This is a batch data-chain gate, not the final Huygens physics proof. The
 region-lobe metrics compare the overlap of the top-power directional regions,
 which is more stable than a single argmax for broad or ring-like patterns. Final
-claims still require a stricter vector surface-integral operator and H-field or
-calibrated impedance support.
+claims still require a stricter vector surface-integral operator and independent
+H-field support. The scalar impedance scan is a calibration proxy: it tunes the
+relative weight of electric and magnetic equivalent currents against the current
+Level 1 far-field reference and keeps the selected `eta_eff/eta0` visible in
+every row.
 
 ## Command
 

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-04T04:18:00+00:00",
+  "generated_at": "2026-06-04T04:34:14+00:00",
   "generated_by": "code/run_cst_meshsafe_huygens_extrapolation.py",
   "local_nearfield": "data\\cst_exports\\level1_meshsafe_huygens\\L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv",
   "farfield": "data\\cst_exports\\level1\\all_farfield.csv",
@@ -29,21 +29,25 @@
   "best_setting": {
     "sample_id": "L1_short_dipole_z_1p2G",
     "frequency_hz": 1200000000.0,
-    "variant": "outgoing_equivalence_minus",
-    "model_note": "J=-E_t/eta0, M sign flipped",
+    "variant": "outgoing_equivalence_minus_eta0p25",
+    "variant_family": "outgoing_equivalence_minus",
+    "impedance_ohm": 94.182578417,
+    "impedance_factor_to_eta0": 0.25,
+    "calibration_mode": "scalar_impedance_scan",
+    "model_note": "J=-E_t/eta_eff, eta_eff=94.1826 ohm, M sign flipped",
     "sensor_count": 96,
     "farfield_points": 2664,
     "farfield_shape": "37x72",
-    "electric_current_l2": 3.2178988063152654e-05,
+    "electric_current_l2": 0.00012871595225261062,
     "magnetic_current_l2": 0.012122800266550991,
-    "predicted_peak_power": 5.746969129683429e-08,
+    "predicted_peak_power": 5.746761192389833e-08,
     "reference_peak_power": 3.914311124569356e-08,
-    "best_power_scale": 0.7210527748450808,
-    "scaled_power_nmse": 0.0006964637367260091,
-    "nmse": 0.0037631287870546343,
-    "correlation": 0.9989445663610194,
+    "best_power_scale": 0.721028591196995,
+    "scaled_power_nmse": 0.0006962082909021457,
+    "nmse": 0.0037555863959004314,
+    "correlation": 0.9989449743744064,
     "main_lobe_error_deg": 139.52260287822136,
-    "peak_error_db": 1.6678352219444776,
+    "peak_error_db": 1.667678082327191,
     "main_lobe_region_threshold": 0.75,
     "reference_lobe_region_points": 864,
     "predicted_lobe_region_points": 794,
@@ -56,6 +60,31 @@
     "main_lobe_region_error_deg": 0.0,
     "status": "region_shape_pass"
   },
-  "variant_count": 5,
-  "interpretation": "diagnostic Huygens/Kirchhoff proxy; use to verify the real CST local probe export and directionality, then replace with a stricter vector surface-integral operator before final report claims"
+  "variant_count": 19,
+  "impedance_scan": {
+    "enabled": true,
+    "eta0_ohm": 376.730313668,
+    "factors": [
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.5,
+      2.0,
+      3.0,
+      4.0
+    ],
+    "ohms": [
+      94.182578417,
+      188.365156834,
+      282.547735251,
+      376.730313668,
+      565.095470502,
+      753.460627336,
+      1130.190941004,
+      1506.921254672
+    ],
+    "candidate_count": 19
+  },
+  "interpretation": "diagnostic Huygens/Kirchhoff proxy; use to verify the real CST local probe export and directionality, then replace with a stricter vector surface-integral operator and independent H-field support before final report claims"
 }

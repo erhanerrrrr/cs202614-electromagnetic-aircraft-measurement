@@ -55,6 +55,7 @@ def status_rank(status: str) -> int:
         "strict_pass": 0,
         "physics_proxy_pass": 1,
         "corr_pass_nmse_near": 1,
+        "impedance_region_proxy_batch_pass": 2,
         "region_proxy_batch_pass": 2,
         "region_shape_pass": 2,
         "corr_lobe_pass_nmse_open": 2,
@@ -409,8 +410,10 @@ def build_rows() -> list[dict[str, Any]]:
         completed = int(meshsafe_batch.get("case_count_completed", 0))
         missing = int(meshsafe_batch.get("case_count_missing_or_failed", 0))
         pass_like = int(meshsafe_batch.get("case_count_strict_proxy_or_region", 0))
+        impedance_scan_enabled = bool(meshsafe_batch.get("impedance_scan_enabled", False))
+        non_eta0_count = int(meshsafe_batch.get("case_count_best_non_eta0_impedance", 0))
         if completed == requested and requested > 0 and pass_like == requested:
-            batch_status = "region_proxy_batch_pass"
+            batch_status = "impedance_region_proxy_batch_pass" if impedance_scan_enabled else "region_proxy_batch_pass"
         elif completed == requested and pass_like > 0:
             batch_status = "physics_proxy_pass"
         elif missing > 0:
@@ -424,7 +427,10 @@ def build_rows() -> list[dict[str, Any]]:
         )
         min_corr = min((finite_float(item.get("correlation")) for item in case_rows), default=math.nan)
         best_settings = "; ".join(
-            f"{item.get('sample_id', '')}:{item.get('status', '')}/{item.get('variant', '')}"
+            (
+                f"{item.get('sample_id', '')}:{item.get('status', '')}/{item.get('variant', '')}"
+                f"/eta={format_float(item.get('impedance_factor_to_eta0'), 3)}eta0"
+            )
             for item in case_rows
         )
         rows.append(
@@ -443,10 +449,11 @@ def build_rows() -> list[dict[str, Any]]:
                 sensor_count=96,
                 interpretation=(
                     "The mesh-safe route now uses real CST local probe curves for two Level 1 sources and "
-                    "passes the data-chain/region-lobe gate; it still needs H-field or calibrated impedance "
-                    "before being used as final Stratton-Chu/Huygens proof."
+                    "passes the data-chain/region-lobe gate with scalar impedance calibration "
+                    f"({non_eta0_count}/{requested} best settings use non-eta0 eta_eff); it still needs "
+                    "independent H-field support before being used as final Stratton-Chu/Huygens proof."
                 ),
-                next_action="Add H-field/impedance-backed current estimates and rerun this batch gate before final physics wording.",
+                next_action="Use the calibrated eta_eff result as a proxy baseline; next add H-field export or independent impedance validation before final physics wording.",
             )
         )
     else:
@@ -498,7 +505,7 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
     meshsafe_ready = bool(
         (
             status["artifact"].eq("meshsafe_huygens_real_cst_batch")
-            & status["status"].isin(["region_proxy_batch_pass", "physics_proxy_pass"])
+            & status["status"].isin(["impedance_region_proxy_batch_pass", "region_proxy_batch_pass", "physics_proxy_pass"])
         ).any()
     )
     actions = [
@@ -506,10 +513,10 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             "priority": 1,
             "owner": "Independent workflow",
             "gate": "meshsafe_huygens_physics",
-            "action": "Add H-field or calibrated-impedance support for the local Huygens surface, then rerun the real CST two-case batch gate.",
-            "trigger": "Mesh-safe real CST batch gate is region/proxy ready.",
-            "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv or impedance-backed current estimates",
-            "proof_to_close": "Batch summary reports two real CST cases with strict_pass or an explicitly justified physics_proxy_pass under the stricter current estimate.",
+            "action": "Promote the scalar impedance proxy to H-field-backed Huygens evidence, or validate eta_eff stability on additional CST cases.",
+            "trigger": "Mesh-safe real CST batch gate is region/proxy ready and now records calibrated eta_eff.",
+            "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv plus updated impedance/H-field batch summary",
+            "proof_to_close": "Batch summary reports two real CST cases passing the region gate with H-field-backed currents or independently stable eta_eff bounds.",
             "blocked_by": "" if meshsafe_ready else "Mesh-safe batch gate",
         },
         {
@@ -636,7 +643,15 @@ def build_summary(status: pd.DataFrame) -> dict[str, Any]:
     true_monitor = status.loc[status["artifact"] == "true_nearfield_monitor_gate"]
     true_monitor_status = str(true_monitor["status"].iloc[0]) if not true_monitor.empty else "missing"
     strict_or_near = status[
-        status["status"].isin(["strict_pass", "corr_pass_nmse_near", "physics_proxy_pass", "region_proxy_batch_pass"])
+        status["status"].isin(
+            [
+                "strict_pass",
+                "corr_pass_nmse_near",
+                "physics_proxy_pass",
+                "region_proxy_batch_pass",
+                "impedance_region_proxy_batch_pass",
+            ]
+        )
     ]
     diagnostic = status[status["status"].eq("diagnostic_only")]
     return {

@@ -462,3 +462,29 @@ The G3 dashboard now includes `meshsafe_huygens_real_cst_batch` as a
 `region_proxy_batch_pass` evidence row. The first next action is no longer to
 wait idly for true-monitor CSVs; it is to add H-field or calibrated-impedance
 support for the local Huygens surface and rerun the two-case gate.
+
+## CST mesh-safe Huygens scalar impedance addendum
+
+`run_cst_meshsafe_huygens_extrapolation.py` now has an explicit scalar
+impedance calibration proxy. The default run scans
+`eta_eff/eta0 = 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0` for the outgoing
+electric/magnetic equivalence variants while preserving the original E-only
+and M-only diagnostics.
+
+```powershell
+python code\run_cst_meshsafe_huygens_extrapolation.py --batch
+python code\build_g3_model_dashboard.py
+```
+
+Current calibrated two-case status:
+
+- Both real CST Level 1 mesh-safe cases select
+  `outgoing_equivalence_minus_eta0p25`, i.e. `eta_eff = 0.25 eta0`.
+- Both cases are `region_shape_pass`; the worst scaled NMSE is about
+  `8.48e-4`, and the region-lobe error is `0 deg`.
+- The G3 dashboard status for `meshsafe_huygens_real_cst_batch` is now
+  `impedance_region_proxy_batch_pass`.
+
+This is still a calibrated proxy, not final Huygens physics proof. The next
+upgrade is H-field probe export or an independent stability test of the
+selected `eta_eff` across additional CST cases.

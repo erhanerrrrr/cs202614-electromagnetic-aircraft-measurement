@@ -27,33 +27,52 @@ proxy against the existing Level 1 CST far-field reference.
 
 | Field | Value |
 |---|---|
-| Variant | `electric_only_outgoing` |
-| Status | `physics_proxy_pass` |
-| Correlation | `0.9868` |
-| Normalized NMSE | `1.8414e-02` |
-| Scale-fitted power NMSE | `1.4090e-02` |
-| Main-lobe error / deg | `0.00` |
+| Variant | `outgoing_equivalence_minus_eta0p25` |
+| Variant family | `outgoing_equivalence_minus` |
+| Calibration mode | `scalar_impedance_scan` |
+| Eta_eff / eta0 | `0.25` |
+| Eta_eff / ohm | `94.182578417` |
+| Status | `region_shape_pass` |
+| Correlation | `0.9990` |
+| Normalized NMSE | `2.7633e-03` |
+| Scale-fitted power NMSE | `8.4827e-04` |
+| Main-lobe error / deg | `19.99` |
 | Region-lobe error / deg | `0.00` |
-| Region-lobe Jaccard | `0.729` |
-| Region-lobe min capture | `0.754` |
+| Region-lobe Jaccard | `0.910` |
+| Region-lobe min capture | `0.923` |
 
 ## Variant Ranking
 
-| Variant | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
-|---|---|---:|---:|---:|---:|---:|---:|---:|
-| electric_only_outgoing | physics_proxy_pass | 0.9868 | 1.8414e-02 | 1.4090e-02 | 0.00 | 0.00 | 0.729 | 1.3574e+04 |
-| outgoing_equivalence_minus | region_shape_pass | 0.9990 | 2.7957e-03 | 8.5651e-04 | 19.99 | 0.00 | 0.910 | 2.8534e-02 |
-| magnetic_only_plus | region_shape_pass | 0.9990 | 2.8066e-03 | 8.5939e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
-| magnetic_only_minus | region_shape_pass | 0.9990 | 2.8066e-03 | 8.5939e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
-| outgoing_equivalence_plus | region_shape_pass | 0.9989 | 2.8175e-03 | 8.6235e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| Variant | Calibration | Eta/eta0 | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
+|---|---|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| outgoing_equivalence_minus_eta0p25 | scalar_impedance_scan | 0.25 | region_shape_pass | 0.9990 | 2.7633e-03 | 8.4827e-04 | 19.99 | 0.00 | 0.910 | 2.8531e-02 |
+| outgoing_equivalence_minus_eta0p5 | scalar_impedance_scan | 0.5 | region_shape_pass | 0.9990 | 2.7849e-03 | 8.5369e-04 | 19.99 | 0.00 | 0.910 | 2.8533e-02 |
+| outgoing_equivalence_minus_eta0p75 | scalar_impedance_scan | 0.75 | region_shape_pass | 0.9990 | 2.7921e-03 | 8.5556e-04 | 19.99 | 0.00 | 0.910 | 2.8534e-02 |
+| outgoing_equivalence_minus | fixed_eta0 | 1 | region_shape_pass | 0.9990 | 2.7957e-03 | 8.5651e-04 | 19.99 | 0.00 | 0.910 | 2.8534e-02 |
+| outgoing_equivalence_minus_eta1p5 | scalar_impedance_scan | 1.5 | region_shape_pass | 0.9990 | 2.7993e-03 | 8.5746e-04 | 19.99 | 0.00 | 0.911 | 2.8534e-02 |
+| outgoing_equivalence_minus_eta2 | scalar_impedance_scan | 2 | region_shape_pass | 0.9990 | 2.8011e-03 | 8.5794e-04 | 19.99 | 0.00 | 0.911 | 2.8534e-02 |
+| outgoing_equivalence_minus_eta3 | scalar_impedance_scan | 3 | region_shape_pass | 0.9990 | 2.8030e-03 | 8.5842e-04 | 19.99 | 0.00 | 0.911 | 2.8534e-02 |
+| outgoing_equivalence_minus_eta4 | scalar_impedance_scan | 4 | region_shape_pass | 0.9990 | 2.8039e-03 | 8.5867e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| magnetic_only_plus | not_used | 1 | region_shape_pass | 0.9990 | 2.8066e-03 | 8.5939e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| magnetic_only_minus | not_used | 1 | region_shape_pass | 0.9990 | 2.8066e-03 | 8.5939e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| outgoing_equivalence_plus_eta4 | scalar_impedance_scan | 4 | region_shape_pass | 0.9990 | 2.8093e-03 | 8.6013e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| outgoing_equivalence_plus_eta3 | scalar_impedance_scan | 3 | region_shape_pass | 0.9990 | 2.8102e-03 | 8.6037e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| outgoing_equivalence_plus_eta2 | scalar_impedance_scan | 2 | region_shape_pass | 0.9990 | 2.8120e-03 | 8.6086e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| outgoing_equivalence_plus_eta1p5 | scalar_impedance_scan | 1.5 | region_shape_pass | 0.9990 | 2.8138e-03 | 8.6136e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| outgoing_equivalence_plus | fixed_eta0 | 1 | region_shape_pass | 0.9989 | 2.8175e-03 | 8.6235e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| outgoing_equivalence_plus_eta0p75 | scalar_impedance_scan | 0.75 | region_shape_pass | 0.9989 | 2.8211e-03 | 8.6335e-04 | 19.99 | 0.00 | 0.911 | 2.8536e-02 |
+| outgoing_equivalence_plus_eta0p5 | scalar_impedance_scan | 0.5 | region_shape_pass | 0.9989 | 2.8283e-03 | 8.6538e-04 | 19.99 | 0.00 | 0.910 | 2.8536e-02 |
+| outgoing_equivalence_plus_eta0p25 | scalar_impedance_scan | 0.25 | region_shape_pass | 0.9989 | 2.8502e-03 | 8.7166e-04 | 19.99 | 0.00 | 0.910 | 2.8536e-02 |
+| electric_only_outgoing | fixed_eta0 | 1 | physics_proxy_pass | 0.9868 | 1.8414e-02 | 1.4090e-02 | 0.00 | 0.00 | 0.729 | 1.3574e+04 |
 
 ## Reading
 
 - This Python gate uses real CST local Huygens probe values
   instead of the previous FarfieldPlot-derived 13 m near-field surrogate.
 - The equivalent-current formulas are deliberately kept as a diagnostic proxy:
-  `J ~= -E_t/eta0` and `M = -n x E_t`. They are good enough to expose data
-  quality, directionality, and sign conventions, but not final report-level
+  `J ~= -E_t/eta_eff` and `M = -n x E_t`. The scalar impedance scan tunes
+  the relative electric/magnetic current weight against the Level 1 far-field
+  reference, making it a calibration proxy rather than final report-level
   Stratton-Chu/Huygens evidence.
 - Broad, ring-like, or multi-peak reference patterns can make the single-point
   main-lobe metric stricter than the whole-pattern shape metrics. Treat

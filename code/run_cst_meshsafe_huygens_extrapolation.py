@@ -34,6 +34,7 @@ DEFAULT_CASE_CSV = (
 DEFAULT_BATCH_OUT_DIR = ROOT / "data" / "sampling_layouts" / "cst_meshsafe_huygens_extrapolation_batch"
 ETA0 = 376.730313668
 COMPONENTS = ("Ex", "Ey", "Ez")
+DEFAULT_IMPEDANCE_FACTORS = (0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0)
 
 
 def now_iso() -> str:
@@ -213,22 +214,89 @@ def field_quality(surface: pd.DataFrame) -> tuple[dict[str, Any], dict[str, np.n
     return quality, arrays
 
 
-def equivalent_currents(arrays: dict[str, np.ndarray], variant: str) -> tuple[np.ndarray, np.ndarray, float, str]:
+def parse_impedance_factors(value: str) -> list[float]:
+    factors: list[float] = []
+    for item in value.split(","):
+        stripped = item.strip()
+        if not stripped:
+            continue
+        factor = float(stripped)
+        if factor <= 0:
+            raise ValueError(f"impedance factor must be positive, got {factor}")
+        if not any(math.isclose(factor, existing, rel_tol=1e-9, abs_tol=1e-12) for existing in factors):
+            factors.append(factor)
+    if not factors:
+        raise ValueError("at least one impedance factor is required")
+    if not any(math.isclose(factor, 1.0, rel_tol=1e-9, abs_tol=1e-12) for factor in factors):
+        factors.append(1.0)
+    return sorted(factors)
+
+
+def impedance_label(factor: float) -> str:
+    text = f"{factor:.3g}".replace("-", "m").replace(".", "p")
+    return text.rstrip("0").rstrip("p") if "p" in text else text
+
+
+def candidate_settings(impedance_factors: list[float]) -> list[dict[str, Any]]:
+    settings: list[dict[str, Any]] = [
+        {
+            "variant": "electric_only_outgoing",
+            "variant_family": "electric_only_outgoing",
+            "impedance_factor_to_eta0": 1.0,
+            "impedance_ohm": ETA0,
+            "calibration_mode": "fixed_eta0",
+        },
+        {
+            "variant": "magnetic_only_plus",
+            "variant_family": "magnetic_only_plus",
+            "impedance_factor_to_eta0": 1.0,
+            "impedance_ohm": ETA0,
+            "calibration_mode": "not_used",
+        },
+        {
+            "variant": "magnetic_only_minus",
+            "variant_family": "magnetic_only_minus",
+            "impedance_factor_to_eta0": 1.0,
+            "impedance_ohm": ETA0,
+            "calibration_mode": "not_used",
+        },
+    ]
+    for family in ("outgoing_equivalence_plus", "outgoing_equivalence_minus"):
+        for factor in impedance_factors:
+            fixed_eta0 = math.isclose(factor, 1.0, rel_tol=1e-9, abs_tol=1e-12)
+            settings.append(
+                {
+                    "variant": family if fixed_eta0 else f"{family}_eta{impedance_label(factor)}",
+                    "variant_family": family,
+                    "impedance_factor_to_eta0": float(factor),
+                    "impedance_ohm": float(ETA0 * factor),
+                    "calibration_mode": "fixed_eta0" if fixed_eta0 else "scalar_impedance_scan",
+                }
+            )
+    return settings
+
+
+def equivalent_currents(
+    arrays: dict[str, np.ndarray],
+    variant: str,
+    impedance_ohm: float = ETA0,
+) -> tuple[np.ndarray, np.ndarray, float, str]:
     normals = arrays["normals"]
     tangential = arrays["tangential"]
     magnetic_current = -np.cross(normals, tangential)
-    electric_current = -tangential / ETA0
+    eta_eff = max(float(impedance_ohm), 1e-30)
+    electric_current = -tangential / eta_eff
     zeros = np.zeros_like(tangential)
     if variant == "electric_only_outgoing":
-        return electric_current, zeros, 1.0, "J=-E_t/eta0, M=0"
+        return electric_current, zeros, 1.0, f"J=-E_t/eta_eff, eta_eff={eta_eff:.6g} ohm, M=0"
     if variant == "magnetic_only_plus":
-        return zeros, magnetic_current, 1.0, "J=0, M=-n_cross_E_t"
+        return zeros, magnetic_current, 1.0, "J=0, M=-n_cross_E_t; eta_eff not used"
     if variant == "magnetic_only_minus":
-        return zeros, magnetic_current, -1.0, "J=0, M sign flipped"
+        return zeros, magnetic_current, -1.0, "J=0, M sign flipped; eta_eff not used"
     if variant == "outgoing_equivalence_plus":
-        return electric_current, magnetic_current, 1.0, "J=-E_t/eta0, M=-n_cross_E_t"
+        return electric_current, magnetic_current, 1.0, f"J=-E_t/eta_eff, eta_eff={eta_eff:.6g} ohm, M=-n_cross_E_t"
     if variant == "outgoing_equivalence_minus":
-        return electric_current, magnetic_current, -1.0, "J=-E_t/eta0, M sign flipped"
+        return electric_current, magnetic_current, -1.0, f"J=-E_t/eta_eff, eta_eff={eta_eff:.6g} ohm, M sign flipped"
     raise ValueError(f"unknown equivalent-current variant: {variant}")
 
 
@@ -342,8 +410,8 @@ def acceptance_status(row: dict[str, Any]) -> str:
 def status_rank(status: str) -> int:
     return {
         "strict_pass": 0,
-        "physics_proxy_pass": 1,
-        "region_shape_pass": 2,
+        "region_shape_pass": 1,
+        "physics_proxy_pass": 2,
         "shape_pass_lobe_ambiguous": 3,
         "shape_diagnostic": 3,
         "diagnostic_only": 3,
@@ -352,6 +420,13 @@ def status_rank(status: str) -> int:
 
 def parse_sample_ids(value: str) -> set[str]:
     return {item.strip() for item in value.split(",") if item.strip()}
+
+
+def finite_non_eta0_impedance(value: Any) -> bool:
+    try:
+        return not math.isclose(float(value), 1.0, rel_tol=1e-9, abs_tol=1e-12)
+    except (TypeError, ValueError):
+        return False
 
 
 def batch_summary_row(summary: dict[str, Any], local_nearfield: Path, out_dir: Path) -> dict[str, Any]:
@@ -368,6 +443,10 @@ def batch_summary_row(summary: dict[str, Any], local_nearfield: Path, out_dir: P
         "normal_to_total_l2_ratio": quality["normal_to_total_l2_ratio"],
         "dynamic_range_db": quality["dynamic_range_db"],
         "best_variant": best["variant"],
+        "best_variant_family": best.get("variant_family", ""),
+        "best_impedance_ohm": best.get("impedance_ohm", ""),
+        "best_impedance_factor_to_eta0": best.get("impedance_factor_to_eta0", ""),
+        "best_calibration_mode": best.get("calibration_mode", ""),
         "best_status": best["status"],
         "correlation": best["correlation"],
         "nmse": best["nmse"],
@@ -387,17 +466,18 @@ def write_batch_readme(out_dir: Path, rows: pd.DataFrame, summary: dict[str, Any
         table_rows = []
         for row in rows.itertuples(index=False):
             if row.status != "ok":
-                table_rows.append(f"| {row.sample_id} | {row.status} | - | - | - | - | - | - |")
+                table_rows.append(f"| {row.sample_id} | {row.status} | - | - | - | - | - | - | - |")
                 continue
             table_rows.append(
                 f"| {row.sample_id} | {row.best_status} | {row.best_variant} | "
+                f"{row.best_impedance_factor_to_eta0:.3g} | "
                 f"{row.correlation:.4f} | {row.scaled_power_nmse:.4e} | "
                 f"{row.main_lobe_error_deg:.2f} | {row.main_lobe_region_error_deg:.2f} | "
                 f"{row.main_lobe_region_jaccard:.3f} |"
             )
         table = (
-            "| Sample | Best status | Best variant | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |\n"
-            "|---|---|---|---:|---:|---:|---:|---:|\n"
+            "| Sample | Best status | Best variant | Eta/eta0 | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |\n"
+            "|---|---|---|---:|---:|---:|---:|---:|---:|\n"
             + "\n".join(table_rows)
             + "\n"
         )
@@ -414,7 +494,10 @@ cross-case pass/fail picture.
 - Cases completed: `{summary['case_count_completed']}`
 - Missing/failed cases: `{summary['case_count_missing_or_failed']}`
 - Best strict/physics-proxy cases: `{summary['case_count_strict_or_proxy']}`
+- Best region-shape cases: `{summary['case_count_region_shape']}`
 - Best strict/physics-proxy/region cases: `{summary['case_count_strict_proxy_or_region']}`
+- Impedance scan enabled: `{summary['impedance_scan_enabled']}`
+- Best non-eta0 impedance cases: `{summary['case_count_best_non_eta0_impedance']}`
 
 ## Case Table
 
@@ -424,8 +507,11 @@ cross-case pass/fail picture.
 This is a batch data-chain gate, not the final Huygens physics proof. The
 region-lobe metrics compare the overlap of the top-power directional regions,
 which is more stable than a single argmax for broad or ring-like patterns. Final
-claims still require a stricter vector surface-integral operator and H-field or
-calibrated impedance support.
+claims still require a stricter vector surface-integral operator and independent
+H-field support. The scalar impedance scan is a calibration proxy: it tunes the
+relative weight of electric and magnetic equivalent currents against the current
+Level 1 far-field reference and keeps the selected `eta_eff/eta0` visible in
+every row.
 
 ## Command
 
@@ -441,6 +527,7 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
     batch_out_dir.mkdir(parents=True, exist_ok=True)
     case_table = read_table(resolve_path(args.case_csv))
     selected_ids = parse_sample_ids(args.sample_ids)
+    impedance_factors = parse_impedance_factors(args.impedance_factors)
     rows: list[dict[str, Any]] = []
     completed_summaries: list[dict[str, Any]] = []
 
@@ -468,6 +555,7 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
             out_dir=case_out_dir,
             sample_id=sample_id,
             frequency_hz=frequency_hz,
+            impedance_factors=args.impedance_factors,
         )
         try:
             case_summary = run(case_args)
@@ -493,11 +581,18 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
 
     ok_rows = rows_df.loc[rows_df.get("status", pd.Series(dtype=str)) == "ok"] if not rows_df.empty else rows_df
     strict_or_proxy = 0
+    region_shape = 0
     strict_proxy_or_region = 0
+    best_non_eta0_impedance = 0
     if not ok_rows.empty and "best_status" in ok_rows.columns:
         strict_or_proxy = int(ok_rows["best_status"].isin(["strict_pass", "physics_proxy_pass"]).sum())
+        region_shape = int(ok_rows["best_status"].eq("region_shape_pass").sum())
         strict_proxy_or_region = int(
             ok_rows["best_status"].isin(["strict_pass", "physics_proxy_pass", "region_shape_pass"]).sum()
+        )
+    if not ok_rows.empty and "best_impedance_factor_to_eta0" in ok_rows.columns:
+        best_non_eta0_impedance = int(
+            ok_rows["best_impedance_factor_to_eta0"].map(finite_non_eta0_impedance).fillna(False).sum()
         )
     summary = {
         "generated_at": now_iso(),
@@ -509,7 +604,12 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
         "case_count_completed": int(len(completed_summaries)),
         "case_count_missing_or_failed": int(len(rows) - len(completed_summaries)),
         "case_count_strict_or_proxy": strict_or_proxy,
+        "case_count_region_shape": region_shape,
         "case_count_strict_proxy_or_region": strict_proxy_or_region,
+        "impedance_scan_factors": impedance_factors,
+        "impedance_scan_ohms": [float(ETA0 * factor) for factor in impedance_factors],
+        "impedance_scan_enabled": any(not math.isclose(factor, 1.0) for factor in impedance_factors),
+        "case_count_best_non_eta0_impedance": best_non_eta0_impedance,
         "case_summaries": completed_summaries,
     }
     write_json(batch_out_dir / "meshsafe_huygens_batch_summary.json", summary)
@@ -525,17 +625,18 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     farfield = read_table(args.farfield)
     theta, phi, true_power, farfield_shape = farfield_power_from_table(farfield, args.sample_id, float(args.frequency_hz))
 
-    variants = [
-        "electric_only_outgoing",
-        "magnetic_only_plus",
-        "magnetic_only_minus",
-        "outgoing_equivalence_plus",
-        "outgoing_equivalence_minus",
-    ]
+    impedance_factors = parse_impedance_factors(args.impedance_factors)
+    settings = candidate_settings(impedance_factors)
     result_rows: list[dict[str, Any]] = []
     prediction_cache: dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]] = {}
-    for variant in variants:
-        electric_current, magnetic_current, magnetic_sign, model_note = equivalent_currents(arrays, variant)
+    for setting in settings:
+        variant = str(setting["variant"])
+        variant_family = str(setting["variant_family"])
+        electric_current, magnetic_current, magnetic_sign, model_note = equivalent_currents(
+            arrays,
+            variant_family,
+            float(setting["impedance_ohm"]),
+        )
         predicted_power, e_theta_value, e_phi_value = farfield_from_currents(
             arrays["positions"],
             arrays["weights"],
@@ -554,6 +655,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "sample_id": args.sample_id,
             "frequency_hz": float(args.frequency_hz),
             "variant": variant,
+            "variant_family": variant_family,
+            "impedance_ohm": float(setting["impedance_ohm"]),
+            "impedance_factor_to_eta0": float(setting["impedance_factor_to_eta0"]),
+            "calibration_mode": str(setting["calibration_mode"]),
             "model_note": model_note,
             "sensor_count": int(quality["sensor_count"]),
             "farfield_points": int(theta.size),
@@ -610,9 +715,16 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "quality": quality,
         "best_setting": best,
         "variant_count": int(results.shape[0]),
+        "impedance_scan": {
+            "enabled": any(not math.isclose(factor, 1.0) for factor in impedance_factors),
+            "eta0_ohm": ETA0,
+            "factors": impedance_factors,
+            "ohms": [float(ETA0 * factor) for factor in impedance_factors],
+            "candidate_count": int(len(settings)),
+        },
         "interpretation": (
             "diagnostic Huygens/Kirchhoff proxy; use to verify the real CST local probe export and directionality, "
-            "then replace with a stricter vector surface-integral operator before final report claims"
+            "then replace with a stricter vector surface-integral operator and independent H-field support before final report claims"
         ),
     }
     write_json(out_dir / "meshsafe_huygens_extrapolation_summary.json", summary)
@@ -632,7 +744,8 @@ def write_readme(out_dir: Path, summary: dict[str, Any], results: pd.DataFrame) 
     rows = []
     for row in results.itertuples(index=False):
         rows.append(
-            f"| {row.variant} | {row.status} | {row.correlation:.4f} | {row.nmse:.4e} | "
+            f"| {row.variant} | {row.calibration_mode} | {row.impedance_factor_to_eta0:.3g} | "
+            f"{row.status} | {row.correlation:.4f} | {row.nmse:.4e} | "
             f"{row.scaled_power_nmse:.4e} | {row.main_lobe_error_deg:.2f} | "
             f"{row.main_lobe_region_error_deg:.2f} | {row.main_lobe_region_jaccard:.3f} | "
             f"{row.best_power_scale:.4e} |"
@@ -667,6 +780,10 @@ proxy against the existing Level 1 CST far-field reference.
 | Field | Value |
 |---|---|
 | Variant | `{best['variant']}` |
+| Variant family | `{best.get('variant_family', '')}` |
+| Calibration mode | `{best.get('calibration_mode', '')}` |
+| Eta_eff / eta0 | `{best.get('impedance_factor_to_eta0', '')}` |
+| Eta_eff / ohm | `{best.get('impedance_ohm', '')}` |
 | Status | `{best['status']}` |
 | Correlation | `{best['correlation']:.4f}` |
 | Normalized NMSE | `{best['nmse']:.4e}` |
@@ -678,8 +795,8 @@ proxy against the existing Level 1 CST far-field reference.
 
 ## Variant Ranking
 
-| Variant | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
-|---|---|---:|---:|---:|---:|---:|---:|---:|
+| Variant | Calibration | Eta/eta0 | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
+|---|---|---:|---|---:|---:|---:|---:|---:|---:|---:|
 {chr(10).join(rows)}
 
 ## Reading
@@ -687,8 +804,9 @@ proxy against the existing Level 1 CST far-field reference.
 - This Python gate uses real CST local Huygens probe values
   instead of the previous FarfieldPlot-derived 13 m near-field surrogate.
 - The equivalent-current formulas are deliberately kept as a diagnostic proxy:
-  `J ~= -E_t/eta0` and `M = -n x E_t`. They are good enough to expose data
-  quality, directionality, and sign conventions, but not final report-level
+  `J ~= -E_t/eta_eff` and `M = -n x E_t`. The scalar impedance scan tunes
+  the relative electric/magnetic current weight against the Level 1 far-field
+  reference, making it a calibration proxy rather than final report-level
   Stratton-Chu/Huygens evidence.
 - Broad, ring-like, or multi-peak reference patterns can make the single-point
   main-lobe metric stricter than the whole-pattern shape metrics. Treat
@@ -722,6 +840,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     parser.add_argument("--sample-id", default="L1_short_dipole_z_1p2G")
     parser.add_argument("--frequency-hz", type=float, default=1.2e9)
+    parser.add_argument(
+        "--impedance-factors",
+        default=",".join(str(item) for item in DEFAULT_IMPEDANCE_FACTORS),
+        help=(
+            "Comma-separated eta_eff/eta0 factors for outgoing equivalence current scans; "
+            "1.0 is always included."
+        ),
+    )
     parser.add_argument("--batch", action="store_true", help="Run every available mesh-safe case from --case-csv.")
     parser.add_argument("--case-csv", type=Path, default=DEFAULT_CASE_CSV)
     parser.add_argument("--batch-out-dir", type=Path, default=DEFAULT_BATCH_OUT_DIR)
@@ -737,6 +863,7 @@ def main() -> int:
         print(
             f"completed {summary['case_count_completed']}/{summary['case_count_requested']} cases; "
             f"strict_or_proxy={summary['case_count_strict_or_proxy']}; "
+            f"region_shape={summary['case_count_region_shape']}; "
             f"strict_proxy_or_region={summary['case_count_strict_proxy_or_region']}"
         )
         return 0 if summary["case_count_missing_or_failed"] == 0 else 1
