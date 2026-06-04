@@ -49,6 +49,8 @@
 | S40 | `40_g3_meshsafe_huygens_frozen_real_eh_rule.md` | G3 mesh-safe Huygens frozen real E/H rule gate and dashboard status |
 | S41 | `41_g3_huygens_rotation_covariance.md` | G3 Huygens frozen real E/H rotation-covariance gate and independent CST source-family boundary |
 | S42 | `42_g3_huygens_source_family_workpack.md` | G3 Huygens independent CST source-family workpack, x/y/off-axis automation, and dashboard status |
+| S43 | `43_g3_huygens_source_family_project_generation.md` | G3 Huygens independent CST source-family E/H project generation and solve/export boundary |
+| S44 | `44_g3_huygens_source_family_solver_pilot.md` | G3 Huygens independent CST source-family solver pilot timeout and solver-safe next gate |
 
 后续规则：
 

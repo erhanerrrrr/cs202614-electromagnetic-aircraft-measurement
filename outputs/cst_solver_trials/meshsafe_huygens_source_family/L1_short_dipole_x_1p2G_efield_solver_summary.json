@@ -1,0 +1,498 @@
+{
+  "created_at": "2026-06-04T13:39:23+00:00",
+  "status": "timed_out",
+  "real_cst_api_used": true,
+  "project": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield.cst",
+  "project_exists": true,
+  "timeout_seconds": 600,
+  "poll_seconds": 20.0,
+  "tree_count_before": 139,
+  "result_tree_roots_before": [
+    "1D Results",
+    "2D/3D Results",
+    "Farfields",
+    "Tables"
+  ],
+  "result_tree_count_before": 0,
+  "farfield_items_before": [],
+  "solver_start_result": {
+    "ok": true,
+    "value": true
+  },
+  "completed_at": "2026-06-04T13:49:32+00:00",
+  "elapsed_seconds": 609.3600000000006,
+  "poll_count": 31,
+  "poll_log_tail": [
+    {
+      "elapsed_seconds": 228.36,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 248.36,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 268.375,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 288.391,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 308.407,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 328.407,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 348.422,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 368.438,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 388.438,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 408.438,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 428.469,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 448.469,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 468.485,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 488.485,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 508.5,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 528.516,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 548.516,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 568.532,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 588.532,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 608.547,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    }
+  ],
+  "last_solver_info": {
+    "ok": false,
+    "error": "missing method get_solver_info"
+  },
+  "timeout_stop_solver": {
+    "ok": true,
+    "value": true
+  },
+  "save_project": {
+    "ok": false,
+    "error": "RuntimeError('Failed to save project')"
+  },
+  "tree_count_after": 1146,
+  "result_tree_roots_after": [
+    "1D Results",
+    "2D/3D Results",
+    "Farfields",
+    "Tables"
+  ],
+  "result_tree_count_after": 788,
+  "result_items_after_summary": {
+    "count": 788,
+    "category_counts": {
+      "1D Results\\Discrete Ports": 1,
+      "1D Results\\Discrete Ports\\Currents": 4,
+      "1D Results\\Discrete Ports\\Impedances": 2,
+      "1D Results\\Discrete Ports\\Voltages": 4,
+      "1D Results\\Energy": 1,
+      "1D Results\\Energy\\Energy [1]": 1,
+      "1D Results\\Port signals": 1,
+      "1D Results\\Port signals\\i1": 1,
+      "1D Results\\Probes": 1,
+      "1D Results\\Probes\\E-Field": 770,
+      "2D/3D Results\\E-Field": 1,
+      "2D/3D Results\\E-Field\\nearfield_local_huygens_r0p35_1200MHz [1]": 1
+    },
+    "sample": [
+      "1D Results\\Discrete Ports",
+      "1D Results\\Discrete Ports\\Currents",
+      "1D Results\\Discrete Ports\\Currents\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Currents\\Signals",
+      "1D Results\\Discrete Ports\\Currents\\Signals\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Impedances",
+      "1D Results\\Discrete Ports\\Impedances\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Voltages",
+      "1D Results\\Discrete Ports\\Voltages\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Voltages\\Signals",
+      "1D Results\\Discrete Ports\\Voltages\\Signals\\Port 1 [1]",
+      "1D Results\\Energy",
+      "1D Results\\Energy\\Energy [1]",
+      "1D Results\\Port signals",
+      "1D Results\\Port signals\\i1",
+      "1D Results\\Probes",
+      "1D Results\\Probes\\E-Field",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.011538 0.0490476 3.65365)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.011538 0.0490476 3.65365)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.011538 0.0490476 3.65365)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.011538 0.0490476 3.65365)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0130088 0.281327 4.20781)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0130088 0.281327 4.20781)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0130088 0.281327 4.20781)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0130088 0.281327 4.20781)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.024023 -0.308231 3.83594)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.024023 -0.308231 3.83594)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.024023 -0.308231 3.83594)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.024023 -0.308231 3.83594)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0283482 0.290446 3.80677)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0283482 0.290446 3.80677)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0283482 0.290446 3.80677)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0283482 0.290446 3.80677)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0331001 -0.255432 4.23698)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0331001 -0.255432 4.23698)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0331001 -0.255432 4.23698)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0331001 -0.255432 4.23698)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0456569 0.169842 4.3026)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0456569 0.169842 4.3026)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0456569 0.169842 4.3026)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0456569 0.169842 4.3026)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0618748 0.340119 4.05469)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0618748 0.340119 4.05469)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0618748 0.340119 4.05469)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0618748 0.340119 4.05469)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0640137 0.0586418 4.33906)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0640137 0.0586418 4.33906)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0640137 0.0586418 4.33906)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0640137 0.0586418 4.33906)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0683068 -0.225452 3.74115)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0683068 -0.225452 3.74115)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0683068 -0.225452 3.74115)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0683068 -0.225452 3.74115)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0734474 -0.342032 3.98906)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0734474 -0.342032 3.98906)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0734474 -0.342032 3.98906)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0734474 -0.342032 3.98906)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0865849 -0.166714 4.29531)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0865849 -0.166714 4.29531)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0865849 -0.166714 4.29531)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.0865849 -0.166714 4.29531)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.103643 0.319481 3.90156)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.103643 0.319481 3.90156)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.103643 0.319481 3.90156)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.103643 0.319481 3.90156)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.105286 0.219388 3.74844)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.105286 0.219388 3.74844)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.105286 0.219388 3.74844)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.105286 0.219388 3.74844)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.108243 -0.300942 4.14219)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.108243 -0.300942 4.14219)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.108243 -0.300942 4.14219)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.108243 -0.300942 4.14219)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.110336 -0.015943 3.66823)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.110336 -0.015943 3.66823)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.110336 -0.015943 3.66823)(Y) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.110336 -0.015943 3.66823)(Z) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.116426 0.11362 3.6901)(Abs) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.116426 0.11362 3.6901)(X) [1]",
+      "1D Results\\Probes\\E-Field\\E-Field (-0.116426 0.11362 3.6901)(Y) [1]"
+    ],
+    "omitted_count": 708
+  },
+  "farfield_items_after": [],
+  "project_size_bytes": 46233,
+  "solver_logs": {
+    "project_result_dir": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield",
+    "log_files": [
+      {
+        "path": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield\\Result\\Model.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 1258,
+        "tail": [
+          "2026-06-04 21:39:31   Defined reference frequency for open boundary condition (1.2 GHz) is larger",
+          "                      than the lowest relevant system frequency (monitor at 1.2 GHz).",
+          "                      Please check the Settings for PML Boundary (Simulation > Settings > Boundary",
+          "                      Conditions > Open Boundary) to ensure accurate monitor results for the lowest",
+          "                      frequency of interest. More...",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-04 21:39:31   The following farfield monitor(s) have been adjusted to model box [-0.00654904,",
+          "                      0.00651858, -0.000596784, 0.000609872, 3.99942, 4.00058]:",
+          "                        farfield_1200MHz.",
+          "                      For further information please check the page \"Special Solver Parameters -",
+          "                      Solver\" in the Online Help.",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-04 21:39:31   According to the selected features the <Time Domain Solver (HEX)> will be",
+          "                      started.",
+          "                      ------------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield\\Result\\output.txt",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 1976,
+        "tail": [
+          "_______________________________________________________________________________________________________________________",
+          "_______________________________________________________________________________________________________________________",
+          "Defined reference frequency for open boundary condition (1.2 GHz) is larger than the lowest relevant system frequency (monitor at 1.2 GHz).",
+          "Please check the Settings for PML Boundary (Simulation > Settings > Boundary Conditions > Open Boundary) to ensure accurate monitor results for the lowest frequency of interest. <a href=\"2108;2356.htm\">More...</a>",
+          "_______________________________________________________________________________________________________________________",
+          "Using 12 threads for parallelized CAD processing",
+          "_______________________________________________________________________________________________________________________",
+          "Matrix computation (PBA)",
+          "\t[Perfect Boundary Approximation (PBA), version: default]",
+          "\t[GPU acceleration: off (by user)]",
+          "<a href=\"1490;2389.htm\">More...</a>",
+          "_______________________________________________________________________________________________________________________",
+          "Virtual radius setting will not be considered for the distributed discrete port 1.",
+          "_______________________________________________________________________________________________________________________",
+          "Solver Settings:",
+          "Excited discrete port: 1",
+          "[Frequency domain results normalized to default signal]",
+          "Excitation duration: 2.96212396e+001 ns",
+          "Steady state accuracy limit: -40 dB",
+          "Maximum number of time steps: 1457297",
+          "Time step width:",
+          "     without subcycles: 4.065228069e-004 ns",
+          "     used: 4.065228069e-004 ns",
+          "Number of threads used: 8"
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield\\Result\\outputDS.txt",
+        "exists": false
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield\\Result\\hexmeshengine.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 457,
+        "tail": [
+          ">2026-06-04 21:39:31.00597< :  Configuring HexMeshEngine...",
+          ">2026-06-04 21:39:31.00641< :  Locals Configured.",
+          ">2026-06-04 21:39:31.00642< :  Globals Configured.",
+          ">2026-06-04 21:39:31.00642< :  Configuration Done.",
+          ">2026-06-04 21:39:31.00642< :  HexMeshEngine correctly configured.",
+          ">2026-06-04 21:39:31.00643< :  Generating Mesh Line...",
+          ">2026-06-04 21:39:31.00652< :  Done.",
+          ">2026-06-04 21:39:31.00653< :  Postprocessing...",
+          ">2026-06-04 21:39:31.00653< :  Done."
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield\\Result\\ml_info.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 211,
+        "tail": [
+          "Layer Detection Run At: Thu Jun  4 21:39:31 2026",
+          "Layer Detection Version: 20180416",
+          "No Result from User Configuration (No Auto-Detection attempted).",
+          "Result from Auto-Detection.",
+          "Stack Detection Failed."
+        ]
+      }
+    ],
+    "result_jsons": {
+      "simulation_overview.json": {
+        "path": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield\\Result\\simulation_overview.json",
+        "exists": false,
+        "data": {}
+      },
+      "output.json": {
+        "path": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield\\Result\\output.json",
+        "exists": false,
+        "data": {}
+      }
+    },
+    "result_artifacts": {
+      "result_dir": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield",
+      "artifact_count": 0,
+      "suffix_counts": {},
+      "has_farfield_artifact": false,
+      "has_nearfield_artifact": false,
+      "artifacts": [],
+      "omitted_count": 0
+    },
+    "error_lines": [],
+    "mesh_cell_count_billion": null,
+    "required_mpi_nodes": null,
+    "mesh_limit_detected": false,
+    "path_length_limit_detected": false,
+    "encoding_warning_detected": false,
+    "aborted_keeping_results_detected": false,
+    "solver_return_code": null,
+    "solver_used": null,
+    "solver_run_time_seconds": null
+  },
+  "controller_returncode": 1,
+  "source_project": "C:\\csttmp\\huy_sf_e\\projects\\CST_L1_short_dipole_x_1p2G_meshsafe_huygens_r0p35.cst",
+  "trial_project": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield.cst",
+  "stdout_log": "outputs\\cst_solver_trials\\meshsafe_huygens_source_family\\L1_short_dipole_x_1p2G_efield_stdout.log"
+}

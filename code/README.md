@@ -626,3 +626,54 @@ Current status: `source_family_workpack_ready`.
 This is not a new physics pass yet. It is the CST generation/solve/export
 handoff needed to test whether the same frozen E/H Huygens rule remains
 accepted on independent x/y/off-axis CST solves without per-source retuning.
+
+## CST mesh-safe Huygens source-family project generation addendum
+
+The S42 source-family handoff has now passed real CST API project generation
+for both E-field and H-field variants:
+
+```powershell
+python code\build_cst_source_family_generation_status.py
+python code\build_g3_model_dashboard.py
+```
+
+Current status: `source_family_projects_generated`.
+
+- E-field CST projects: `6/6`.
+- H-field CST projects: `6/6`.
+- Total combined project rows: `12`.
+- Local project roots: `C:\csttmp\huy_sf_e\projects` and
+  `C:\csttmp\huy_sf_h\projects`.
+- Repository evidence:
+  `outputs/cst_meshsafe_huygens_source_family_generation/`.
+
+This proves that the x/y/off-axis source-family generator is CST-compatible.
+The active gate is now solver/export completion plus frozen-rule validation on
+the exported source-family E/H CSVs.
+
+## CST mesh-safe Huygens source-family solver pilot addendum
+
+The first generated source-family solver pilot is now tracked separately from
+project generation:
+
+```powershell
+python code\build_cst_source_family_solver_status.py
+python code\build_g3_model_dashboard.py
+```
+
+Current status: `source_family_solver_pilot_timed_out`.
+
+Key evidence from `L1_short_dipole_x_1p2G_efield`:
+
+- Real CST API used and solver start returned OK.
+- Elapsed time: `609.36 s` against a `600 s` timeout.
+- ResultTree after the run contains `788` result items, including `770`
+  E-field probe entries.
+- CST reports `1457297` maximum time steps and a `-40 dB` steady-state
+  accuracy limit.
+- No export-ready local E/H CSV or far-field artifact was produced.
+
+This is not a CST startup failure. It is a solver/runtime settings gate. Keep
+the same short x-oriented case as the pilot, repair the time-domain settings or
+validate a frequency-domain/fast-path variant, and only then run the remaining
+source-family queue.

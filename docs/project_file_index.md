@@ -431,3 +431,37 @@ Tracked entries:
 | `code/export_cst_meshsafe_huygens_results.py` | Now filters case-scoped probe rows by `sample_id` during ResultTree export checks. |
 | `data/cst_meshsafe_huygens_source_family_workpack/` | Generated source-family cases, probe CSV, validation matrix, command queue, summary JSON, and README. |
 | `outputs/g3_model_dashboard/` | Dashboard now includes `meshsafe_huygens_source_family_workpack = source_family_workpack_ready`. |
+
+## 2026-06-04 CST mesh-safe Huygens source-family project generation
+
+S43 executes the S42 project-generation gate through the real local CST API.
+Both the E-field and H-field source-family project sets are generated. The
+remaining gate is solving, ResultTree export, far-field reference export, and
+frozen-rule Huygens validation.
+
+Tracked entries:
+
+| File/directory | Meaning |
+|---|---|
+| `docs/stage_notes/43_g3_huygens_source_family_project_generation.md` | S43 note covering 12/12 E/H CST project generation and the remaining solve/export boundary. |
+| `code/build_cst_source_family_generation_status.py` | Collects local `C:\csttmp\huy_sf_e/h` CST generation evidence into repository outputs. |
+| `outputs/cst_meshsafe_huygens_source_family_generation/` | Generated summary JSON, combined project manifest, and human-readable generation report. |
+| `outputs/g3_model_dashboard/` | Dashboard now reports `meshsafe_huygens_source_family_workpack = source_family_projects_generated`. |
+
+## 2026-06-04 CST mesh-safe Huygens source-family solver pilot
+
+S44 runs the first generated source-family CST solver pilot. The short
+x-oriented E-field case starts through the real CST API and creates ResultTree
+probe entries, but the current time-domain settings time out before export.
+This changes the active gate from project generation to solver-safe pilot
+repair.
+
+Tracked entries:
+
+| File/directory | Meaning |
+|---|---|
+| `docs/stage_notes/44_g3_huygens_source_family_solver_pilot.md` | S44 note covering the timed-out source-family solver pilot and next solver-safe gate. |
+| `code/build_cst_source_family_solver_status.py` | Summarizes source-family solver trial summaries into repository outputs. |
+| `outputs/cst_solver_trials/meshsafe_huygens_source_family/L1_short_dipole_x_1p2G_efield_solver_summary.json` | Raw solver pilot summary: real CST start OK, ResultTree populated, timed out before export. |
+| `outputs/cst_meshsafe_huygens_source_family_solver_status/` | Machine-readable solver status summary, trial CSV, and human-readable report. |
+| `outputs/g3_model_dashboard/` | Dashboard reports the source-family gate as `source_family_solver_pilot_timed_out` once refreshed. |

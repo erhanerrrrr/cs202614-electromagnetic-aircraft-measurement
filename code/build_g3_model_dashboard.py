@@ -60,7 +60,13 @@ def status_rank(status: str) -> int:
         "corr_pass_nmse_near": 1,
         "real_eh_frozen_rule_region_pass": 2,
         "rotation_covariance_pass": 2,
+        "source_family_solver_completed": 2,
+        "source_family_projects_generated": 2,
         "source_family_workpack_ready": 3,
+        "source_family_solver_partial_with_timeout": 4,
+        "source_family_project_generation_partial": 4,
+        "source_family_solver_pilot_timed_out": 5,
+        "source_family_solver_partial": 5,
         "impedance_region_proxy_batch_pass": 2,
         "region_proxy_batch_pass": 2,
         "region_shape_pass": 2,
@@ -622,37 +628,126 @@ def build_rows() -> list[dict[str, Any]]:
         / "cst_meshsafe_huygens_source_family_workpack"
         / "source_family_workpack_summary.json"
     )
+    source_family_generation_path = (
+        ROOT
+        / "outputs"
+        / "cst_meshsafe_huygens_source_family_generation"
+        / "source_family_project_generation_summary.json"
+    )
+    source_family_solver_path = (
+        ROOT
+        / "outputs"
+        / "cst_meshsafe_huygens_source_family_solver_status"
+        / "source_family_solver_status_summary.json"
+    )
     source_family = read_json(source_family_path)
+    source_family_generation = read_json(source_family_generation_path)
+    source_family_solver = read_json(source_family_solver_path)
     if source_family:
-        rows.append(
-            row(
-                category="rerun_priority",
-                artifact="meshsafe_huygens_source_family_workpack",
-                scope=(
+        solver_status = str(source_family_solver.get("stage_status", ""))
+        if solver_status in (
+            "source_family_solver_pilot_timed_out",
+            "source_family_solver_partial_with_timeout",
+            "source_family_solver_partial",
+            "source_family_solver_completed",
+        ):
+            trial_count = int(source_family_solver.get("trial_count", 0) or 0)
+            timed_out_count = int(source_family_solver.get("timed_out_count", 0) or 0)
+            completed_count = int(source_family_solver.get("completed_count", 0) or 0)
+            solver_start_ok_count = int(source_family_solver.get("solver_start_ok_count", 0) or 0)
+            source_family_status = solver_status
+            source_family_evidence = source_family_solver_path
+            source_family_command = "python code\\build_cst_source_family_solver_status.py"
+            source_family_scope = (
+                f"{trial_count} CST source-family solver pilot trial(s); "
+                f"{timed_out_count} timed out; {completed_count} completed"
+            )
+            source_family_best = (
+                f"solver_start_ok={solver_start_ok_count}/{trial_count}; "
+                f"max_elapsed_s={format_float(source_family_solver.get('max_elapsed_seconds'))}; "
+                f"max_time_steps={source_family_solver.get('max_time_steps', 0)}; "
+                f"real_cst_api_trials={source_family_solver.get('real_cst_api_used_count', 0)}"
+            )
+            source_family_interpretation = (
+                "The independent source-family gate has moved into real CST solver execution. The first pilot "
+                "started successfully and populated ResultTree probe entries, but the current time-domain setup "
+                "did not finish inside the solver timeout, so no matched local E/H CSV or far-field export is "
+                "ready for frozen-rule validation."
+            )
+            source_family_next = (
+                "Build a solver-safe pilot for the short x-oriented case before running the full 12-project queue: "
+                "reduce or verify CST time-domain settings, or switch to a validated frequency-domain/fast-path "
+                "variant, then rerun solve/export and only then evaluate the frozen Huygens rule."
+            )
+            source_family_trust = "solver_gate_not_physics_proof"
+            source_family_blocker = "current CST time-domain solver settings timed out before export"
+        else:
+            generation_status = str(source_family_generation.get("stage_status", ""))
+            if generation_status in ("source_family_projects_generated", "source_family_project_generation_partial"):
+                source_family_status = generation_status
+                source_family_evidence = source_family_generation_path
+                source_family_command = "python code\\build_cst_source_family_generation_status.py"
+                source_family_scope = (
+                    f"{source_family_generation.get('efield_projects_created', 0)} E-field + "
+                    f"{source_family_generation.get('hfield_projects_created', 0)} H-field CST source-family projects"
+                )
+                source_family_best = (
+                    f"rule={source_family.get('frozen_rule_under_test', '')}; "
+                    f"projects={source_family_generation.get('total_projects_created', 0)}; "
+                    f"rows={source_family_generation.get('total_project_rows', 0)}; "
+                    f"real_cst_api={source_family_generation.get('real_cst_api_used', False)}"
+                )
+                source_family_interpretation = (
+                    "The S42 handoff has moved past planning: real CST API project generation succeeded for the E/H "
+                    "source-family set. This proves the x/y/off-axis case generator is CST-compatible; it still does "
+                    "not prove the electromagnetic result until the generated projects are solved and exported."
+                )
+                source_family_next = (
+                    "Solve the generated projects listed in next_source_family_commands.csv, export matched local "
+                    "E/H probe CSVs and far-field references, then run the frozen Huygens rule without retuning."
+                )
+                source_family_trust = "project_generation_not_physics_proof"
+                source_family_blocker = ""
+            else:
+                source_family_status = str(source_family.get("stage_status", "missing"))
+                source_family_evidence = source_family_path
+                source_family_command = "python code\\prepare_cst_huygens_source_family_workpack.py"
+                source_family_scope = (
                     f"{source_family.get('automation_ready_count', 0)} automation-ready CST source-family cases; "
                     f"{source_family.get('pending_advanced_count', 0)} advanced gates tracked"
-                ),
-                evidence_path=source_family_path,
-                command="python code\\prepare_cst_huygens_source_family_workpack.py",
-                best_setting=(
+                )
+                source_family_best = (
                     f"rule={source_family.get('frozen_rule_under_test', '')}; "
                     f"cases={source_family.get('axis_aligned_case_count', 0)}; "
                     f"probes/case={source_family.get('probe_count_per_case', 0)}; "
                     f"probe_rows={source_family.get('probe_row_count', 0)}"
-                ),
-                status=str(source_family.get("stage_status", "missing")),
-                trust_level="workpack_not_physics_proof",
-                sensor_count=source_family.get("probe_count_per_case"),
-                interpretation=(
+                )
+                source_family_interpretation = (
                     "The next independent CST validation package is ready: x/y-oriented and off-axis Level 1 "
                     "single-source cases have case-scoped local Huygens probe rows and ordered CST project, solve, "
                     "and export commands. This is an execution handoff, not proof that the frozen rule has passed "
                     "new electromagnetic solves."
-                ),
-                next_action=(
+                )
+                source_family_next = (
                     "Run data\\cst_meshsafe_huygens_source_family_workpack\\next_source_family_commands.csv, then "
                     "evaluate the frozen E/H Huygens rule on the exported source-family E/H CSVs without retuning."
-                ),
+                )
+                source_family_trust = "workpack_not_physics_proof"
+                source_family_blocker = ""
+        rows.append(
+            row(
+                category="rerun_priority",
+                artifact="meshsafe_huygens_source_family_workpack",
+                scope=source_family_scope,
+                evidence_path=source_family_evidence,
+                command=source_family_command,
+                best_setting=source_family_best,
+                status=source_family_status,
+                trust_level=source_family_trust,
+                sensor_count=source_family.get("probe_count_per_case"),
+                interpretation=source_family_interpretation,
+                next_action=source_family_next,
+                blocker=source_family_blocker,
             )
         )
     else:
@@ -830,32 +925,73 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
     source_family_workpack_ready = bool(
         (
             status["artifact"].eq("meshsafe_huygens_source_family_workpack")
-            & status["status"].eq("source_family_workpack_ready")
+            & status["status"].isin(
+                [
+                    "source_family_workpack_ready",
+                    "source_family_projects_generated",
+                    "source_family_solver_pilot_timed_out",
+                    "source_family_solver_partial_with_timeout",
+                    "source_family_solver_partial",
+                    "source_family_solver_completed",
+                ]
+            )
         ).any()
+    )
+    source_family_projects_generated = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_source_family_workpack")
+            & status["status"].eq("source_family_projects_generated")
+        ).any()
+    )
+    source_family_solver_timed_out = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_source_family_workpack")
+            & status["status"].isin(["source_family_solver_pilot_timed_out", "source_family_solver_partial_with_timeout"])
+        ).any()
+    )
+    source_family_action = (
+        "Repair the CST source-family solver pilot before running the full 12-project queue: keep the short "
+        "x-oriented case as the pilot, adjust CST time-domain settings or use a validated frequency-domain/fast-path "
+        "variant, then export local E/H probes and far-field references."
+        if source_family_solver_timed_out
+        else (
+            "Execute the CST source-family handoff in "
+            "data\\cst_meshsafe_huygens_source_family_workpack\\next_source_family_commands.csv: generate E/H "
+            "projects, solve the six x/y/off-axis cases, export local E/H probes, then test the frozen rule "
+            "without per-source retuning."
+        )
+    )
+    source_family_trigger = (
+        "The first real CST source-family solver pilot started and populated probe ResultTree entries, but the "
+        "current time-domain setup timed out before export; the next proof step is solver-parameter repair, not "
+        "blindly running all remaining cases."
+        if source_family_solver_timed_out
+        else (
+            "The frozen Huygens rule passes rotation-covariance and the source-family E/H CST projects have been generated; the next proof step is solve/export plus frozen-rule evaluation." if frozen_real_eh_needs_validation and rotation_covariance_ready and source_family_projects_generated else
+            "The frozen Huygens rule passes rotation-covariance and the source-family workpack is ready; the next proof step is running those independent CST solves." if frozen_real_eh_needs_validation and rotation_covariance_ready and source_family_workpack_ready else
+            "Mesh-safe real CST batch has a frozen real E/H candidate and the rotation-covariance gate passes; the remaining proof is independent CST source-family validation." if frozen_real_eh_needs_validation and rotation_covariance_ready else
+            "Mesh-safe real CST batch now has a frozen real E/H candidate accepted by every current Level 1 case; it still needs a physics/geometry explanation and broader source-family validation." if frozen_real_eh_needs_validation else
+            "Mesh-safe real CST batch gate now reaches strict/proxy status with real E/H currents, but the best J-scale/sign is source-dependent." if real_eh_calibration_needed else
+            "Mesh-safe real CST batch gate is region/proxy ready, but the stability gate still shows "
+            "source-dependent impedance sensitivity." if impedance_extension_needed else
+            "Mesh-safe real CST batch gate is region/proxy ready and the impedance stability gate is available."
+        )
+    )
+    source_family_blocker = (
+        "Current source-family CST time-domain solver settings timed out before export"
+        if source_family_solver_timed_out
+        else "" if meshsafe_ready and source_family_workpack_ready else "Mesh-safe batch gate or source-family workpack"
     )
     actions = [
         {
             "priority": 1,
             "owner": "Independent workflow",
             "gate": "meshsafe_huygens_physics",
-            "action": (
-                "Execute the CST source-family handoff in "
-                "data\\cst_meshsafe_huygens_source_family_workpack\\next_source_family_commands.csv: generate E/H "
-                "projects, solve the six x/y/off-axis cases, export local E/H probes, then test the frozen rule "
-                "without per-source retuning."
-            ),
-            "trigger": (
-                "The frozen Huygens rule passes rotation-covariance and the source-family workpack is ready; the next proof step is running those independent CST solves." if frozen_real_eh_needs_validation and rotation_covariance_ready and source_family_workpack_ready else
-                "Mesh-safe real CST batch has a frozen real E/H candidate and the rotation-covariance gate passes; the remaining proof is independent CST source-family validation." if frozen_real_eh_needs_validation and rotation_covariance_ready else
-                "Mesh-safe real CST batch now has a frozen real E/H candidate accepted by every current Level 1 case; it still needs a physics/geometry explanation and broader source-family validation." if frozen_real_eh_needs_validation else
-                "Mesh-safe real CST batch gate now reaches strict/proxy status with real E/H currents, but the best J-scale/sign is source-dependent." if real_eh_calibration_needed else
-                "Mesh-safe real CST batch gate is region/proxy ready, but the stability gate still shows "
-                "source-dependent impedance sensitivity." if impedance_extension_needed else
-                "Mesh-safe real CST batch gate is region/proxy ready and the impedance stability gate is available."
-            ),
+            "action": source_family_action,
+            "trigger": source_family_trigger,
             "artifact": "data/cst_meshsafe_huygens_source_family_workpack/next_source_family_commands.csv and data/cst_exports/level1_meshsafe_huygens_source_family/*_local_[eh]field.csv",
             "proof_to_close": "Six automation-ready source-family rows have matched local E/H exports, far-field references, and the same frozen Huygens rule remains accepted without retuning.",
-            "blocked_by": "" if meshsafe_ready and source_family_workpack_ready else "Mesh-safe batch gate or source-family workpack",
+            "blocked_by": source_family_blocker,
         },
         {
             "priority": 2,
@@ -946,7 +1082,21 @@ def write_markdown(status: pd.DataFrame, actions: pd.DataFrame, summary: dict[st
             "not as a substitute for independent CST source-family solves."
         )
     source_family_rows = status.loc[status["artifact"] == "meshsafe_huygens_source_family_workpack"]
-    if not source_family_rows.empty and str(source_family_rows.iloc[0].get("status", "")) == "source_family_workpack_ready":
+    if not source_family_rows.empty and str(source_family_rows.iloc[0].get("status", "")) in (
+        "source_family_solver_pilot_timed_out",
+        "source_family_solver_partial_with_timeout",
+    ):
+        lines.append(
+            "- The first independent CST source-family solver pilot started through the real CST API and populated "
+            "probe ResultTree entries, but timed out before export; solver settings now need repair before the "
+            "full queue is run."
+        )
+    elif not source_family_rows.empty and str(source_family_rows.iloc[0].get("status", "")) == "source_family_projects_generated":
+        lines.append(
+            "- The independent CST source-family workpack has generated all six E-field and six H-field CST projects; "
+            "solve/export is now the active gate before frozen-rule validation."
+        )
+    elif not source_family_rows.empty and str(source_family_rows.iloc[0].get("status", "")) == "source_family_workpack_ready":
         lines.append(
             "- The independent CST source-family workpack is ready for execution: six x/y/off-axis cases are scripted, "
             "while tilted and multi-source rows remain explicit future gates."

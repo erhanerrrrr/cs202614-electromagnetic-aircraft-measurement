@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-06-04T14:06:46.699408+00:00",
+  "stage_status": "source_family_solver_pilot_timed_out",
+  "trial_dir": "outputs\\cst_solver_trials\\meshsafe_huygens_source_family",
+  "trial_count": 1,
+  "timed_out_count": 1,
+  "completed_count": 0,
+  "solver_start_ok_count": 1,
+  "real_cst_api_used_count": 1,
+  "export_artifact_ready_count": 0,
+  "max_elapsed_seconds": 609.3600000000006,
+  "max_time_steps": 1457297,
+  "next_gate": "repair CST solver settings or create a frequency-domain/fast-path pilot before running the full source-family queue",
+  "trials": [
+    {
+      "sample_id": "L1_short_dipole_x_1p2G",
+      "field_kind": "efield",
+      "status": "timed_out",
+      "real_cst_api_used": true,
+      "project_exists": true,
+      "solver_start_ok": true,
+      "elapsed_seconds": 609.3600000000006,
+      "timeout_seconds": 600.0,
+      "poll_count": 31,
+      "result_tree_count_after": 788,
+      "probe_result_count": 770,
+      "has_nearfield_artifact": false,
+      "has_farfield_artifact": false,
+      "artifact_count": 0,
+      "max_time_steps": 1457297,
+      "time_step_width_ns": 0.0004065228069,
+      "excitation_duration_ns": 29.6212396,
+      "steady_state_accuracy_db": -40.0,
+      "open_boundary_warning": true,
+      "farfield_adjusted_to_model_box": true,
+      "save_project_ok": false,
+      "save_project_error": "RuntimeError('Failed to save project')",
+      "source_project": "C:\\csttmp\\huy_sf_e\\projects\\CST_L1_short_dipole_x_1p2G_meshsafe_huygens_r0p35.cst",
+      "trial_project": "C:\\csttmp\\huy_sf_es\\L1_short_dipole_x_1p2G_efield.cst",
+      "summary_path": "outputs\\cst_solver_trials\\meshsafe_huygens_source_family\\L1_short_dipole_x_1p2G_efield_solver_summary.json"
+    }
+  ]
+}

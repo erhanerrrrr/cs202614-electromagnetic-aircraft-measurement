@@ -1,0 +1,13 @@
+﻿field_kind,probe_mode,sample_id,source_type,orientation_axis,project_path,project_exists,project_size_bytes,probe_count,history_block_count,status,error
+e,efield,L1_short_dipole_x_1p2G,short_dipole,x,C:\csttmp\huy_sf_e\projects\CST_L1_short_dipole_x_1p2G_meshsafe_huygens_r0p35.cst,True,46233,96,7,project_saved,
+e,efield,L1_short_dipole_y_1p2G,short_dipole,y,C:\csttmp\huy_sf_e\projects\CST_L1_short_dipole_y_1p2G_meshsafe_huygens_r0p35.cst,True,47239,96,7,project_saved,
+e,efield,L1_halfwave_dipole_x_1p2G,halfwave_dipole,x,C:\csttmp\huy_sf_e\projects\CST_L1_halfwave_dipole_x_1p2G_meshsafe_huygens_r0p35.cst,True,51006,96,7,project_saved,
+e,efield,L1_halfwave_dipole_y_1p2G,halfwave_dipole,y,C:\csttmp\huy_sf_e\projects\CST_L1_halfwave_dipole_y_1p2G_meshsafe_huygens_r0p35.cst,True,51272,96,7,project_saved,
+e,efield,L1_short_dipole_z_offset_xp25_1p2G,short_dipole,z,C:\csttmp\huy_sf_e\projects\CST_L1_short_dipole_z_offset_xp25_1p2G_meshsafe_huygens_r0p35.cst,True,47139,96,7,project_saved,
+e,efield,L1_halfwave_dipole_z_offset_yp25_1p2G,halfwave_dipole,z,C:\csttmp\huy_sf_e\projects\CST_L1_halfwave_dipole_z_offset_yp25_1p2G_meshsafe_huygens_r0p35.cst,True,47107,96,7,project_saved,
+h,hfield,L1_short_dipole_x_1p2G,short_dipole,x,C:\csttmp\huy_sf_h\projects\CST_L1_short_dipole_x_1p2G_meshsafe_huygens_r0p35.cst,True,46223,96,7,project_saved,
+h,hfield,L1_short_dipole_y_1p2G,short_dipole,y,C:\csttmp\huy_sf_h\projects\CST_L1_short_dipole_y_1p2G_meshsafe_huygens_r0p35.cst,True,47239,96,7,project_saved,
+h,hfield,L1_halfwave_dipole_x_1p2G,halfwave_dipole,x,C:\csttmp\huy_sf_h\projects\CST_L1_halfwave_dipole_x_1p2G_meshsafe_huygens_r0p35.cst,True,51014,96,7,project_saved,
+h,hfield,L1_halfwave_dipole_y_1p2G,halfwave_dipole,y,C:\csttmp\huy_sf_h\projects\CST_L1_halfwave_dipole_y_1p2G_meshsafe_huygens_r0p35.cst,True,51276,96,7,project_saved,
+h,hfield,L1_short_dipole_z_offset_xp25_1p2G,short_dipole,z,C:\csttmp\huy_sf_h\projects\CST_L1_short_dipole_z_offset_xp25_1p2G_meshsafe_huygens_r0p35.cst,True,47133,96,7,project_saved,
+h,hfield,L1_halfwave_dipole_z_offset_yp25_1p2G,halfwave_dipole,z,C:\csttmp\huy_sf_h\projects\CST_L1_halfwave_dipole_z_offset_yp25_1p2G_meshsafe_huygens_r0p35.cst,True,47105,96,7,project_saved,
