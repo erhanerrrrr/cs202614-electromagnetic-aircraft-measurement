@@ -264,16 +264,75 @@ def scaled_power_nmse(true_power: np.ndarray, predicted_power: np.ndarray) -> tu
     return scale, nmse
 
 
+def min_angle_to_region_deg(directions: np.ndarray, point_idx: int, region_mask: np.ndarray) -> float:
+    if not bool(np.any(region_mask)):
+        return 180.0
+    dots = np.clip(directions[region_mask] @ directions[int(point_idx)], -1.0, 1.0)
+    return float(np.rad2deg(np.arccos(float(np.max(dots)))))
+
+
+def top_power_region_metrics(
+    true_power: np.ndarray,
+    predicted_power: np.ndarray,
+    theta: np.ndarray,
+    phi: np.ndarray,
+    threshold: float = 0.75,
+) -> dict[str, float]:
+    true_norm = true_power / max(float(np.max(true_power)), 1e-30)
+    pred_norm = predicted_power / max(float(np.max(predicted_power)), 1e-30)
+    true_region = true_norm >= threshold
+    pred_region = pred_norm >= threshold
+    intersection = true_region & pred_region
+    union = true_region | pred_region
+    true_lobe_power = float(np.sum(true_norm[true_region]))
+    pred_lobe_power = float(np.sum(pred_norm[pred_region]))
+    reference_capture = float(np.sum(true_norm[intersection]) / max(true_lobe_power, 1e-30))
+    prediction_precision = float(np.sum(pred_norm[intersection]) / max(pred_lobe_power, 1e-30))
+    true_peak = int(np.argmax(true_norm))
+    pred_peak = int(np.argmax(pred_norm))
+    directions, _, _ = spherical_basis(theta, phi)
+    true_peak_to_pred_region = min_angle_to_region_deg(directions, true_peak, pred_region)
+    pred_peak_to_true_region = min_angle_to_region_deg(directions, pred_peak, true_region)
+    return {
+        "main_lobe_region_threshold": float(threshold),
+        "reference_lobe_region_points": int(np.sum(true_region)),
+        "predicted_lobe_region_points": int(np.sum(pred_region)),
+        "main_lobe_region_jaccard": float(np.sum(intersection) / max(int(np.sum(union)), 1)),
+        "reference_lobe_region_capture": reference_capture,
+        "predicted_lobe_region_precision": prediction_precision,
+        "main_lobe_region_min_capture": float(min(reference_capture, prediction_precision)),
+        "true_peak_to_pred_region_error_deg": true_peak_to_pred_region,
+        "pred_peak_to_true_region_error_deg": pred_peak_to_true_region,
+        "main_lobe_region_error_deg": float(max(true_peak_to_pred_region, pred_peak_to_true_region)),
+    }
+
+
+def combined_pattern_metrics(
+    true_power: np.ndarray,
+    predicted_power: np.ndarray,
+    theta: np.ndarray,
+    phi: np.ndarray,
+) -> dict[str, float]:
+    metrics = pattern_metrics(true_power, predicted_power, theta, phi)
+    metrics.update(top_power_region_metrics(true_power, predicted_power, theta, phi))
+    return metrics
+
+
 def acceptance_status(row: dict[str, Any]) -> str:
     corr = float(row["correlation"])
     nmse = float(row["nmse"])
     lobe = float(row["main_lobe_error_deg"])
     scaled_nmse = float(row["scaled_power_nmse"])
+    region_error = float(row.get("main_lobe_region_error_deg", lobe))
+    region_capture = float(row.get("main_lobe_region_min_capture", 0.0))
+    region_pass = region_error <= 5.0 and region_capture >= 0.75
     if corr >= 0.95 and nmse <= 1e-2 and scaled_nmse <= 1e-2 and lobe <= 5.0:
         return "strict_pass"
+    if corr >= 0.95 and scaled_nmse <= 1e-2 and region_pass:
+        return "region_shape_pass"
     if corr >= 0.95 and scaled_nmse <= 1e-2:
         return "shape_pass_lobe_ambiguous"
-    if corr >= 0.90 and scaled_nmse <= 5e-2 and lobe <= 10.0:
+    if corr >= 0.90 and scaled_nmse <= 5e-2 and (lobe <= 10.0 or region_pass):
         return "physics_proxy_pass"
     if corr >= 0.75 and lobe <= 20.0:
         return "shape_diagnostic"
@@ -284,7 +343,8 @@ def status_rank(status: str) -> int:
     return {
         "strict_pass": 0,
         "physics_proxy_pass": 1,
-        "shape_pass_lobe_ambiguous": 2,
+        "region_shape_pass": 2,
+        "shape_pass_lobe_ambiguous": 3,
         "shape_diagnostic": 3,
         "diagnostic_only": 3,
     }.get(status, 99)
@@ -313,6 +373,9 @@ def batch_summary_row(summary: dict[str, Any], local_nearfield: Path, out_dir: P
         "nmse": best["nmse"],
         "scaled_power_nmse": best["scaled_power_nmse"],
         "main_lobe_error_deg": best["main_lobe_error_deg"],
+        "main_lobe_region_error_deg": best.get("main_lobe_region_error_deg", ""),
+        "main_lobe_region_jaccard": best.get("main_lobe_region_jaccard", ""),
+        "main_lobe_region_min_capture": best.get("main_lobe_region_min_capture", ""),
         "best_power_scale": best["best_power_scale"],
     }
 
@@ -324,15 +387,17 @@ def write_batch_readme(out_dir: Path, rows: pd.DataFrame, summary: dict[str, Any
         table_rows = []
         for row in rows.itertuples(index=False):
             if row.status != "ok":
-                table_rows.append(f"| {row.sample_id} | {row.status} | - | - | - | - |")
+                table_rows.append(f"| {row.sample_id} | {row.status} | - | - | - | - | - | - |")
                 continue
             table_rows.append(
                 f"| {row.sample_id} | {row.best_status} | {row.best_variant} | "
-                f"{row.correlation:.4f} | {row.scaled_power_nmse:.4e} | {row.main_lobe_error_deg:.2f} |"
+                f"{row.correlation:.4f} | {row.scaled_power_nmse:.4e} | "
+                f"{row.main_lobe_error_deg:.2f} | {row.main_lobe_region_error_deg:.2f} | "
+                f"{row.main_lobe_region_jaccard:.3f} |"
             )
         table = (
-            "| Sample | Best status | Best variant | Corr | Scaled NMSE | Main-lobe error / deg |\n"
-            "|---|---|---|---:|---:|---:|\n"
+            "| Sample | Best status | Best variant | Corr | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard |\n"
+            "|---|---|---|---:|---:|---:|---:|---:|\n"
             + "\n".join(table_rows)
             + "\n"
         )
@@ -349,17 +414,18 @@ cross-case pass/fail picture.
 - Cases completed: `{summary['case_count_completed']}`
 - Missing/failed cases: `{summary['case_count_missing_or_failed']}`
 - Best strict/physics-proxy cases: `{summary['case_count_strict_or_proxy']}`
+- Best strict/physics-proxy/region cases: `{summary['case_count_strict_proxy_or_region']}`
 
 ## Case Table
 
 {table}
 ## Reading
 
-This is a batch data-chain gate, not the final Huygens physics proof. A case is
-useful here when the local CST probe CSV is complete, the farfield reference can
-be matched, and the diagnostic equivalent-current variants preserve the main
-directional structure. Final claims still require a stricter vector
-surface-integral operator and H-field or calibrated impedance support.
+This is a batch data-chain gate, not the final Huygens physics proof. The
+region-lobe metrics compare the overlap of the top-power directional regions,
+which is more stable than a single argmax for broad or ring-like patterns. Final
+claims still require a stricter vector surface-integral operator and H-field or
+calibrated impedance support.
 
 ## Command
 
@@ -427,8 +493,12 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
 
     ok_rows = rows_df.loc[rows_df.get("status", pd.Series(dtype=str)) == "ok"] if not rows_df.empty else rows_df
     strict_or_proxy = 0
+    strict_proxy_or_region = 0
     if not ok_rows.empty and "best_status" in ok_rows.columns:
         strict_or_proxy = int(ok_rows["best_status"].isin(["strict_pass", "physics_proxy_pass"]).sum())
+        strict_proxy_or_region = int(
+            ok_rows["best_status"].isin(["strict_pass", "physics_proxy_pass", "region_shape_pass"]).sum()
+        )
     summary = {
         "generated_at": now_iso(),
         "generated_by": "code/run_cst_meshsafe_huygens_extrapolation.py --batch",
@@ -439,6 +509,7 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
         "case_count_completed": int(len(completed_summaries)),
         "case_count_missing_or_failed": int(len(rows) - len(completed_summaries)),
         "case_count_strict_or_proxy": strict_or_proxy,
+        "case_count_strict_proxy_or_region": strict_proxy_or_region,
         "case_summaries": completed_summaries,
     }
     write_json(batch_out_dir / "meshsafe_huygens_batch_summary.json", summary)
@@ -475,7 +546,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             float(args.frequency_hz),
             magnetic_sign,
         )
-        metrics = pattern_metrics(true_power, predicted_power, theta, phi)
+        metrics = combined_pattern_metrics(true_power, predicted_power, theta, phi)
         if not math.isfinite(float(metrics.get("correlation", math.nan))):
             metrics["correlation"] = -1.0
         scale, scaled_nmse = scaled_power_nmse(true_power, predicted_power)
@@ -562,7 +633,9 @@ def write_readme(out_dir: Path, summary: dict[str, Any], results: pd.DataFrame) 
     for row in results.itertuples(index=False):
         rows.append(
             f"| {row.variant} | {row.status} | {row.correlation:.4f} | {row.nmse:.4e} | "
-            f"{row.scaled_power_nmse:.4e} | {row.main_lobe_error_deg:.2f} | {row.best_power_scale:.4e} |"
+            f"{row.scaled_power_nmse:.4e} | {row.main_lobe_error_deg:.2f} | "
+            f"{row.main_lobe_region_error_deg:.2f} | {row.main_lobe_region_jaccard:.3f} | "
+            f"{row.best_power_scale:.4e} |"
         )
     content = f"""# CST Mesh-Safe Huygens Extrapolation Gate
 
@@ -599,16 +672,19 @@ proxy against the existing Level 1 CST far-field reference.
 | Normalized NMSE | `{best['nmse']:.4e}` |
 | Scale-fitted power NMSE | `{best['scaled_power_nmse']:.4e}` |
 | Main-lobe error / deg | `{best['main_lobe_error_deg']:.2f}` |
+| Region-lobe error / deg | `{best['main_lobe_region_error_deg']:.2f}` |
+| Region-lobe Jaccard | `{best['main_lobe_region_jaccard']:.3f}` |
+| Region-lobe min capture | `{best['main_lobe_region_min_capture']:.3f}` |
 
 ## Variant Ranking
 
-| Variant | Status | Corr | Norm NMSE | Scaled NMSE | Main-lobe error / deg | Best power scale |
-|---|---|---:|---:|---:|---:|---:|
+| Variant | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
 {chr(10).join(rows)}
 
 ## Reading
 
-- This is the first Python gate that uses real CST local Huygens probe values
+- This Python gate uses real CST local Huygens probe values
   instead of the previous FarfieldPlot-derived 13 m near-field surrogate.
 - The equivalent-current formulas are deliberately kept as a diagnostic proxy:
   `J ~= -E_t/eta0` and `M = -n x E_t`. They are good enough to expose data
@@ -616,8 +692,8 @@ proxy against the existing Level 1 CST far-field reference.
   Stratton-Chu/Huygens evidence.
 - Broad, ring-like, or multi-peak reference patterns can make the single-point
   main-lobe metric stricter than the whole-pattern shape metrics. Treat
-  `shape_pass_lobe_ambiguous` as a good data-chain signal, not as a final
-  physics pass.
+  `region_shape_pass` or `shape_pass_lobe_ambiguous` as good data-chain
+  signals, not as final physics passes.
 - Final G3 evidence still needs a stricter vector surface-integral operator
   plus H-field or impedance-backed current estimates.
 
@@ -660,7 +736,8 @@ def main() -> int:
         print(f"CST mesh-safe Huygens batch gate written to {summary['out_dir']}")
         print(
             f"completed {summary['case_count_completed']}/{summary['case_count_requested']} cases; "
-            f"strict_or_proxy={summary['case_count_strict_or_proxy']}"
+            f"strict_or_proxy={summary['case_count_strict_or_proxy']}; "
+            f"strict_proxy_or_region={summary['case_count_strict_proxy_or_region']}"
         )
         return 0 if summary["case_count_missing_or_failed"] == 0 else 1
     summary = run(args)

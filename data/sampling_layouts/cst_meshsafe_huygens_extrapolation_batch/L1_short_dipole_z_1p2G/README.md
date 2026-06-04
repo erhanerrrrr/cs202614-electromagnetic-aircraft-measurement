@@ -28,25 +28,28 @@ proxy against the existing Level 1 CST far-field reference.
 | Field | Value |
 |---|---|
 | Variant | `outgoing_equivalence_minus` |
-| Status | `shape_pass_lobe_ambiguous` |
+| Status | `region_shape_pass` |
 | Correlation | `0.9989` |
 | Normalized NMSE | `3.7631e-03` |
 | Scale-fitted power NMSE | `6.9646e-04` |
 | Main-lobe error / deg | `139.52` |
+| Region-lobe error / deg | `0.00` |
+| Region-lobe Jaccard | `0.919` |
+| Region-lobe min capture | `0.930` |
 
 ## Variant Ranking
 
-| Variant | Status | Corr | Norm NMSE | Scaled NMSE | Main-lobe error / deg | Best power scale |
-|---|---|---:|---:|---:|---:|---:|
-| outgoing_equivalence_minus | shape_pass_lobe_ambiguous | 0.9989 | 3.7631e-03 | 6.9646e-04 | 139.52 | 7.2105e-01 |
-| magnetic_only_plus | shape_pass_lobe_ambiguous | 0.9989 | 3.7657e-03 | 6.9657e-04 | 139.52 | 7.2105e-01 |
-| magnetic_only_minus | shape_pass_lobe_ambiguous | 0.9989 | 3.7657e-03 | 6.9657e-04 | 139.52 | 7.2105e-01 |
-| outgoing_equivalence_plus | shape_pass_lobe_ambiguous | 0.9989 | 3.7683e-03 | 6.9668e-04 | 139.52 | 7.2105e-01 |
-| electric_only_outgoing | shape_pass_lobe_ambiguous | 0.9987 | 1.0419e-02 | 8.7346e-04 | 134.58 | 3.3837e+05 |
+| Variant | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| outgoing_equivalence_minus | region_shape_pass | 0.9989 | 3.7631e-03 | 6.9646e-04 | 139.52 | 0.00 | 0.919 | 7.2105e-01 |
+| magnetic_only_plus | region_shape_pass | 0.9989 | 3.7657e-03 | 6.9657e-04 | 139.52 | 0.00 | 0.919 | 7.2105e-01 |
+| magnetic_only_minus | region_shape_pass | 0.9989 | 3.7657e-03 | 6.9657e-04 | 139.52 | 0.00 | 0.919 | 7.2105e-01 |
+| outgoing_equivalence_plus | region_shape_pass | 0.9989 | 3.7683e-03 | 6.9668e-04 | 139.52 | 0.00 | 0.919 | 7.2105e-01 |
+| electric_only_outgoing | region_shape_pass | 0.9987 | 1.0419e-02 | 8.7346e-04 | 134.58 | 0.00 | 0.815 | 3.3837e+05 |
 
 ## Reading
 
-- This is the first Python gate that uses real CST local Huygens probe values
+- This Python gate uses real CST local Huygens probe values
   instead of the previous FarfieldPlot-derived 13 m near-field surrogate.
 - The equivalent-current formulas are deliberately kept as a diagnostic proxy:
   `J ~= -E_t/eta0` and `M = -n x E_t`. They are good enough to expose data
@@ -54,8 +57,8 @@ proxy against the existing Level 1 CST far-field reference.
   Stratton-Chu/Huygens evidence.
 - Broad, ring-like, or multi-peak reference patterns can make the single-point
   main-lobe metric stricter than the whole-pattern shape metrics. Treat
-  `shape_pass_lobe_ambiguous` as a good data-chain signal, not as a final
-  physics pass.
+  `region_shape_pass` or `shape_pass_lobe_ambiguous` as good data-chain
+  signals, not as final physics passes.
 - Final G3 evidence still needs a stricter vector surface-integral operator
   plus H-field or impedance-backed current estimates.
 

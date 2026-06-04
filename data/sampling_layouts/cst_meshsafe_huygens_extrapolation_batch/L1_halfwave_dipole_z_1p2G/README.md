@@ -33,20 +33,23 @@ proxy against the existing Level 1 CST far-field reference.
 | Normalized NMSE | `1.8414e-02` |
 | Scale-fitted power NMSE | `1.4090e-02` |
 | Main-lobe error / deg | `0.00` |
+| Region-lobe error / deg | `0.00` |
+| Region-lobe Jaccard | `0.729` |
+| Region-lobe min capture | `0.754` |
 
 ## Variant Ranking
 
-| Variant | Status | Corr | Norm NMSE | Scaled NMSE | Main-lobe error / deg | Best power scale |
-|---|---|---:|---:|---:|---:|---:|
-| electric_only_outgoing | physics_proxy_pass | 0.9868 | 1.8414e-02 | 1.4090e-02 | 0.00 | 1.3574e+04 |
-| outgoing_equivalence_minus | shape_pass_lobe_ambiguous | 0.9990 | 2.7957e-03 | 8.5651e-04 | 19.99 | 2.8534e-02 |
-| magnetic_only_plus | shape_pass_lobe_ambiguous | 0.9990 | 2.8066e-03 | 8.5939e-04 | 19.99 | 2.8535e-02 |
-| magnetic_only_minus | shape_pass_lobe_ambiguous | 0.9990 | 2.8066e-03 | 8.5939e-04 | 19.99 | 2.8535e-02 |
-| outgoing_equivalence_plus | shape_pass_lobe_ambiguous | 0.9989 | 2.8175e-03 | 8.6235e-04 | 19.99 | 2.8535e-02 |
+| Variant | Status | Corr | Norm NMSE | Scaled NMSE | Point-lobe error / deg | Region-lobe error / deg | Region Jaccard | Best power scale |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| electric_only_outgoing | physics_proxy_pass | 0.9868 | 1.8414e-02 | 1.4090e-02 | 0.00 | 0.00 | 0.729 | 1.3574e+04 |
+| outgoing_equivalence_minus | region_shape_pass | 0.9990 | 2.7957e-03 | 8.5651e-04 | 19.99 | 0.00 | 0.910 | 2.8534e-02 |
+| magnetic_only_plus | region_shape_pass | 0.9990 | 2.8066e-03 | 8.5939e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| magnetic_only_minus | region_shape_pass | 0.9990 | 2.8066e-03 | 8.5939e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
+| outgoing_equivalence_plus | region_shape_pass | 0.9989 | 2.8175e-03 | 8.6235e-04 | 19.99 | 0.00 | 0.911 | 2.8535e-02 |
 
 ## Reading
 
-- This is the first Python gate that uses real CST local Huygens probe values
+- This Python gate uses real CST local Huygens probe values
   instead of the previous FarfieldPlot-derived 13 m near-field surrogate.
 - The equivalent-current formulas are deliberately kept as a diagnostic proxy:
   `J ~= -E_t/eta0` and `M = -n x E_t`. They are good enough to expose data
@@ -54,8 +57,8 @@ proxy against the existing Level 1 CST far-field reference.
   Stratton-Chu/Huygens evidence.
 - Broad, ring-like, or multi-peak reference patterns can make the single-point
   main-lobe metric stricter than the whole-pattern shape metrics. Treat
-  `shape_pass_lobe_ambiguous` as a good data-chain signal, not as a final
-  physics pass.
+  `region_shape_pass` or `shape_pass_lobe_ambiguous` as good data-chain
+  signals, not as final physics passes.
 - Final G3 evidence still needs a stricter vector surface-integral operator
   plus H-field or impedance-backed current estimates.
 

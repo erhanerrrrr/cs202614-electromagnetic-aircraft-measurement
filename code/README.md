@@ -436,3 +436,29 @@ The tracked batch outputs live in
 `data/sampling_layouts/cst_meshsafe_huygens_extrapolation_batch/`. Large CST
 solver caches and result-tree export logs stay under `C:\csttmp` and
 `outputs/`; they are audit caches rather than Git payloads.
+
+## CST mesh-safe Huygens region-lobe addendum
+
+`run_cst_meshsafe_huygens_extrapolation.py` now reports a top-power region-lobe
+metric in addition to the older single-point main-lobe error. The region metric
+uses the normalized-power `0.75` contour and records region error, Jaccard
+overlap, and min capture. This keeps the strict point-lobe metric visible while
+avoiding a false negative for broad or ring-like patterns.
+
+```powershell
+python code\run_cst_meshsafe_huygens_extrapolation.py --batch
+python code\build_g3_model_dashboard.py
+```
+
+Current two-case status:
+
+- `L1_halfwave_dipole_z_1p2G`: `physics_proxy_pass`, point-lobe error `0 deg`,
+  region-lobe error `0 deg`.
+- `L1_short_dipole_z_1p2G`: `region_shape_pass`; point-lobe error remains about
+  `139.52 deg`, but region-lobe error is `0 deg` and region Jaccard is about
+  `0.919`.
+
+The G3 dashboard now includes `meshsafe_huygens_real_cst_batch` as a
+`region_proxy_batch_pass` evidence row. The first next action is no longer to
+wait idly for true-monitor CSVs; it is to add H-field or calibrated-impedance
+support for the local Huygens surface and rerun the two-case gate.

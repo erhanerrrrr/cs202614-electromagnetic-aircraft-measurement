@@ -39,6 +39,7 @@
 | S30 | `30_g3_meshsafe_huygens_workpack.md` | G3 mesh-safe Huygens 工作包：CST 近源局部面观测、短路径 solver gate 和后续 Python 外推入口 |
 | S31 | `31_g3_meshsafe_huygens_resulttree_extrapolation.md` | G3 mesh-safe Huygens ResultTree 实测导出与 Python 外推诊断 |
 | S32 | `32_g3_meshsafe_huygens_two_case_batch.md` | G3 mesh-safe Huygens 第二源例 clean solver、ResultTree 导出和两例批处理门控 |
+| S33 | `33_g3_meshsafe_huygens_region_dashboard.md` | G3 mesh-safe Huygens 区域主瓣门控和 dashboard 接入 |
 
 后续规则：
 

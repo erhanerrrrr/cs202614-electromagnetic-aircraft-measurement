@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-04T04:07:59+00:00",
+  "generated_at": "2026-06-04T04:18:00+00:00",
   "generated_by": "code/run_cst_meshsafe_huygens_extrapolation.py",
   "local_nearfield": "data\\cst_exports\\level1_meshsafe_huygens\\L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv",
   "farfield": "data\\cst_exports\\level1\\all_farfield.csv",
@@ -44,7 +44,17 @@
     "correlation": 0.9989445663610194,
     "main_lobe_error_deg": 139.52260287822136,
     "peak_error_db": 1.6678352219444776,
-    "status": "shape_pass_lobe_ambiguous"
+    "main_lobe_region_threshold": 0.75,
+    "reference_lobe_region_points": 864,
+    "predicted_lobe_region_points": 794,
+    "main_lobe_region_jaccard": 0.9189814814814815,
+    "reference_lobe_region_capture": 0.9302475179104308,
+    "predicted_lobe_region_precision": 1.0,
+    "main_lobe_region_min_capture": 0.9302475179104308,
+    "true_peak_to_pred_region_error_deg": 0.0,
+    "pred_peak_to_true_region_error_deg": 0.0,
+    "main_lobe_region_error_deg": 0.0,
+    "status": "region_shape_pass"
   },
   "variant_count": 5,
   "interpretation": "diagnostic Huygens/Kirchhoff proxy; use to verify the real CST local probe export and directionality, then replace with a stricter vector surface-integral operator before final report claims"

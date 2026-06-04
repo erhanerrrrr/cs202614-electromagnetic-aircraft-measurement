@@ -53,9 +53,13 @@ def format_float(value: Any, digits: int = 4) -> str:
 def status_rank(status: str) -> int:
     return {
         "strict_pass": 0,
+        "physics_proxy_pass": 1,
         "corr_pass_nmse_near": 1,
+        "region_proxy_batch_pass": 2,
+        "region_shape_pass": 2,
         "corr_lobe_pass_nmse_open": 2,
         "reference_match": 3,
+        "shape_pass_lobe_ambiguous": 4,
         "diagnostic_only": 4,
         "pending_source": 5,
         "needs_physical_rerun": 6,
@@ -140,6 +144,25 @@ def missing_row(category: str, artifact: str, evidence_path: Path, command: str)
         next_action=command,
         blocker="missing evidence file",
     )
+
+
+def best_batch_rows(summary: dict[str, Any]) -> list[dict[str, Any]]:
+    cases = summary.get("case_summaries", [])
+    rows: list[dict[str, Any]] = []
+    if not isinstance(cases, list):
+        return rows
+    for case in cases:
+        if not isinstance(case, dict):
+            continue
+        best = case.get("best_setting", {})
+        quality = case.get("quality", {})
+        if not isinstance(best, dict):
+            continue
+        item = dict(best)
+        item["sample_id"] = case.get("sample_id", "")
+        item["sensor_count"] = quality.get("sensor_count", math.nan) if isinstance(quality, dict) else math.nan
+        rows.append(item)
+    return rows
 
 
 def best_candidate(summary: dict[str, Any], candidate_name: str | None = None) -> dict[str, Any]:
@@ -372,6 +395,70 @@ def build_rows() -> list[dict[str, Any]]:
     else:
         rows.append(missing_row("model_bottleneck", "huygens_surface_prior", huygens_path, "python code\\run_cst_huygens_baseline.py"))
 
+    meshsafe_batch_path = (
+        ROOT
+        / "data"
+        / "sampling_layouts"
+        / "cst_meshsafe_huygens_extrapolation_batch"
+        / "meshsafe_huygens_batch_summary.json"
+    )
+    meshsafe_batch = read_json(meshsafe_batch_path)
+    if meshsafe_batch:
+        case_rows = best_batch_rows(meshsafe_batch)
+        requested = int(meshsafe_batch.get("case_count_requested", 0))
+        completed = int(meshsafe_batch.get("case_count_completed", 0))
+        missing = int(meshsafe_batch.get("case_count_missing_or_failed", 0))
+        pass_like = int(meshsafe_batch.get("case_count_strict_proxy_or_region", 0))
+        if completed == requested and requested > 0 and pass_like == requested:
+            batch_status = "region_proxy_batch_pass"
+        elif completed == requested and pass_like > 0:
+            batch_status = "physics_proxy_pass"
+        elif missing > 0:
+            batch_status = "pending_source"
+        else:
+            batch_status = "diagnostic_only"
+        max_scaled_nmse = max((finite_float(item.get("scaled_power_nmse")) for item in case_rows), default=math.nan)
+        max_region_error = max(
+            (finite_float(item.get("main_lobe_region_error_deg")) for item in case_rows),
+            default=math.nan,
+        )
+        min_corr = min((finite_float(item.get("correlation")) for item in case_rows), default=math.nan)
+        best_settings = "; ".join(
+            f"{item.get('sample_id', '')}:{item.get('status', '')}/{item.get('variant', '')}"
+            for item in case_rows
+        )
+        rows.append(
+            row(
+                category="trusted_sanity",
+                artifact="meshsafe_huygens_real_cst_batch",
+                scope=f"{completed}/{requested} Level 1 real CST local Huygens exports",
+                evidence_path=meshsafe_batch_path,
+                command="python code\\run_cst_meshsafe_huygens_extrapolation.py --batch",
+                best_setting=best_settings,
+                status=batch_status,
+                trust_level="real_cst_data_chain_not_final_huygens_proof",
+                min_correlation=min_corr,
+                max_nmse=max_scaled_nmse,
+                max_main_lobe_error_deg=max_region_error,
+                sensor_count=96,
+                interpretation=(
+                    "The mesh-safe route now uses real CST local probe curves for two Level 1 sources and "
+                    "passes the data-chain/region-lobe gate; it still needs H-field or calibrated impedance "
+                    "before being used as final Stratton-Chu/Huygens proof."
+                ),
+                next_action="Add H-field/impedance-backed current estimates and rerun this batch gate before final physics wording.",
+            )
+        )
+    else:
+        rows.append(
+            missing_row(
+                "trusted_sanity",
+                "meshsafe_huygens_real_cst_batch",
+                meshsafe_batch_path,
+                "python code\\run_cst_meshsafe_huygens_extrapolation.py --batch",
+            )
+        )
+
     gate_path = ROOT / "data" / "cst_true_nearfield_workpack" / "gate_report" / "true_nearfield_gate_summary.json"
     gate = read_json(gate_path)
     if gate:
@@ -408,9 +495,25 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
     pending_true_monitor = bool((status["artifact"] == "true_nearfield_monitor_gate").any()) and bool(
         (status["artifact"].eq("true_nearfield_monitor_gate") & status["status"].eq("pending_source")).any()
     )
+    meshsafe_ready = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_real_cst_batch")
+            & status["status"].isin(["region_proxy_batch_pass", "physics_proxy_pass"])
+        ).any()
+    )
     actions = [
         {
             "priority": 1,
+            "owner": "Independent workflow",
+            "gate": "meshsafe_huygens_physics",
+            "action": "Add H-field or calibrated-impedance support for the local Huygens surface, then rerun the real CST two-case batch gate.",
+            "trigger": "Mesh-safe real CST batch gate is region/proxy ready.",
+            "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv or impedance-backed current estimates",
+            "proof_to_close": "Batch summary reports two real CST cases with strict_pass or an explicitly justified physics_proxy_pass under the stricter current estimate.",
+            "blocked_by": "" if meshsafe_ready else "Mesh-safe batch gate",
+        },
+        {
+            "priority": 2,
             "owner": "CST operator",
             "gate": "true_monitor",
             "action": "Use outputs\\cst_true_nearfield_handoff\\expected_true_monitor_files.csv, then export authoritative full-grid CST true near-field monitor CSVs for the queued Level 1 cases.",
@@ -420,7 +523,7 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             "blocked_by": "CST monitor CSVs" if pending_true_monitor else "",
         },
         {
-            "priority": 2,
+            "priority": 3,
             "owner": "Algorithm operator",
             "gate": "post_true_monitor",
             "action": "After full-grid monitor CSVs exist, derive queued 32/120 layouts and compare them against the FarfieldPlot-derived reference.",
@@ -430,7 +533,7 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             "blocked_by": "Full-grid monitor CSVs" if pending_true_monitor else "",
         },
         {
-            "priority": 3,
+            "priority": 4,
             "owner": "Algorithm operator",
             "gate": "physical_baseline",
             "action": "Rerun source-model, convention, scalar SWE, reduced-layout, and Huygens baselines on true-monitor input if the gate reports needs_physical_rerun.",
@@ -440,7 +543,7 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             "blocked_by": "True-monitor gate comparison result",
         },
         {
-            "priority": 4,
+            "priority": 5,
             "owner": "Report/PPT operator",
             "gate": "wording",
             "action": "Use center-source and scalar SWE rows as sanity evidence; keep generic, sparse, and Huygens rows as diagnostic bottleneck evidence.",
@@ -532,7 +635,9 @@ def build_summary(status: pd.DataFrame) -> dict[str, Any]:
     status_counts = status["status"].value_counts().to_dict()
     true_monitor = status.loc[status["artifact"] == "true_nearfield_monitor_gate"]
     true_monitor_status = str(true_monitor["status"].iloc[0]) if not true_monitor.empty else "missing"
-    strict_or_near = status[status["status"].isin(["strict_pass", "corr_pass_nmse_near"])]
+    strict_or_near = status[
+        status["status"].isin(["strict_pass", "corr_pass_nmse_near", "physics_proxy_pass", "region_proxy_batch_pass"])
+    ]
     diagnostic = status[status["status"].eq("diagnostic_only")]
     return {
         "generated_by": "code/build_g3_model_dashboard.py",

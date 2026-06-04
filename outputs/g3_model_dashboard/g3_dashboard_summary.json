@@ -2,12 +2,13 @@
   "generated_by": "code/build_g3_model_dashboard.py",
   "status_counts": {
     "diagnostic_only": 4,
-    "strict_pass": 2,
     "corr_pass_nmse_near": 2,
-    "pending_source": 1
+    "strict_pass": 2,
+    "pending_source": 1,
+    "region_proxy_batch_pass": 1
   },
   "true_monitor_status": "pending_source",
-  "trusted_or_near_pass_count": 4,
+  "trusted_or_near_pass_count": 5,
   "diagnostic_only_count": 4,
   "output_files": {
     "model_comparison": "outputs\\g3_model_dashboard\\model_comparison.md",
