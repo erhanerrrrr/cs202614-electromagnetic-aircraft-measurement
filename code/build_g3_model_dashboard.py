@@ -60,6 +60,7 @@ def status_rank(status: str) -> int:
         "corr_pass_nmse_near": 1,
         "real_eh_frozen_rule_region_pass": 2,
         "rotation_covariance_pass": 2,
+        "source_family_workpack_ready": 3,
         "impedance_region_proxy_batch_pass": 2,
         "region_proxy_batch_pass": 2,
         "region_shape_pass": 2,
@@ -615,6 +616,55 @@ def build_rows() -> list[dict[str, Any]]:
             )
         )
 
+    source_family_path = (
+        ROOT
+        / "data"
+        / "cst_meshsafe_huygens_source_family_workpack"
+        / "source_family_workpack_summary.json"
+    )
+    source_family = read_json(source_family_path)
+    if source_family:
+        rows.append(
+            row(
+                category="rerun_priority",
+                artifact="meshsafe_huygens_source_family_workpack",
+                scope=(
+                    f"{source_family.get('automation_ready_count', 0)} automation-ready CST source-family cases; "
+                    f"{source_family.get('pending_advanced_count', 0)} advanced gates tracked"
+                ),
+                evidence_path=source_family_path,
+                command="python code\\prepare_cst_huygens_source_family_workpack.py",
+                best_setting=(
+                    f"rule={source_family.get('frozen_rule_under_test', '')}; "
+                    f"cases={source_family.get('axis_aligned_case_count', 0)}; "
+                    f"probes/case={source_family.get('probe_count_per_case', 0)}; "
+                    f"probe_rows={source_family.get('probe_row_count', 0)}"
+                ),
+                status=str(source_family.get("stage_status", "missing")),
+                trust_level="workpack_not_physics_proof",
+                sensor_count=source_family.get("probe_count_per_case"),
+                interpretation=(
+                    "The next independent CST validation package is ready: x/y-oriented and off-axis Level 1 "
+                    "single-source cases have case-scoped local Huygens probe rows and ordered CST project, solve, "
+                    "and export commands. This is an execution handoff, not proof that the frozen rule has passed "
+                    "new electromagnetic solves."
+                ),
+                next_action=(
+                    "Run data\\cst_meshsafe_huygens_source_family_workpack\\next_source_family_commands.csv, then "
+                    "evaluate the frozen E/H Huygens rule on the exported source-family E/H CSVs without retuning."
+                ),
+            )
+        )
+    else:
+        rows.append(
+            missing_row(
+                "rerun_priority",
+                "meshsafe_huygens_source_family_workpack",
+                source_family_path,
+                "python code\\prepare_cst_huygens_source_family_workpack.py",
+            )
+        )
+
     impedance_stability_path = (
         ROOT
         / "data"
@@ -777,17 +827,25 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             & status["status"].isin(["rotation_covariance_strict_pass", "rotation_covariance_pass"])
         ).any()
     )
+    source_family_workpack_ready = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_source_family_workpack")
+            & status["status"].eq("source_family_workpack_ready")
+        ).any()
+    )
     actions = [
         {
             "priority": 1,
             "owner": "Independent workflow",
             "gate": "meshsafe_huygens_physics",
             "action": (
-                "Close the real E/H Huygens operator-stability gate: tie the plus/minus convention and J-scale "
-                "normalization to source geometry, then test true CST x/y, tilted, off-axis, or multi-source cases "
-                "before propagating the accepted rule toward the 13 m shell."
+                "Execute the CST source-family handoff in "
+                "data\\cst_meshsafe_huygens_source_family_workpack\\next_source_family_commands.csv: generate E/H "
+                "projects, solve the six x/y/off-axis cases, export local E/H probes, then test the frozen rule "
+                "without per-source retuning."
             ),
             "trigger": (
+                "The frozen Huygens rule passes rotation-covariance and the source-family workpack is ready; the next proof step is running those independent CST solves." if frozen_real_eh_needs_validation and rotation_covariance_ready and source_family_workpack_ready else
                 "Mesh-safe real CST batch has a frozen real E/H candidate and the rotation-covariance gate passes; the remaining proof is independent CST source-family validation." if frozen_real_eh_needs_validation and rotation_covariance_ready else
                 "Mesh-safe real CST batch now has a frozen real E/H candidate accepted by every current Level 1 case; it still needs a physics/geometry explanation and broader source-family validation." if frozen_real_eh_needs_validation else
                 "Mesh-safe real CST batch gate now reaches strict/proxy status with real E/H currents, but the best J-scale/sign is source-dependent." if real_eh_calibration_needed else
@@ -795,9 +853,9 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
                 "source-dependent impedance sensitivity." if impedance_extension_needed else
                 "Mesh-safe real CST batch gate is region/proxy ready and the impedance stability gate is available."
             ),
-            "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv and data/sampling_layouts/cst_meshsafe_huygens_*/",
-            "proof_to_close": "Batch summary reports H-field loaded for all required cases, frozen_real_eh_rule_status is accepted, rotation_covariance status is pass, and independent CST source-family rows keep the same frozen rule accepted.",
-            "blocked_by": "" if meshsafe_ready else "Mesh-safe batch gate",
+            "artifact": "data/cst_meshsafe_huygens_source_family_workpack/next_source_family_commands.csv and data/cst_exports/level1_meshsafe_huygens_source_family/*_local_[eh]field.csv",
+            "proof_to_close": "Six automation-ready source-family rows have matched local E/H exports, far-field references, and the same frozen Huygens rule remains accepted without retuning.",
+            "blocked_by": "" if meshsafe_ready and source_family_workpack_ready else "Mesh-safe batch gate or source-family workpack",
         },
         {
             "priority": 2,
@@ -886,6 +944,12 @@ def write_markdown(status: pd.DataFrame, actions: pd.DataFrame, summary: dict[st
         lines.append(
             "- The frozen Huygens rule also has a rotation-covariance operator check; treat it as geometry-rule evidence, "
             "not as a substitute for independent CST source-family solves."
+        )
+    source_family_rows = status.loc[status["artifact"] == "meshsafe_huygens_source_family_workpack"]
+    if not source_family_rows.empty and str(source_family_rows.iloc[0].get("status", "")) == "source_family_workpack_ready":
+        lines.append(
+            "- The independent CST source-family workpack is ready for execution: six x/y/off-axis cases are scripted, "
+            "while tilted and multi-source rows remain explicit future gates."
         )
 
     lines.extend(

@@ -413,3 +413,21 @@ Tracked entries:
 | `data/sampling_layouts/cst_meshsafe_huygens_rotation_covariance/huygens_rotation_base_cst_agreement.csv` | Base real CST agreement rows for the frozen candidate. |
 | `data/sampling_layouts/cst_meshsafe_huygens_rotation_covariance/huygens_rotation_covariance_cases.csv` | Per-case, per-rotation covariance metrics. |
 | `outputs/g3_model_dashboard/` | Dashboard now includes `meshsafe_huygens_rotation_covariance = rotation_covariance_strict_pass`. |
+
+## 2026-06-04 CST mesh-safe Huygens source-family workpack
+
+S42 packages the next independent CST validation gate for the frozen Huygens
+rule. The workpack is ready for execution, but it is not yet a physics pass:
+the next step is to run the generated CST project, solver, and ResultTree export
+commands, then evaluate the same frozen E/H rule without retuning.
+
+Tracked entries:
+
+| File/directory | Meaning |
+|---|---|
+| `docs/stage_notes/42_g3_huygens_source_family_workpack.md` | S42 note covering the source-family workpack, automation boundary, and next CST gate. |
+| `code/prepare_cst_huygens_source_family_workpack.py` | Generates six x/y/off-axis Level 1 source-family cases, case-scoped probe points, validation matrix, and command queue. |
+| `code/run_cst_level1_required_automation.py` | Now supports axis-aligned x/y/z dipole generation inferred from each case segment. |
+| `code/export_cst_meshsafe_huygens_results.py` | Now filters case-scoped probe rows by `sample_id` during ResultTree export checks. |
+| `data/cst_meshsafe_huygens_source_family_workpack/` | Generated source-family cases, probe CSV, validation matrix, command queue, summary JSON, and README. |
+| `outputs/g3_model_dashboard/` | Dashboard now includes `meshsafe_huygens_source_family_workpack = source_family_workpack_ready`. |

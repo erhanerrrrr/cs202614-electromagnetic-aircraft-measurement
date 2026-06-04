@@ -598,3 +598,31 @@ normalized absolute error is about `2.74e-14`.
 This proves the implementation rotates consistently as a vector surface
 operator. It is still not an independent CST source-family proof; the remaining
 CST work is x/y/tilted/off-axis/multi-source export under the same frozen rule.
+
+## CST mesh-safe Huygens source-family workpack addendum
+
+The next independent CST source-family gate is now packaged:
+
+```powershell
+python code\prepare_cst_huygens_source_family_workpack.py
+python code\build_g3_model_dashboard.py
+```
+
+The workpack lives in:
+
+```text
+data/cst_meshsafe_huygens_source_family_workpack
+```
+
+Current status: `source_family_workpack_ready`.
+
+- Frozen rule under test: `eh_love_equivalence_minus_j96`.
+- Automation-ready source-family cases: `6`.
+- Case-scoped local Huygens probe rows: `576`.
+- Advanced tracked but not automated rows: tilted dipole and two-source pilot.
+- Ordered CST commands:
+  `data/cst_meshsafe_huygens_source_family_workpack/next_source_family_commands.csv`.
+
+This is not a new physics pass yet. It is the CST generation/solve/export
+handoff needed to test whether the same frozen E/H Huygens rule remains
+accepted on independent x/y/off-axis CST solves without per-source retuning.

@@ -1,0 +1,9 @@
+﻿validation_id,case_kind,automation_status,case_csv,probe_csv,proof_role,blocker
+L1_short_dipole_x_1p2G,single_axis_aligned,ready_for_cst_project_generation,level1_source_family_axis_aligned_cases.csv,level1_source_family_probe_points.csv,independent CST source-family row for frozen E/H Huygens rule,
+L1_short_dipole_y_1p2G,single_axis_aligned,ready_for_cst_project_generation,level1_source_family_axis_aligned_cases.csv,level1_source_family_probe_points.csv,independent CST source-family row for frozen E/H Huygens rule,
+L1_halfwave_dipole_x_1p2G,single_axis_aligned,ready_for_cst_project_generation,level1_source_family_axis_aligned_cases.csv,level1_source_family_probe_points.csv,independent CST source-family row for frozen E/H Huygens rule,
+L1_halfwave_dipole_y_1p2G,single_axis_aligned,ready_for_cst_project_generation,level1_source_family_axis_aligned_cases.csv,level1_source_family_probe_points.csv,independent CST source-family row for frozen E/H Huygens rule,
+L1_short_dipole_z_offset_xp25_1p2G,single_axis_aligned,ready_for_cst_project_generation,level1_source_family_axis_aligned_cases.csv,level1_source_family_probe_points.csv,independent CST source-family row for frozen E/H Huygens rule,
+L1_halfwave_dipole_z_offset_yp25_1p2G,single_axis_aligned,ready_for_cst_project_generation,level1_source_family_axis_aligned_cases.csv,level1_source_family_probe_points.csv,independent CST source-family row for frozen E/H Huygens rule,
+L1_short_dipole_tilt_xz45_1p2G,single_tilted,manual_or_next_generator_needed,,,tests arbitrary-axis source orientation after x/y axis-aligned gate,CST cylinder arbitrary-axis history is not yet promoted to automated generation
+L1_two_short_dipole_xy_pair_1p2G,multi_source,manual_or_next_generator_needed,,,tests superposed source interaction under the same frozen Huygens rule,single-dipole CST generator must be extended to multiple radiators and ports

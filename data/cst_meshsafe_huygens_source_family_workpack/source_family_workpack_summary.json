@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-06-04T13:04:11+00:00",
+  "stage_status": "source_family_workpack_ready",
+  "source_required_cases": "data\\cst_meshsafe_huygens_workpack\\level1_required_meshsafe_huygens_cases.csv",
+  "source_required_probes": "data\\cst_meshsafe_huygens_workpack\\level1_local_huygens_probe_points.csv",
+  "out_dir": "data\\cst_meshsafe_huygens_source_family_workpack",
+  "frozen_rule_under_test": "eh_love_equivalence_minus_j96",
+  "axis_aligned_case_count": 6,
+  "probe_count_per_case": 96,
+  "probe_row_count": 576,
+  "validation_matrix_count": 8,
+  "automation_ready_count": 6,
+  "pending_advanced_count": 2,
+  "files": {
+    "case_csv": "data\\cst_meshsafe_huygens_source_family_workpack\\level1_source_family_axis_aligned_cases.csv",
+    "probe_csv": "data\\cst_meshsafe_huygens_source_family_workpack\\level1_source_family_probe_points.csv",
+    "validation_matrix": "data\\cst_meshsafe_huygens_source_family_workpack\\source_family_validation_matrix.csv",
+    "commands_csv": "data\\cst_meshsafe_huygens_source_family_workpack\\next_source_family_commands.csv",
+    "readme": "data\\cst_meshsafe_huygens_source_family_workpack\\README.md"
+  },
+  "next_gate": "Generate E/H CST projects for axis-aligned source-family cases, solve them, export local E/H probe CSVs and farfield references, then run the frozen Huygens rule without retuning.",
+  "boundary": "Tilted and multi-source validation rows are tracked but not claimed as automation-ready in this workpack."
+}

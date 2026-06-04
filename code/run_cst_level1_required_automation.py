@@ -60,6 +60,60 @@ def vba_str(value: str) -> str:
     return '"' + str(value).replace('"', '""') + '"'
 
 
+def infer_axis_from_segment(
+    start: tuple[float, float, float],
+    end: tuple[float, float, float],
+    tolerance: float = 1e-9,
+) -> str:
+    delta = [end[index] - start[index] for index in range(3)]
+    active = [index for index, value in enumerate(delta) if abs(value) > tolerance]
+    if len(active) != 1:
+        raise ValueError(
+            "run_cst_level1_required_automation.py currently supports only "
+            f"axis-aligned single dipoles; start={start}, end={end}"
+        )
+    return "xyz"[active[0]]
+
+
+def axis_index(axis: str) -> int:
+    key = str(axis).strip().lower()
+    if key not in {"x", "y", "z"}:
+        raise ValueError(f"unsupported dipole axis {axis!r}; expected x, y, or z")
+    return {"x": 0, "y": 1, "z": 2}[key]
+
+
+def select_case_probes(probes: list[dict[str, str]], sample_id: str) -> list[dict[str, str]]:
+    if not probes:
+        return []
+    has_sample_ids = any(str(row.get("sample_id", "")).strip() for row in probes)
+    if not has_sample_ids:
+        return probes
+    selected = [row for row in probes if str(row.get("sample_id", "")).strip() == sample_id]
+    if selected:
+        return selected
+    global_rows = [row for row in probes if not str(row.get("sample_id", "")).strip()]
+    if global_rows:
+        return global_rows
+    raise ValueError(f"probe CSV has sample_id-scoped rows but none for sample_id={sample_id!r}")
+
+
+def limit_probes(probes: list[dict[str, str]], max_probes: int) -> list[dict[str, str]]:
+    if max_probes <= 0:
+        return probes
+    has_sample_ids = any(str(row.get("sample_id", "")).strip() for row in probes)
+    if not has_sample_ids:
+        return probes[:max_probes]
+    limited: list[dict[str, str]] = []
+    counts: dict[str, int] = {}
+    for row in probes:
+        sample_id = str(row.get("sample_id", "")).strip()
+        count = counts.get(sample_id, 0)
+        if count < max_probes:
+            limited.append(row)
+            counts[sample_id] = count + 1
+    return limited
+
+
 def build_case_model(case: dict[str, str]) -> dict[str, Any]:
     frequency_hz = float(case["frequency_hz"])
     frequency_ghz = frequency_hz / 1e9
@@ -68,10 +122,18 @@ def build_case_model(case: dict[str, str]) -> dict[str, Any]:
     end = parse_xyz(case["end_xyz_m"])
     length_m = float(case["length_m"])
     feed_gap_m = float(case["feed_gap_m"])
-    z_min = min(start[2], end[2])
-    z_max = max(start[2], end[2])
-    lower_gap_edge = center[2] - feed_gap_m / 2.0
-    upper_gap_edge = center[2] + feed_gap_m / 2.0
+    inferred_axis = infer_axis_from_segment(start, end)
+    declared_axis = str(case.get("orientation_axis", inferred_axis)).strip().lower() or inferred_axis
+    if declared_axis != inferred_axis:
+        raise ValueError(
+            f"orientation_axis={declared_axis!r} does not match start/end axis {inferred_axis!r} "
+            f"for sample_id={case.get('sample_id', '')!r}"
+        )
+    axis_i = axis_index(inferred_axis)
+    axis_min = min(start[axis_i], end[axis_i])
+    axis_max = max(start[axis_i], end[axis_i])
+    lower_gap_edge = center[axis_i] - feed_gap_m / 2.0
+    upper_gap_edge = center[axis_i] + feed_gap_m / 2.0
     conductor_radius_m = min(0.001, max(0.00025, length_m / 125.0))
     frequency_span = 0.10 * frequency_ghz
 
@@ -86,10 +148,12 @@ def build_case_model(case: dict[str, str]) -> dict[str, Any]:
         "center_xyz_m": center,
         "start_xyz_m": start,
         "end_xyz_m": end,
+        "orientation_axis": inferred_axis,
+        "axis_index": axis_i,
         "length_m": length_m,
         "feed_gap_m": feed_gap_m,
-        "lower_zrange": (z_min, lower_gap_edge),
-        "upper_zrange": (upper_gap_edge, z_max),
+        "lower_axis_range": (axis_min, lower_gap_edge),
+        "upper_axis_range": (upper_gap_edge, axis_max),
         "conductor_radius_m": conductor_radius_m,
         "port_radius_m": conductor_radius_m,
         "nearfield_monitor": case["nearfield_monitor"],
@@ -138,21 +202,38 @@ End With
 
 def build_geometry_history(model: dict[str, Any]) -> str:
     radius = fnum(model["conductor_radius_m"])
-    lower_z0, lower_z1 = model["lower_zrange"]
-    upper_z0, upper_z1 = model["upper_zrange"]
-    x, y, _ = model["center_xyz_m"]
+    lower0, lower1 = model["lower_axis_range"]
+    upper0, upper1 = model["upper_axis_range"]
+    x, y, z = model["center_xyz_m"]
+    axis = model["orientation_axis"]
+    if axis == "x":
+        center_lines = f"""
+    .Ycenter ({fnum(y)})
+    .Zcenter ({fnum(z)})
+"""
+        range_cmd = "Xrange"
+    elif axis == "y":
+        center_lines = f"""
+    .Xcenter ({fnum(x)})
+    .Zcenter ({fnum(z)})
+"""
+        range_cmd = "Yrange"
+    else:
+        center_lines = f"""
+    .Xcenter ({fnum(x)})
+    .Ycenter ({fnum(y)})
+"""
+        range_cmd = "Zrange"
     return f"""
 With Cylinder
     .Reset
     .Name ("dipole_lower")
     .Component ("radiator")
     .Material ("PEC")
-    .Axis ("z")
+    .Axis ({vba_str(axis)})
     .OuterRadius ({radius})
     .InnerRadius (0.0)
-    .Xcenter ({fnum(x)})
-    .Ycenter ({fnum(y)})
-    .Zrange ({fnum(lower_z0)}, {fnum(lower_z1)})
+{center_lines}    .{range_cmd} ({fnum(lower0)}, {fnum(lower1)})
     .Segments (24)
     .Create
 End With
@@ -161,12 +242,10 @@ With Cylinder
     .Name ("dipole_upper")
     .Component ("radiator")
     .Material ("PEC")
-    .Axis ("z")
+    .Axis ({vba_str(axis)})
     .OuterRadius ({radius})
     .InnerRadius (0.0)
-    .Xcenter ({fnum(x)})
-    .Ycenter ({fnum(y)})
-    .Zrange ({fnum(upper_z0)}, {fnum(upper_z1)})
+{center_lines}    .{range_cmd} ({fnum(upper0)}, {fnum(upper1)})
     .Segments (24)
     .Create
 End With
@@ -174,10 +253,12 @@ End With
 
 
 def build_port_history(model: dict[str, Any]) -> str:
-    x, y, z = model["center_xyz_m"]
+    p1 = list(model["center_xyz_m"])
+    p2 = list(model["center_xyz_m"])
     half_gap = model["feed_gap_m"] / 2.0
-    z0 = z - half_gap
-    z1 = z + half_gap
+    axis_i = int(model["axis_index"])
+    p1[axis_i] -= half_gap
+    p2[axis_i] += half_gap
     return f"""
 With DiscretePort
     .Reset
@@ -185,8 +266,8 @@ With DiscretePort
     .Type "Voltage"
     .Impedance "50.0"
     .Voltage "1.0"
-    .SetP1 "False", "{fnum(x)}", "{fnum(y)}", "{fnum(z0)}"
-    .SetP2 "False", "{fnum(x)}", "{fnum(y)}", "{fnum(z1)}"
+    .SetP1 "False", "{fnum(p1[0])}", "{fnum(p1[1])}", "{fnum(p1[2])}"
+    .SetP2 "False", "{fnum(p2[0])}", "{fnum(p2[1])}", "{fnum(p2[2])}"
     .InvertDirection "False"
     .LocalCoordinates "False"
     .Monitor "True"
@@ -334,11 +415,12 @@ def worker_run(config_path: Path, summary_path: Path) -> int:
         de = ci.DesignEnvironment.new()
         for case in cases:
             model = build_case_model(case)
+            case_probes = select_case_probes(probes, model["sample_id"])
             project_path = project_dir / model["cst_project"]
             recipe_path = recipe_dir / f"{model['sample_id']}_model_history.bas"
             status = "started"
             error = ""
-            histories = build_case_histories(model, probes, probe_mode)
+            histories = build_case_histories(model, case_probes, probe_mode)
             print(f"BUILD_START {model['sample_id']} -> {project_path}")
             try:
                 prj = de.new_mws()
@@ -369,7 +451,8 @@ def worker_run(config_path: Path, summary_path: Path) -> int:
                     else 0,
                     "recipe_path": str(recipe_path),
                     "recipe_exists": recipe_path.exists(),
-                    "probe_count": len(probes),
+                    "orientation_axis": model["orientation_axis"],
+                    "probe_count": len(case_probes),
                     "history_block_count": len(histories),
                     "conductor_radius_m": model["conductor_radius_m"],
                     "feed_gap_m": model["feed_gap_m"],
@@ -460,7 +543,7 @@ def controller_run(args: argparse.Namespace) -> int:
     cases = read_csv_rows(args.level1_csv)
     probes = read_csv_rows(args.probe_csv)
     if args.max_probes:
-        probes = probes[: args.max_probes]
+        probes = limit_probes(probes, args.max_probes)
 
     config = {
         "created_at": now_iso(),
@@ -522,6 +605,7 @@ def controller_run(args: argparse.Namespace) -> int:
                 "sample_id": row.get("sample_id", ""),
                 "source_type": row.get("source_type", ""),
                 "frequency_ghz": row.get("frequency_ghz", ""),
+                "orientation_axis": row.get("orientation_axis", ""),
                 "project_path": row.get("project_path", ""),
                 "project_exists": row.get("project_exists", False),
                 "project_size_bytes": row.get("project_size_bytes", 0),
@@ -544,6 +628,7 @@ def controller_run(args: argparse.Namespace) -> int:
                 "sample_id",
                 "source_type",
                 "frequency_ghz",
+                "orientation_axis",
                 "project_path",
                 "project_exists",
                 "project_size_bytes",

@@ -297,6 +297,21 @@ def select_case(case_rows: list[dict[str, str]], sample_id: str) -> dict[str, st
     raise ValueError(f"sample_id {sample_id!r} not found in case CSV. Available: {available}")
 
 
+def select_case_probes(probe_rows: list[dict[str, str]], sample_id: str) -> list[dict[str, str]]:
+    if not probe_rows:
+        return []
+    has_sample_ids = any(str(row.get("sample_id", "")).strip() for row in probe_rows)
+    if not has_sample_ids:
+        return probe_rows
+    selected = [row for row in probe_rows if str(row.get("sample_id", "")).strip() == sample_id]
+    if selected:
+        return selected
+    global_rows = [row for row in probe_rows if not str(row.get("sample_id", "")).strip()]
+    if global_rows:
+        return global_rows
+    raise ValueError(f"probe CSV has sample_id-scoped rows but none for sample_id={sample_id!r}")
+
+
 def normalized_token(text: str | Path) -> str:
     return re.sub(r"[^a-z0-9]+", "", str(text).lower())
 
@@ -364,7 +379,7 @@ def build_task(
     spec = field_spec(field_kind)
     sample_id = case["sample_id"]
     target_export = target_export_for_case(case, field_kind, target_export_override)
-    probe_rows = read_csv_rows(probe_csv)
+    probe_rows = select_case_probes(read_csv_rows(probe_csv), sample_id)
     expected_rows = len(probe_rows) * len(spec["components"])
     target_rows = 0
     target_columns: list[str] = []
@@ -620,7 +635,7 @@ def inspect_project_worker(args: argparse.Namespace) -> int:
     case_rows = read_csv_rows(resolve_path(args.case_csv))
     sample_id = selected_sample_id(args, case_rows, project)
     case = select_case(case_rows, sample_id)
-    probe_rows = read_csv_rows(resolve_path(args.probe_csv))
+    probe_rows = select_case_probes(read_csv_rows(resolve_path(args.probe_csv)), sample_id)
     contract_csv = selected_contract_csv(args)
     monitor_name = str(case.get("nearfield_monitor", "")).strip()
     target_export = target_export_for_case(case, args.field_kind, args.target_export)
