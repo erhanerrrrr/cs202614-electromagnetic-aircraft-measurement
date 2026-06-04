@@ -81,6 +81,7 @@ python code\run_true_nearfield_workflow_decision.py
 python code\build_true_nearfield_handoff.py
 python code\check_true_nearfield_dropzone.py
 python code\build_g3_model_dashboard.py
+python code\run_cst_impedance_stability_gate.py
 python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check
 python code\run_spherical_nf_ff_baseline.py
 python code\run_spherical_nf_ff_tradeoff.py
@@ -181,6 +182,15 @@ monitor data must be exported first. The scalar spherical NF-FF 32-point result
 is a true-monitor rerun priority with both power-pattern and complex-component
 sanity metrics, while Huygens and generic source-grid rows remain
 `diagnostic_only`.
+
+`run_cst_impedance_stability_gate.py` reads the mesh-safe Huygens batch result
+CSV files and writes
+`data/sampling_layouts/cst_meshsafe_huygens_impedance_stability/`. It checks
+whether the scalar `eta_eff/eta0` calibration has an interior cross-case optimum
+or is sitting on a scan boundary. It also reads cached CST ResultTree inspection
+JSON files to record whether matching H-field probe curves are visible. Current
+use: keep the mesh-safe Huygens route at calibrated-proxy wording until H-field
+currents or an interior stable impedance bound exists.
 
 ## Recognition stress-test addendum
 

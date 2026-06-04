@@ -1,0 +1,82 @@
+{
+  "generated_at": "2026-06-04T04:54:44+00:00",
+  "generated_by": "code/run_cst_impedance_stability_gate.py",
+  "batch_dir": "data\\sampling_layouts\\cst_meshsafe_huygens_impedance_lower_scan",
+  "out_dir": "data\\sampling_layouts\\cst_meshsafe_huygens_impedance_stability",
+  "variant_family": "outgoing_equivalence_minus",
+  "case_count": 2,
+  "overall_status": "cross_case_impedance_disagreement",
+  "any_best_at_scan_boundary": false,
+  "min_best_correlation": 0.9989454730423356,
+  "max_best_scaled_power_nmse": 0.0008012910468817,
+  "hfield_resulttree_status": "hfield_resulttree_missing",
+  "case_summaries": [
+    {
+      "sample_id": "L1_halfwave_dipole_z_1p2G",
+      "candidate_count": 13,
+      "scan_min_factor_to_eta0": 0.015625,
+      "scan_max_factor_to_eta0": 4.0,
+      "best_factor_to_eta0": 0.03125,
+      "best_impedance_ohm": 11.772822302125,
+      "best_variant": "outgoing_equivalence_minus_eta0p0312",
+      "best_status": "region_shape_pass",
+      "best_scaled_power_nmse": 0.0008012910468817,
+      "best_correlation": 0.9989985078768624,
+      "best_region_lobe_error_deg": 0.0,
+      "best_at_lower_scan_boundary": false,
+      "best_at_upper_scan_boundary": false,
+      "nmse_plateau_abs_window": 8.012910468817e-06,
+      "plateau_factor_min_to_eta0": 0.015625,
+      "plateau_factor_max_to_eta0": 0.03125,
+      "plateau_factor_width_to_eta0": 0.015625,
+      "plateau_candidate_count": 2,
+      "recommendation": "candidate_interior_eta"
+    },
+    {
+      "sample_id": "L1_short_dipole_z_1p2G",
+      "candidate_count": 13,
+      "scan_min_factor_to_eta0": 0.015625,
+      "scan_max_factor_to_eta0": 4.0,
+      "best_factor_to_eta0": 0.0625,
+      "best_impedance_ohm": 23.54564460425,
+      "best_variant": "outgoing_equivalence_minus_eta0p0625",
+      "best_status": "region_shape_pass",
+      "best_scaled_power_nmse": 0.0006959354012775,
+      "best_correlation": 0.9989454730423356,
+      "best_region_lobe_error_deg": 0.0,
+      "best_at_lower_scan_boundary": false,
+      "best_at_upper_scan_boundary": false,
+      "nmse_plateau_abs_window": 6.959354012775e-06,
+      "plateau_factor_min_to_eta0": 0.03125,
+      "plateau_factor_max_to_eta0": 4.0,
+      "plateau_factor_width_to_eta0": 3.96875,
+      "plateau_candidate_count": 12,
+      "recommendation": "candidate_interior_eta"
+    }
+  ],
+  "hfield_readiness": [
+    {
+      "result_export_dir": "outputs\\cst_meshsafe_huygens_result_export",
+      "inspection_json": "outputs\\cst_meshsafe_huygens_result_export\\meshsafe_huygens_tree_inspection.json",
+      "e_field_string_count": 236,
+      "h_field_string_count": 0,
+      "magnetic_string_count": 0,
+      "status": "hfield_resulttree_missing"
+    },
+    {
+      "result_export_dir": "outputs\\cst_meshsafe_huygens_result_export_halfwave",
+      "inspection_json": "outputs\\cst_meshsafe_huygens_result_export_halfwave\\meshsafe_huygens_tree_inspection.json",
+      "e_field_string_count": 236,
+      "h_field_string_count": 0,
+      "magnetic_string_count": 0,
+      "status": "hfield_resulttree_missing"
+    }
+  ],
+  "outputs": {
+    "case_summary": "impedance_stability_case_summary.csv",
+    "curve": "impedance_stability_curve.csv",
+    "hfield_readiness": "hfield_resulttree_readiness.csv",
+    "next_commands": "next_impedance_stability_commands.csv",
+    "readme": "README.md"
+  }
+}

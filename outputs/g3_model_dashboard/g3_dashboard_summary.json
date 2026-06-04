@@ -2,10 +2,11 @@
   "generated_by": "code/build_g3_model_dashboard.py",
   "status_counts": {
     "diagnostic_only": 4,
-    "corr_pass_nmse_near": 2,
     "strict_pass": 2,
+    "corr_pass_nmse_near": 2,
     "pending_source": 1,
-    "impedance_region_proxy_batch_pass": 1
+    "impedance_region_proxy_batch_pass": 1,
+    "cross_case_impedance_disagreement": 1
   },
   "true_monitor_status": "pending_source",
   "trusted_or_near_pass_count": 5,

@@ -66,3 +66,17 @@ Final G3 claims still require Python extrapolation to the 13 m shell, comparison
 against the existing FarfieldPlot-derived reference, and repetition on the
 second Level 1 source case before the local Huygens route becomes report-level
 evidence.
+
+## Current Export Boundary
+
+The cached CST ResultTree inspections currently expose local E-field probe
+curves, but no matching H-field probe curves. Do not use ASCII export from the
+`Field Monitors` 3D view as the handoff path; the CST popup for that view is an
+export-interface limitation, not a CST solver failure. Use ResultTree probe
+curves for the current E-field handoff, then add H-field probes or run the
+impedance stability gate before final Huygens wording.
+
+The latest lower-eta stability check reports source-dependent proxy calibration:
+the half-wave dipole prefers about `0.03125 eta0`, while the short dipole
+prefers about `0.0625 eta0`. Treat this as a cross-case disagreement, not as a
+single physical impedance measurement.

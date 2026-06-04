@@ -1,0 +1,3 @@
+﻿priority,action,command,expected_close_condition
+1,Resolve the source-dependent eta_eff disagreement with H-field-backed currents or more CST cases.,"Add matching CST H-field probe export, or add more source-family CST cases before using one global eta_eff.","The stability gate records a cross-case eta model, or final wording keeps eta_eff source-dependent and proxy-level."
+2,Rebuild the impedance stability gate after the scan or H-field export changes.,python code\run_cst_impedance_stability_gate.py,impedance_stability_summary.json records stable_impedance_candidate or a documented boundary limitation.

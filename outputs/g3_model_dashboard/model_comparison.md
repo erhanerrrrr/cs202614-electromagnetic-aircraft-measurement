@@ -23,6 +23,7 @@ It separates report-safe sanity checks from diagnostic bottlenecks and true-moni
 | model_bottleneck | generic_grid_convention_check | diagnostic_only | diagnostic_only | default_cube_5x3x3, current_phi_sign_flip, lambda=1e-05 | 0.7941 | 0.3184 | 59.96 |  | `data\sampling_layouts\cst_level1_convention_check\cst_convention_check_summary.json` |
 | model_bottleneck | group_sparse_equivalent_sources | diagnostic_only | diagnostic_only | default_cube_5x3x3, group_sparse, l2=0.0001, group=0.3 | 0.9283 | 0.0811 | 152.70 |  | `data\sampling_layouts\cst_level1_sparse_calibration\cst_sparse_calibration_summary.json` |
 | model_bottleneck | huygens_surface_prior | diagnostic_only | diagnostic_only | huygens_em_minus, field=radiating_dipole, lambda=0.01, smooth=0.0 | 0.7781 | 0.2642 | 166.71 | 162 | `data\sampling_layouts\cst_level1_huygens_baseline\huygens_reconstruction_summary.json` |
+| model_bottleneck | meshsafe_huygens_impedance_stability | cross_case_impedance_disagreement | calibration_sensitivity_check | L1_halfwave_dipole_z_1p2G:eta=0.0312eta0/candidate_interior_eta; L1_short_dipole_z_1p2G:eta=0.0625eta0/candidate_interior_eta | 0.9989 | 8.0129e-04 | 0.00 | 96 | `data\sampling_layouts\cst_meshsafe_huygens_impedance_stability\impedance_stability_summary.json` |
 
 ## Interpretation
 
@@ -36,12 +37,13 @@ It separates report-safe sanity checks from diagnostic bottlenecks and true-moni
 - `generic_grid_convention_check`: No simple global phase or theta/phi transform rescues the generic grid.
 - `group_sparse_equivalent_sources`: Sparse support improves Corr/NMSE but does not fix the main-lobe/source-convention issue.
 - `huygens_surface_prior`: The Huygens workflow is runnable, but current field-model/smoothness axes still miss the physics gate.
+- `meshsafe_huygens_impedance_stability`: The lower-eta extension removed the immediate scan-boundary issue, but the two real CST cases now prefer different eta_eff values. Current H-field ResultTree readiness is hfield_resulttree_missing; therefore the scalar impedance route is a source-dependent calibrated proxy, not a single global physical impedance closure.
 
 ## Next Actions
 
 | Priority | Owner | Gate | Action | Proof to close | Blocked by |
 |---:|---|---|---|---|---|
-| 1 | Independent workflow | meshsafe_huygens_physics | Promote the scalar impedance proxy to H-field-backed Huygens evidence, or validate eta_eff stability on additional CST cases. | Batch summary reports two real CST cases passing the region gate with H-field-backed currents or independently stable eta_eff bounds. |  |
+| 1 | Independent workflow | meshsafe_huygens_physics | Promote the scalar impedance proxy to H-field-backed Huygens evidence; if H-field is unavailable, validate eta_eff on more CST cases and keep source-dependent calibration explicit. | Batch summary reports H-field-backed currents or the stability gate records an interior, cross-case stable eta_eff candidate. |  |
 | 2 | CST operator | true_monitor | Use outputs\cst_true_nearfield_handoff\expected_true_monitor_files.csv, then export authoritative full-grid CST true near-field monitor CSVs for the queued Level 1 cases. | python code\run_true_nearfield_gate.py reports no pending_source rows for full_grid_162. | CST monitor CSVs |
 | 3 | Algorithm operator | post_true_monitor | After full-grid monitor CSVs exist, derive queued 32/120 layouts and compare them against the FarfieldPlot-derived reference. | true_nearfield_gate_summary.json reports reference_match or needs_physical_rerun with comparison metrics, not pending_source. | Full-grid monitor CSVs |
 | 4 | Algorithm operator | physical_baseline | Rerun source-model, convention, scalar SWE, reduced-layout, and Huygens baselines on true-monitor input if the gate reports needs_physical_rerun. | A full-grid physical baseline reaches strict_pass or an approved near-pass before reduced-layout claims are written. | True-monitor gate comparison result |

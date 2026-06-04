@@ -261,3 +261,23 @@ Boundary: the selected impedance is calibrated against the current Level 1
 far-field reference. It is stronger than a fixed `eta0` assumption, but final
 Stratton-Chu/Huygens wording still needs H-field-backed currents or stable
 impedance bounds across additional CST cases.
+
+## 2026-06-04 Mesh-safe Huygens impedance stability gate
+
+`code/run_cst_impedance_stability_gate.py` records whether the scalar
+`eta_eff/eta0` proxy has an interior stable optimum or remains on a scan
+boundary. It also inspects cached CST ResultTree JSON files for matching
+H-field probe curves. Current reading: CST is runnable on the mesh-safe route,
+but the cached handoff exposes E-field probe curves only; `Field Monitor` ASCII
+export is an export-path mismatch, not a CST startup failure. After the
+lower-eta extension, the two cases prefer different eta values
+(`0.03125 eta0` and `0.0625 eta0`), so the current status is
+`cross_case_impedance_disagreement`.
+
+Related entries:
+
+| File/Directory | Meaning |
+|---|---|
+| `docs/stage_notes/35_g3_meshsafe_huygens_impedance_stability.md` | Stage note explaining the impedance boundary and H-field readiness check. |
+| `data/sampling_layouts/cst_meshsafe_huygens_impedance_stability/` | Stability summary, per-case eta table, H-field ResultTree readiness, and next commands. |
+| `outputs/g3_model_dashboard/g3_model_status.csv` | Dashboard row `meshsafe_huygens_impedance_stability`. |

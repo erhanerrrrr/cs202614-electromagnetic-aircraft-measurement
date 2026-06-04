@@ -41,6 +41,7 @@
 | S32 | `32_g3_meshsafe_huygens_two_case_batch.md` | G3 mesh-safe Huygens 第二源例 clean solver、ResultTree 导出和两例批处理门控 |
 | S33 | `33_g3_meshsafe_huygens_region_dashboard.md` | G3 mesh-safe Huygens 区域主瓣门控和 dashboard 接入 |
 | S34 | `34_g3_meshsafe_huygens_impedance_calibration.md` | G3 mesh-safe Huygens scalar impedance calibration and dashboard status |
+| S35 | `35_g3_meshsafe_huygens_impedance_stability.md` | G3 mesh-safe Huygens impedance stability gate and H-field readiness check |
 
 后续规则：
 

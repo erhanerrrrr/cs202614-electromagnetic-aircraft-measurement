@@ -58,10 +58,13 @@ def status_rank(status: str) -> int:
         "impedance_region_proxy_batch_pass": 2,
         "region_proxy_batch_pass": 2,
         "region_shape_pass": 2,
+        "stable_impedance_candidate": 3,
         "corr_lobe_pass_nmse_open": 2,
         "reference_match": 3,
         "shape_pass_lobe_ambiguous": 4,
         "diagnostic_only": 4,
+        "needs_impedance_extension": 5,
+        "cross_case_impedance_disagreement": 5,
         "pending_source": 5,
         "needs_physical_rerun": 6,
         "row_count_mismatch": 7,
@@ -466,6 +469,85 @@ def build_rows() -> list[dict[str, Any]]:
             )
         )
 
+    impedance_stability_path = (
+        ROOT
+        / "data"
+        / "sampling_layouts"
+        / "cst_meshsafe_huygens_impedance_stability"
+        / "impedance_stability_summary.json"
+    )
+    impedance_stability = read_json(impedance_stability_path)
+    if impedance_stability:
+        case_rows = impedance_stability.get("case_summaries", [])
+        stability_status = str(impedance_stability.get("overall_status", "diagnostic_only"))
+        best_settings = "; ".join(
+            (
+                f"{item.get('sample_id', '')}:eta={format_float(item.get('best_factor_to_eta0'), 4)}eta0"
+                f"/{item.get('recommendation', '')}"
+            )
+            for item in case_rows
+        )
+        hfield_status = str(impedance_stability.get("hfield_resulttree_status", "unknown"))
+        if stability_status == "cross_case_impedance_disagreement":
+            stability_interpretation = (
+                "The lower-eta extension removed the immediate scan-boundary issue, but the two real CST "
+                f"cases now prefer different eta_eff values. Current H-field ResultTree readiness is {hfield_status}; "
+                "therefore the scalar impedance route is a source-dependent calibrated proxy, not a single "
+                "global physical impedance closure."
+            )
+            stability_next_action = (
+                "Add matching CST H-field probe curves, or validate a source-dependent eta model on additional "
+                "CST source families before using this route in final Huygens wording."
+            )
+        elif stability_status == "needs_impedance_extension":
+            stability_interpretation = (
+                "The scalar impedance proxy is now guarded by an explicit stability check, and the best eta_eff "
+                f"still sits on a scan boundary. Current H-field ResultTree readiness is {hfield_status}; the "
+                "calibrated proxy remains useful but not final physics evidence."
+            )
+            stability_next_action = (
+                "Run the lower-eta scan listed by the stability gate or export matching CST H-field probe curves; "
+                "keep final wording at calibrated-proxy level until an interior stable eta or H-field-backed "
+                "current evidence exists."
+            )
+        else:
+            stability_interpretation = (
+                "The scalar impedance proxy is now guarded by an explicit stability check. "
+                f"Current H-field ResultTree readiness is {hfield_status}; keep the result as a calibrated "
+                "proxy until H-field-backed currents or broader CST case coverage confirm it."
+            )
+            stability_next_action = (
+                "Export matching CST H-field probe curves if available, or validate the candidate eta_eff on "
+                "additional CST source families before final physics wording."
+            )
+        rows.append(
+            row(
+                category="model_bottleneck",
+                artifact="meshsafe_huygens_impedance_stability",
+                scope=f"{impedance_stability.get('case_count', 0)} scalar eta calibration cases plus H-field tree readiness",
+                evidence_path=impedance_stability_path,
+                command="python code\\run_cst_impedance_stability_gate.py",
+                best_setting=best_settings,
+                status=stability_status,
+                trust_level="calibration_sensitivity_check",
+                min_correlation=impedance_stability.get("min_best_correlation"),
+                max_nmse=impedance_stability.get("max_best_scaled_power_nmse"),
+                max_main_lobe_error_deg=0.0,
+                sensor_count=96,
+                interpretation=stability_interpretation,
+                next_action=stability_next_action,
+            )
+        )
+    else:
+        rows.append(
+            missing_row(
+                "model_bottleneck",
+                "meshsafe_huygens_impedance_stability",
+                impedance_stability_path,
+                "python code\\run_cst_impedance_stability_gate.py",
+            )
+        )
+
     gate_path = ROOT / "data" / "cst_true_nearfield_workpack" / "gate_report" / "true_nearfield_gate_summary.json"
     gate = read_json(gate_path)
     if gate:
@@ -508,15 +590,25 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             & status["status"].isin(["impedance_region_proxy_batch_pass", "region_proxy_batch_pass", "physics_proxy_pass"])
         ).any()
     )
+    impedance_extension_needed = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_impedance_stability")
+            & status["status"].isin(["needs_impedance_extension", "cross_case_impedance_disagreement"])
+        ).any()
+    )
     actions = [
         {
             "priority": 1,
             "owner": "Independent workflow",
             "gate": "meshsafe_huygens_physics",
-            "action": "Promote the scalar impedance proxy to H-field-backed Huygens evidence, or validate eta_eff stability on additional CST cases.",
-            "trigger": "Mesh-safe real CST batch gate is region/proxy ready and now records calibrated eta_eff.",
-            "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv plus updated impedance/H-field batch summary",
-            "proof_to_close": "Batch summary reports two real CST cases passing the region gate with H-field-backed currents or independently stable eta_eff bounds.",
+            "action": "Promote the scalar impedance proxy to H-field-backed Huygens evidence; if H-field is unavailable, validate eta_eff on more CST cases and keep source-dependent calibration explicit.",
+            "trigger": (
+                "Mesh-safe real CST batch gate is region/proxy ready, while the stability gate still needs "
+                "impedance or H-field closure." if impedance_extension_needed else
+                "Mesh-safe real CST batch gate is region/proxy ready and the impedance stability gate is available."
+            ),
+            "artifact": "data/cst_exports/level1_meshsafe_huygens/*_local_hfield.csv or data/sampling_layouts/cst_meshsafe_huygens_impedance_stability/",
+            "proof_to_close": "Batch summary reports H-field-backed currents or the stability gate records an interior, cross-case stable eta_eff candidate.",
             "blocked_by": "" if meshsafe_ready else "Mesh-safe batch gate",
         },
         {
