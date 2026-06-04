@@ -281,3 +281,25 @@ Related entries:
 | `docs/stage_notes/35_g3_meshsafe_huygens_impedance_stability.md` | Stage note explaining the impedance boundary and H-field readiness check. |
 | `data/sampling_layouts/cst_meshsafe_huygens_impedance_stability/` | Stability summary, per-case eta table, H-field ResultTree readiness, and next commands. |
 | `outputs/g3_model_dashboard/g3_model_status.csv` | Dashboard row `meshsafe_huygens_impedance_stability`. |
+
+## 2026-06-04 CST mesh-safe Huygens H-field 工作包
+
+本轮把 H-field handoff 从“下一步想法”整理成可执行工程路径：`run_cst_level1_required_automation.py`
+支持 `--probe-mode hfield`，`export_cst_meshsafe_huygens_results.py` 支持
+`--field-kind e|h`，工作包新增 H-field CSV 合同并把 H-field 工程生成、短路径求解和
+ResultTree 导出列入 `next_meshsafe_huygens_commands.csv` 的步骤 5-7。
+
+当前结论：CST 不是无法正常运行。E-field 短路径 ResultTree 导出已经达到
+`target_contract_complete`，短偶极子合同有 `288` 行；H-field 路径目前显示
+`blocked`，原因是 `C:\csttmp\huy_hs\h_short_hfield.cst` 还没有生成/求解，不是
+CST 启动失败。
+
+相关入口：
+
+| 文件/目录 | 意义 |
+|---|---|
+| `docs/stage_notes/36_g3_meshsafe_huygens_hfield_workpack.md` | S36 阶段说明，记录 H-field 合同、导出控制器和当前 blocker |
+| `data/cst_meshsafe_huygens_workpack/local_huygens_hfield_export_contract.csv` | H-field probe CSV 字段合同 |
+| `data/cst_meshsafe_huygens_workpack/next_meshsafe_huygens_commands.csv` | E/H 工程生成、solver gate 和 ResultTree 导出命令队列 |
+| `code/export_cst_meshsafe_huygens_results.py` | `--field-kind e|h` ResultTree 导出控制器 |
+| `code/run_cst_level1_required_automation.py` | `--probe-mode hfield` CST 工程生成入口 |

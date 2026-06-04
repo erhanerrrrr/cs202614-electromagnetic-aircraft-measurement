@@ -241,13 +241,14 @@ End With
 """.strip()
             )
             continue
+        probe_field = "hfield" if probe_mode == "hfield" else "efield"
         blocks.append(
             f"""
 With Probe
     .Reset
     .ID {probe_id}
     .AutoLabel 1
-    .Field ("efield")
+    .Field ({vba_str(probe_field)})
     .Xpos ({fnum(float(probe['x_m']))})
     .Ypos ({fnum(float(probe['y_m']))})
     .Zpos ({fnum(float(probe['z_m']))})
@@ -612,10 +613,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--max-probes", type=int, default=0)
     parser.add_argument(
         "--probe-mode",
-        choices=["efield", "efarfield", "none"],
+        choices=["efield", "hfield", "efarfield", "none"],
         default="efield",
         help=(
             "efield uses Cartesian E-field probes and may enlarge the mesh; "
+            "hfield uses Cartesian H-field probes on the same probe CSV; "
             "efarfield preserves hemisphere angular sampling without meshing the measurement radius."
         ),
     )

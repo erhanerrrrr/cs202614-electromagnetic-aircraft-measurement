@@ -17,9 +17,9 @@ tangent2_x,float,Second local tangent x component.
 tangent2_y,float,Second local tangent y component.
 tangent2_z,float,Second local tangent z component.
 weight_m2,float,Surface quadrature weight associated with this node.
-polarization,string,"One of Ex, Ey, Ez; keep Cartesian electric fields for audit."
-e_real,float,Real part of the electric field component.
-e_imag,float,Imaginary part of the electric field component.
+polarization,string,"One of Hx, Hy, Hz; keep Cartesian magnetic fields for audit."
+h_real,float,Real part of the magnetic field component.
+h_imag,float,Imaginary part of the magnetic field component.
 cst_project,string,CST project that produced the row.
 cst_probe_item,string,CST result-tree item or probe label used for extraction.
-extraction_method,string,Use 'CST local Cartesian E-field probe on mesh-safe Huygens surface'.
+extraction_method,string,Use 'CST local Cartesian H-field probe on mesh-safe Huygens surface'.

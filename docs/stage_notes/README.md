@@ -42,6 +42,7 @@
 | S33 | `33_g3_meshsafe_huygens_region_dashboard.md` | G3 mesh-safe Huygens 区域主瓣门控和 dashboard 接入 |
 | S34 | `34_g3_meshsafe_huygens_impedance_calibration.md` | G3 mesh-safe Huygens scalar impedance calibration and dashboard status |
 | S35 | `35_g3_meshsafe_huygens_impedance_stability.md` | G3 mesh-safe Huygens impedance stability gate and H-field readiness check |
+| S36 | `36_g3_meshsafe_huygens_hfield_workpack.md` | G3 mesh-safe Huygens H-field workpack, export contract, and CST next gate |
 
 后续规则：
 

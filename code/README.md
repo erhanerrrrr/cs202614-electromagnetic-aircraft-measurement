@@ -353,10 +353,11 @@ source, followed by Python extrapolation to the 13 m hemisphere shell.
 `data/cst_meshsafe_huygens_workpack/` with:
 
 - two Level 1 required mesh-safe Huygens CST cases;
-- 96 local E-field probe points on `level1_local_sphere_r0p35`;
-- `local_huygens_export_contract.csv` for the future local result adapter;
-- `next_meshsafe_huygens_commands.csv` with the project-generation and
-  short-path solver gate commands.
+- 96 local Cartesian probe points on `level1_local_sphere_r0p35`;
+- `local_huygens_export_contract.csv` for local E-field probe exports;
+- `local_huygens_hfield_export_contract.csv` for local H-field probe exports;
+- `next_meshsafe_huygens_commands.csv` with the E/H project-generation,
+  short-path solver gate, and ResultTree export commands.
 
 Use it before regenerating the CST projects:
 
@@ -365,21 +366,23 @@ python code\prepare_cst_meshsafe_huygens_workpack.py
 python code\run_cst_level1_required_automation.py --level1-csv data\cst_meshsafe_huygens_workpack\level1_required_meshsafe_huygens_cases.csv --probe-csv data\cst_meshsafe_huygens_workpack\level1_local_huygens_probe_points.csv --out-dir C:\csttmp\huy_p --probe-mode efield
 ```
 
-Then run the first solver gate through a short path such as `C:\csttmp\huy_s`
-to avoid CST internal result-path limits. Keep both project generation and
-solver trials on short ASCII paths; the Chinese desktop path can make CST API
-save/close calls report `RuntimeError()` even when the `.cst` file appears.
-Current evidence says CST can run the mesh-safe project without the 4.6B-cell
-blocker; the next blocker is exporting or parsing the kept local `.m3d` E-field
-result into the CSV contract.
+Then run the solver gates through short paths such as `C:\csttmp\huy_s` for
+E-field and `C:\csttmp\huy_hs` for H-field to avoid CST internal result-path
+limits. Keep both project generation and solver trials on short ASCII paths;
+the Chinese desktop path can make CST API save/close calls report
+`RuntimeError()` even when the `.cst` file appears. Current evidence says CST
+can run the mesh-safe project without the 4.6B-cell blocker. The current
+non-proxy blocker is the missing H-field probe export, not CST startup.
 
 `export_cst_meshsafe_huygens_results.py` is the next audit/export controller.
 It inventories the short-path CST result artifacts, checks whether the local
 Huygens CSV contract exists and has the expected `96 * 3 = 288` component rows,
-and optionally opens the CST project to inspect result-tree candidates:
+and optionally opens the CST project to inspect result-tree candidates. Use
+`--field-kind e` for electric probes and `--field-kind h` for magnetic probes:
 
 ```powershell
-python code\export_cst_meshsafe_huygens_results.py --inspect-tree
+python code\export_cst_meshsafe_huygens_results.py --field-kind e --inspect-tree
+python code\export_cst_meshsafe_huygens_results.py --field-kind h --inspect-tree
 ```
 
 The successful export route is CST `ResultTree`, not Field Monitor ASCII
@@ -392,10 +395,18 @@ curves can instead be read under `1D Results\Probes\E-Field\...\(X/Y/Z)` with
 python code\export_cst_meshsafe_huygens_results.py --attempt-export --overwrite
 ```
 
-Current status after the first short-path solver gate is
+Current E-field status after the first short-path solver gate is
 `target_contract_complete`: the short-dipole 1.2 GHz local Huygens contract has
 `96 * 3 = 288` complex E-field component rows in
 `data/cst_exports/level1_meshsafe_huygens/L1_short_dipole_z_1p2G_level1_local_sphere_r0p35_local_efield.csv`.
+The H-field controller is wired but intentionally reports `blocked` until
+`C:\csttmp\huy_hs\h_short_hfield.cst` exists and exposes matching local H-field
+probe curves. Generate that project with `--probe-mode hfield`, solve it on a
+short path, then run:
+
+```powershell
+python code\export_cst_meshsafe_huygens_results.py --field-kind h --attempt-export --project C:\csttmp\huy_hs\h_short_hfield.cst
+```
 
 `run_cst_meshsafe_huygens_extrapolation.py` is the next Python-side diagnostic.
 It consumes the real local CST probe CSV plus the Level 1 farfield reference
@@ -498,3 +509,30 @@ Current calibrated two-case status:
 This is still a calibrated proxy, not final Huygens physics proof. The next
 upgrade is H-field probe export or an independent stability test of the
 selected `eta_eff` across additional CST cases.
+
+## CST mesh-safe Huygens H-field workpack addendum
+
+`export_cst_meshsafe_huygens_results.py` now supports a field switch instead of
+being E-only:
+
+```powershell
+python code\export_cst_meshsafe_huygens_results.py --field-kind e
+python code\export_cst_meshsafe_huygens_results.py --field-kind h
+```
+
+The default E-field path is still `C:\csttmp\huy_s\h_short.cst`; the default
+H-field path is `C:\csttmp\huy_hs\h_short_hfield.cst`. The E-field route is
+complete for the short-dipole contract (`288` rows). The H-field route is
+prepared but currently blocked by the missing solved H-field CST project and
+matching ResultTree probe curves. This is the next concrete CST action, not a
+general CST failure.
+
+The generated workpack now includes:
+
+- `data/cst_meshsafe_huygens_workpack/local_huygens_hfield_export_contract.csv`
+- `data/cst_meshsafe_huygens_workpack/next_meshsafe_huygens_commands.csv`
+  steps 5-7 for H-field project generation, short-path solver gate, and
+  ResultTree export
+
+Once `*_local_hfield.csv` exists, the Python Huygens model can replace the
+scalar impedance proxy with E/H-backed equivalent-current validation.

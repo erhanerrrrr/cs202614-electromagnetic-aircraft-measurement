@@ -17,6 +17,7 @@ DEFAULT_CST_PYTHON = Path(
     r"D:\Program Files (x86)\CST Studio Suite 2025\Opera\code\bin\python.exe"
 )
 DEFAULT_PROJECT = Path(r"C:\csttmp\huy_s\h_short.cst")
+DEFAULT_HFIELD_PROJECT = Path(r"C:\csttmp\huy_hs\h_short_hfield.cst")
 DEFAULT_CASE_CSV = (
     ROOT
     / "data"
@@ -35,14 +36,47 @@ DEFAULT_CONTRACT_CSV = (
     / "cst_meshsafe_huygens_workpack"
     / "local_huygens_export_contract.csv"
 )
+DEFAULT_HFIELD_CONTRACT_CSV = (
+    ROOT
+    / "data"
+    / "cst_meshsafe_huygens_workpack"
+    / "local_huygens_hfield_export_contract.csv"
+)
 DEFAULT_OUT_DIR = ROOT / "outputs" / "cst_meshsafe_huygens_result_export"
-COMPONENTS = ("Ex", "Ey", "Ez")
-AXIS_TO_COMPONENT = {"X": "Ex", "Y": "Ey", "Z": "Ez"}
+DEFAULT_HFIELD_OUT_DIR = ROOT / "outputs" / "cst_meshsafe_huygens_hfield_result_export"
+FIELD_SPECS = {
+    "e": {
+        "label": "E-Field",
+        "components": ("Ex", "Ey", "Ez"),
+        "axis_to_component": {"X": "Ex", "Y": "Ey", "Z": "Ez"},
+        "real_column": "e_real",
+        "imag_column": "e_imag",
+        "target_suffix": "_local_efield.csv",
+        "derived_suffix": "_local_hfield.csv",
+        "contract_csv": DEFAULT_CONTRACT_CSV,
+        "out_dir": DEFAULT_OUT_DIR,
+        "project": DEFAULT_PROJECT,
+        "extraction_method": "CST ResultTree 1D complex local Cartesian E-field probe",
+    },
+    "h": {
+        "label": "H-Field",
+        "components": ("Hx", "Hy", "Hz"),
+        "axis_to_component": {"X": "Hx", "Y": "Hy", "Z": "Hz"},
+        "real_column": "h_real",
+        "imag_column": "h_imag",
+        "target_suffix": "_local_hfield.csv",
+        "derived_suffix": "_local_hfield.csv",
+        "contract_csv": DEFAULT_HFIELD_CONTRACT_CSV,
+        "out_dir": DEFAULT_HFIELD_OUT_DIR,
+        "project": DEFAULT_HFIELD_PROJECT,
+        "extraction_method": "CST ResultTree 1D complex local Cartesian H-field probe",
+    },
+}
 PRIMARY_ARTIFACT_SUFFIXES = {".m3d", ".ffm", ".fme"}
 DIAGNOSTIC_SUFFIXES = {".json", ".txt", ".log"}
 RESULT_TREE_ROOTS = ("1D Results", "2D/3D Results", "Tables", "Farfields")
 PROBE_ITEM_PATTERN = re.compile(
-    r"E-Field\s+\((?P<coords>[-+0-9.eE,\s]+)\)\((?P<axis>Abs|X|Y|Z)\)\s+\[(?P<run>\d+)\]"
+    r"(?P<field>[EH])-Field\s+\((?P<coords>[-+0-9.eE,\s]+)\)\((?P<axis>Abs|X|Y|Z)\)\s+\[(?P<run>\d+)\]"
 )
 
 
@@ -63,6 +97,67 @@ def rel(path_text: str | Path) -> str:
         return str(path.resolve().relative_to(ROOT)).replace("/", "\\")
     except Exception:
         return str(path)
+
+
+def field_spec(field_kind: str) -> dict[str, Any]:
+    key = str(field_kind).strip().lower()
+    if key not in FIELD_SPECS:
+        raise ValueError(f"unsupported field_kind {field_kind!r}; expected one of {sorted(FIELD_SPECS)}")
+    return FIELD_SPECS[key]
+
+
+def default_contract_csv(field_kind: str) -> Path:
+    return Path(field_spec(field_kind)["contract_csv"])
+
+
+def default_out_dir(field_kind: str) -> Path:
+    return Path(field_spec(field_kind)["out_dir"])
+
+
+def default_project(field_kind: str) -> Path:
+    return Path(field_spec(field_kind)["project"])
+
+
+def target_export_for_case(case: dict[str, str], field_kind: str, target_export: Path | None = None) -> Path:
+    if target_export is not None:
+        return resolve_path(target_export)
+    base = resolve_path(case["nearfield_export"])
+    if field_kind == "e":
+        return base
+    text = str(base)
+    source_suffix = str(FIELD_SPECS["e"]["target_suffix"])
+    target_suffix = str(field_spec(field_kind)["target_suffix"])
+    if text.endswith(source_suffix):
+        return Path(text[: -len(source_suffix)] + target_suffix)
+    return base.with_name(base.stem + target_suffix)
+
+
+def selected_project(args: argparse.Namespace) -> Path:
+    value = getattr(args, "project", None)
+    if value is None:
+        return default_project(args.field_kind)
+    return resolve_path(value)
+
+
+def selected_contract_csv(args: argparse.Namespace) -> Path:
+    value = getattr(args, "contract_csv", None)
+    if value is None:
+        return default_contract_csv(args.field_kind)
+    return resolve_path(value)
+
+
+def selected_out_dir(args: argparse.Namespace) -> Path:
+    value = getattr(args, "out_dir", None)
+    if value is None:
+        return default_out_dir(args.field_kind)
+    return resolve_path(value)
+
+
+def selected_worker_summary(args: argparse.Namespace) -> Path:
+    value = getattr(args, "worker_summary", None)
+    if value is not None:
+        return resolve_path(value)
+    return selected_out_dir(args) / "meshsafe_huygens_tree_inspection.json"
 
 
 def read_csv_rows(path: Path) -> list[dict[str, str]]:
@@ -212,11 +307,14 @@ def build_task(
     case: dict[str, str],
     probe_csv: Path,
     contract_csv: Path,
+    field_kind: str,
+    target_export_override: Path | None = None,
 ) -> dict[str, Any]:
+    spec = field_spec(field_kind)
     sample_id = case["sample_id"]
-    target_export = resolve_path(case["nearfield_export"])
+    target_export = target_export_for_case(case, field_kind, target_export_override)
     probe_rows = read_csv_rows(probe_csv)
-    expected_rows = len(probe_rows) * len(COMPONENTS)
+    expected_rows = len(probe_rows) * len(spec["components"])
     target_rows = 0
     target_columns: list[str] = []
     if target_export.exists():
@@ -246,6 +344,8 @@ def build_task(
 
     return {
         "sample_id": sample_id,
+        "field_kind": field_kind,
+        "field_label": spec["label"],
         "frequency_hz": as_int(case.get("frequency_hz")),
         "project_path": rel(project),
         "project_exists": project.exists(),
@@ -275,17 +375,21 @@ def is_result_tree_item(item: str) -> bool:
     return any(has_tree_root(item, root) for root in RESULT_TREE_ROOTS)
 
 
-def likely_local_huygens_items(items: list[str], monitor_name: str) -> list[str]:
+def likely_local_huygens_items(items: list[str], monitor_name: str, field_kind: str = "e") -> list[str]:
+    spec = field_spec(field_kind)
     tokens = [
         monitor_name.lower(),
         "local_huygens",
         "huygens",
         "nearfield",
         "near field",
-        "efield",
-        "e-field",
         "probe",
+        str(spec["label"]).lower(),
     ]
+    if field_kind == "e":
+        tokens.extend(["efield", "e-field", "electric"])
+    else:
+        tokens.extend(["hfield", "h-field", "magnetic"])
     candidates: list[str] = []
     for item in items:
         lowered = item.lower()
@@ -294,12 +398,16 @@ def likely_local_huygens_items(items: list[str], monitor_name: str) -> list[str]
     return candidates
 
 
-def parse_probe_result_item(item: str) -> dict[str, Any] | None:
+def parse_probe_result_item(item: str, field_kind: str = "e") -> dict[str, Any] | None:
+    spec = field_spec(field_kind)
     match = PROBE_ITEM_PATTERN.search(item)
     if not match:
         return None
+    if match.group("field").lower() != field_kind:
+        return None
     axis = match.group("axis")
-    if axis not in AXIS_TO_COMPONENT:
+    axis_to_component = spec["axis_to_component"]
+    if axis not in axis_to_component:
         return None
     coords = [as_float(value) for value in match.group("coords").replace(",", " ").split()]
     if len(coords) != 3:
@@ -307,7 +415,9 @@ def parse_probe_result_item(item: str) -> dict[str, Any] | None:
     return {
         "item": item,
         "axis": axis,
-        "component": AXIS_TO_COMPONENT[axis],
+        "component": axis_to_component[axis],
+        "field_kind": field_kind,
+        "field_label": spec["label"],
         "x_m": coords[0],
         "y_m": coords[1],
         "z_m": coords[2],
@@ -380,11 +490,15 @@ def contract_rows_from_values(
     project: Path,
     probe_rows: list[dict[str, str]],
     values: dict[tuple[int, str], dict[str, Any]],
+    field_kind: str,
 ) -> list[dict[str, Any]]:
+    spec = field_spec(field_kind)
+    real_column = str(spec["real_column"])
+    imag_column = str(spec["imag_column"])
     rows: list[dict[str, Any]] = []
     for probe in probe_rows:
         sensor_id = as_int(probe.get("sensor_id"))
-        for component in COMPONENTS:
+        for component in spec["components"]:
             value = values[(sensor_id, component)]
             rows.append(
                 {
@@ -407,20 +521,21 @@ def contract_rows_from_values(
                     "tangent2_z": probe.get("tangent2_z", ""),
                     "weight_m2": probe.get("weight_m2", ""),
                     "polarization": component,
-                    "e_real": f"{as_float(value.get('e_real')):.12e}",
-                    "e_imag": f"{as_float(value.get('e_imag')):.12e}",
+                    real_column: f"{as_float(value.get(real_column)):.12e}",
+                    imag_column: f"{as_float(value.get(imag_column)):.12e}",
                     "cst_project": rel(project),
                     "cst_probe_item": value.get("cst_probe_item", ""),
-                    "extraction_method": "CST ResultTree 1D complex local Cartesian E-field probe",
+                    "extraction_method": spec["extraction_method"],
                 }
             )
     return rows
 
 
-def tree_summary(items: list[str], monitor_name: str) -> dict[str, Any]:
+def tree_summary(items: list[str], monitor_name: str, field_kind: str = "e") -> dict[str, Any]:
     result_items = [item for item in items if is_result_tree_item(item)]
-    candidates = likely_local_huygens_items(items, monitor_name)
+    candidates = likely_local_huygens_items(items, monitor_name, field_kind)
     exportable = [item for item in candidates if is_result_tree_item(item)]
+    parsed_candidates = [parsed for item in exportable if (parsed := parse_probe_result_item(item, field_kind))]
     definition = [
         item
         for item in candidates
@@ -432,31 +547,38 @@ def tree_summary(items: list[str], monitor_name: str) -> dict[str, Any]:
         root_counts[root] = root_counts.get(root, 0) + 1
     return {
         "tree_item_count": len(items),
+        "field_kind": field_kind,
+        "field_label": field_spec(field_kind)["label"],
         "result_tree_item_count": len(result_items),
         "root_counts": dict(sorted(root_counts.items())),
         "candidate_count": len(candidates),
         "definition_candidate_count": len(definition),
         "exportable_candidate_count": len(exportable),
+        "parsed_probe_result_count": len(parsed_candidates),
         "candidate_items": candidates[:80],
         "definition_candidate_items": definition[:80],
         "exportable_candidate_items": exportable[:80],
+        "parsed_probe_result_items": [item["item"] for item in parsed_candidates[:80]],
     }
 
 
 def inspect_project_worker(args: argparse.Namespace) -> int:
     import cst.interface as ci  # type: ignore[import-not-found]
 
-    project = resolve_path(args.project)
+    project = selected_project(args)
     case = select_case(read_csv_rows(resolve_path(args.case_csv)), args.sample_id)
     probe_rows = read_csv_rows(resolve_path(args.probe_csv))
+    contract_csv = selected_contract_csv(args)
     monitor_name = str(case.get("nearfield_monitor", "")).strip()
-    target_export = resolve_path(case["nearfield_export"])
+    target_export = target_export_for_case(case, args.field_kind, args.target_export)
     target_frequency_ghz = as_float(case.get("frequency_hz")) / 1.0e9
-    summary_path = resolve_path(args.worker_summary)
+    summary_path = selected_worker_summary(args)
     item_map_path = summary_path.with_name("meshsafe_huygens_probe_item_map.csv")
     summary: dict[str, Any] = {
         "created_at": now_iso(),
         "status": "started",
+        "field_kind": args.field_kind,
+        "field_label": field_spec(args.field_kind)["label"],
         "project": rel(project),
         "project_exists": project.exists(),
         "monitor_name": monitor_name,
@@ -480,7 +602,7 @@ def inspect_project_worker(args: argparse.Namespace) -> int:
                     "error": tree_result.get("error", ""),
                     "value_count": len(items),
                 },
-                "tree": tree_summary(items, monitor_name),
+                "tree": tree_summary(items, monitor_name, args.field_kind),
             }
         )
         if args.worker_attempt_export:
@@ -488,7 +610,7 @@ def inspect_project_worker(args: argparse.Namespace) -> int:
                 model=model,
                 case=case,
                 project=project,
-                contract_csv=resolve_path(args.contract_csv),
+                contract_csv=contract_csv,
                 probe_rows=probe_rows,
                 items=items,
                 target_export=target_export,
@@ -498,6 +620,7 @@ def inspect_project_worker(args: argparse.Namespace) -> int:
                 frequency_tolerance_ghz=args.frequency_tolerance_ghz,
                 result_id=args.result_id,
                 overwrite=args.overwrite,
+                field_kind=args.field_kind,
             )
             summary["export"] = export_summary
             summary["status"] = export_summary.get("status", "export_attempted")
@@ -528,7 +651,12 @@ def export_probe_results_from_tree(
     frequency_tolerance_ghz: float,
     result_id: str,
     overwrite: bool,
+    field_kind: str = "e",
 ) -> dict[str, Any]:
+    spec = field_spec(field_kind)
+    components = tuple(spec["components"])
+    real_column = str(spec["real_column"])
+    imag_column = str(spec["imag_column"])
     if target_export.exists() and not overwrite:
         return {
             "status": "skipped_target_exists",
@@ -536,8 +664,12 @@ def export_probe_results_from_tree(
             "target_exists": True,
         }
     result_tree = model.ResultTree
-    exportable_items = [item for item in likely_local_huygens_items(items, case.get("nearfield_monitor", "")) if is_result_tree_item(item)]
-    parsed_items = [parsed for item in exportable_items if (parsed := parse_probe_result_item(item))]
+    exportable_items = [
+        item
+        for item in likely_local_huygens_items(items, case.get("nearfield_monitor", ""), field_kind)
+        if is_result_tree_item(item)
+    ]
+    parsed_items = [parsed for item in exportable_items if (parsed := parse_probe_result_item(item, field_kind))]
     item_map_rows: list[dict[str, Any]] = []
     values: dict[tuple[int, str], dict[str, Any]] = {}
     missing: list[str] = []
@@ -545,7 +677,7 @@ def export_probe_results_from_tree(
 
     for probe in probe_rows:
         sensor_id = as_int(probe.get("sensor_id"))
-        for component in COMPONENTS:
+        for component in components:
             map_row: dict[str, Any] = {
                 "sensor_id": sensor_id,
                 "node_id": as_int(probe.get("node_id")),
@@ -587,8 +719,8 @@ def export_probe_results_from_tree(
                 real = as_float(result_obj.GetYRe(index))
                 imag = as_float(result_obj.GetYIm(index))
                 values[(sensor_id, component)] = {
-                    "e_real": real,
-                    "e_imag": imag,
+                    real_column: real,
+                    imag_column: imag,
                     "cst_probe_item": item["item"],
                     "result_id": chosen_result_id,
                 }
@@ -602,8 +734,8 @@ def export_probe_results_from_tree(
                         "target_frequency_ghz": selected_frequency.get("target_frequency_ghz", ""),
                         "selected_frequency_ghz": selected_frequency.get("selected_frequency_ghz", ""),
                         "frequency_error_ghz": selected_frequency.get("frequency_error_ghz", ""),
-                        "e_real": f"{real:.12e}",
-                        "e_imag": f"{imag:.12e}",
+                        real_column: f"{real:.12e}",
+                        imag_column: f"{imag:.12e}",
                     }
                 )
             except Exception as exc:  # noqa: BLE001 - CST result access can fail per item.
@@ -635,16 +767,18 @@ def export_probe_results_from_tree(
             "target_frequency_ghz",
             "selected_frequency_ghz",
             "frequency_error_ghz",
-            "e_real",
-            "e_imag",
+            real_column,
+            imag_column,
             "error",
         ],
     )
 
-    expected_values = len(probe_rows) * len(COMPONENTS)
+    expected_values = len(probe_rows) * len(components)
     if len(values) != expected_values:
         return {
             "status": "export_incomplete",
+            "field_kind": field_kind,
+            "field_label": spec["label"],
             "target_export": rel(target_export),
             "parsed_probe_result_items": len(parsed_items),
             "expected_values": expected_values,
@@ -655,10 +789,12 @@ def export_probe_results_from_tree(
             "frequency": selected_frequency or {},
         }
 
-    rows = contract_rows_from_values(case, project, probe_rows, values)
+    rows = contract_rows_from_values(case, project, probe_rows, values, field_kind)
     write_csv_rows(target_export, rows, contract_columns(contract_csv))
     return {
         "status": "export_complete",
+        "field_kind": field_kind,
+        "field_label": spec["label"],
         "target_export": rel(target_export),
         "target_rows": len(rows),
         "parsed_probe_result_items": len(parsed_items),
@@ -672,15 +808,18 @@ def build_readme(summary: dict[str, Any]) -> str:
     task = summary.get("task", {})
     artifacts = summary.get("artifact_summary", {})
     tree = summary.get("tree_inspection", {}).get("tree", {})
+    field_label = summary.get("field_label", "E-Field")
+    field_kind = summary.get("field_kind", "e")
     lines = [
         "# CST Mesh-Safe Huygens Result Export",
         "",
-        "Purpose: audit the local Huygens CST result package and decide whether it can be converted into the local CSV contract.",
+        f"Purpose: audit the local Huygens CST result package and decide whether `{field_label}` probe curves can be converted into the local CSV contract.",
         "",
         "## Current Status",
         "",
         f"- Controller status: `{summary.get('status')}`",
         f"- Sample: `{task.get('sample_id', '')}`",
+        f"- Field kind: `{field_kind}` / `{field_label}`",
         f"- Target CSV: `{task.get('target_export_path', '')}`",
         f"- Target CSV exists: `{task.get('target_export_exists', False)}`",
         f"- Expected contract rows: `{task.get('expected_contract_rows', 0)}`",
@@ -691,11 +830,11 @@ def build_readme(summary: dict[str, Any]) -> str:
         "",
         "## Interpretation",
         "",
-        "A `.m3d` local nearfield artifact proves CST kept a binary field result, but it is not the same thing as a parsed CSV. The algorithm pipeline should only consume `data/cst_exports/level1_meshsafe_huygens/*_local_efield.csv` after this controller reports a complete target contract.",
+        "A `.m3d` local nearfield artifact proves CST kept a binary field result, but it is not the same thing as a parsed CSV. The algorithm pipeline should only consume `data/cst_exports/level1_meshsafe_huygens/*_local_efield.csv` or `*_local_hfield.csv` after this controller reports a complete target contract.",
         "",
-        "If only binary artifacts are present, the next step is to open the short-path project in CST and export a solved local E-field table/result item, or add a CST-API path that reads the binary result through an official result accessor.",
+        f"If only binary artifacts are present, the next step is to open the short-path project in CST and expose solved local `{field_label}` table/result items, or add a CST-API path that reads the binary result through an official result accessor.",
         "",
-        "When `--attempt-export` is used, this controller reads 1D probe curves through `ResultTree.GetResultFromTreeItem(...).GetYRe/GetYIm` and writes the local Huygens CSV only after all Ex/Ey/Ez probe values are available.",
+        "When `--attempt-export` is used, this controller reads 1D probe curves through `ResultTree.GetResultFromTreeItem(...).GetYRe/GetYIm` and writes the local Huygens CSV only after all Cartesian component probe values are available.",
         "",
         "## Files",
         "",
@@ -720,22 +859,23 @@ def copy_inputs(out_dir: Path, paths: list[Path]) -> None:
 
 
 def controller_run(args: argparse.Namespace) -> int:
-    project = resolve_path(args.project)
+    project = selected_project(args)
     result_dir = project.with_suffix("")
-    out_dir = resolve_path(args.out_dir)
+    out_dir = selected_out_dir(args)
     case_csv = resolve_path(args.case_csv)
     probe_csv = resolve_path(args.probe_csv)
-    contract_csv = resolve_path(args.contract_csv)
+    contract_csv = selected_contract_csv(args)
+    spec = field_spec(args.field_kind)
     out_dir.mkdir(parents=True, exist_ok=True)
     copy_inputs(out_dir, [case_csv, probe_csv, contract_csv])
 
     case = select_case(read_csv_rows(case_csv), args.sample_id)
-    task = build_task(project, result_dir, case, probe_csv, contract_csv)
+    task = build_task(project, result_dir, case, probe_csv, contract_csv, args.field_kind, args.target_export)
     artifact_rows = inventory_artifacts(result_dir)
     artifact_summary = summarize_artifacts(artifact_rows)
     tree_summary_data: dict[str, Any] = {}
     stdout_log = out_dir / "cst_meshsafe_huygens_export_stdout.log"
-    worker_summary = out_dir / "meshsafe_huygens_tree_inspection.json"
+    worker_summary = selected_worker_summary(args)
 
     if args.inspect_tree or args.attempt_export:
         if not args.cst_python.exists():
@@ -756,6 +896,8 @@ def controller_run(args: argparse.Namespace) -> int:
                 str(case_csv),
                 "--sample-id",
                 args.sample_id,
+                "--field-kind",
+                args.field_kind,
                 "--worker-summary",
                 str(worker_summary),
                 "--probe-csv",
@@ -773,6 +915,8 @@ def controller_run(args: argparse.Namespace) -> int:
                 command.append("--overwrite")
             if args.result_id:
                 command.extend(["--result-id", args.result_id])
+            if args.target_export:
+                command.extend(["--target-export", str(resolve_path(args.target_export))])
             completed = subprocess.run(
                 command,
                 cwd=ROOT,
@@ -793,7 +937,7 @@ def controller_run(args: argparse.Namespace) -> int:
                     "stdout_tail": completed.stdout[-2000:],
                 }
             if args.attempt_export:
-                task = build_task(project, result_dir, case, probe_csv, contract_csv)
+                task = build_task(project, result_dir, case, probe_csv, contract_csv, args.field_kind, args.target_export)
 
     if not args.inspect_tree and not args.attempt_export:
         write_json(worker_summary, {"status": "not_requested"})
@@ -804,8 +948,8 @@ def controller_run(args: argparse.Namespace) -> int:
     if status == "needs_local_result_export" and artifact_summary["has_nearfield_binary"]:
         status = "binary_result_present_needs_export_adapter"
         blockers.append("nearfield .m3d is binary and not yet converted to CSV contract")
-    if args.inspect_tree and tree_summary_data.get("tree", {}).get("exportable_candidate_count", 0):
-        blockers.append("exportable CST result-tree candidates require ASCII/table export attempt")
+    if args.inspect_tree and tree_summary_data.get("tree", {}).get("parsed_probe_result_count", 0):
+        blockers.append(f"exportable CST {spec['label']} probe curves require ASCII/table export attempt")
     export_status = tree_summary_data.get("export", {}).get("status", "")
     if args.attempt_export and export_status and export_status != "export_complete":
         status = "result_tree_export_incomplete"
@@ -817,8 +961,11 @@ def controller_run(args: argparse.Namespace) -> int:
         "created_at": now_iso(),
         "status": status,
         "sample_id": args.sample_id,
+        "field_kind": args.field_kind,
+        "field_label": spec["label"],
         "project": rel(project),
         "result_dir": rel(result_dir),
+        "contract_csv": rel(contract_csv),
         "task": task,
         "artifact_summary": artifact_summary,
         "tree_inspection": tree_summary_data,
@@ -826,7 +973,7 @@ def controller_run(args: argparse.Namespace) -> int:
         "next_recommended_gate": (
             "run local Huygens CSV contract validation and Python extrapolation"
             if status == "target_contract_complete"
-            else "export or parse local Huygens E-field result into the CSV contract"
+            else f"export or parse local Huygens {spec['label']} result into the CSV contract"
         ),
     }
 
@@ -835,6 +982,8 @@ def controller_run(args: argparse.Namespace) -> int:
         [task],
         [
             "sample_id",
+            "field_kind",
+            "field_label",
             "frequency_hz",
             "project_path",
             "project_exists",
@@ -866,12 +1015,14 @@ def controller_run(args: argparse.Namespace) -> int:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Audit/export mesh-safe local Huygens CST results.")
-    parser.add_argument("--project", type=Path, default=DEFAULT_PROJECT)
+    parser.add_argument("--project", type=Path, default=None)
     parser.add_argument("--case-csv", type=Path, default=DEFAULT_CASE_CSV)
     parser.add_argument("--probe-csv", type=Path, default=DEFAULT_PROBE_CSV)
-    parser.add_argument("--contract-csv", type=Path, default=DEFAULT_CONTRACT_CSV)
+    parser.add_argument("--field-kind", choices=sorted(FIELD_SPECS), default="e")
+    parser.add_argument("--contract-csv", type=Path, default=None)
     parser.add_argument("--sample-id", default="L1_short_dipole_z_1p2G")
-    parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
+    parser.add_argument("--target-export", type=Path, default=None)
+    parser.add_argument("--out-dir", type=Path, default=None)
     parser.add_argument("--cst-python", type=Path, default=DEFAULT_CST_PYTHON)
     parser.add_argument("--inspect-tree", action="store_true")
     parser.add_argument("--attempt-export", action="store_true")
@@ -882,7 +1033,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--inspect-timeout-seconds", type=int, default=120)
     parser.add_argument("--worker-inspect-tree", action="store_true")
     parser.add_argument("--worker-attempt-export", action="store_true")
-    parser.add_argument("--worker-summary", type=Path, default=DEFAULT_OUT_DIR / "meshsafe_huygens_tree_inspection.json")
+    parser.add_argument("--worker-summary", type=Path, default=None)
     return parser.parse_args(argv)
 
 
