@@ -486,5 +486,23 @@ Tracked entries:
 | `code/prepare_cst_source_family_solver_safe_pilot.py` | Generates the one-case solver-safe workpack and ordered CST generation/solve command queue. |
 | `code/build_cst_source_family_solver_safe_status.py` | Summarizes executed ladder rows and writes dashboard-ready status outputs. |
 | `data/cst_meshsafe_huygens_source_family_solver_safe_pilot/` | Generated one-case input, probe subsets, command queue, README, and plan summary. |
-| `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/` | Current status summary, trial table, next matched H-field gate, and Markdown report; currently `source_family_solver_safe_full_efield_finished`. |
-| `outputs/g3_model_dashboard/` | Dashboard now includes `meshsafe_huygens_source_family_solver_safe_pilot = source_family_solver_safe_full_efield_finished`. |
+| `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/` | Current status summary, trial table, next matched H-field gate, and Markdown report; S45 ended at `source_family_solver_safe_full_efield_finished`. |
+| `outputs/g3_model_dashboard/` | Dashboard includes `meshsafe_huygens_source_family_solver_safe_pilot`; S46 supersedes this row with matched E/H completion. |
+
+## 2026-06-05 CST mesh-safe Huygens source-family matched E/H pilot
+
+S46 completes the matching `hfield96` long-window pilot for the same short
+x-oriented source-family case. The solver-safe status now tracks seven rows and
+reports `source_family_solver_safe_matched_eh_finished`: `efield96` finished in
+`3564.2 s`, `hfield96` finished in `3348.3 s`, and both runs wrote near-field
+and far-field artifacts. This is still a solver/export gate, not the final
+frozen-rule Huygens physics pass.
+
+Tracked entries:
+
+| File/directory | Meaning |
+|---|---|
+| `docs/stage_notes/46_g3_huygens_source_family_matched_eh_pilot.md` | S46 note covering matched 96-point E/H completion and the frozen-rule export gate. |
+| `outputs/cst_solver_trials/meshsafe_huygens_source_family_solver_safe/L1_short_dipole_x_1p2G_hfield96_solver_summary.json` | Raw `hfield96` solver summary. |
+| `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/` | Seven-row status summary, trial CSV, and Markdown report; currently `source_family_solver_safe_matched_eh_finished`. |
+| `outputs/g3_model_dashboard/` | Dashboard now makes matched E/H export and `eh_love_equivalence_minus_j96` validation the first source-family action. |

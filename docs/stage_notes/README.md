@@ -52,6 +52,7 @@
 | S43 | `43_g3_huygens_source_family_project_generation.md` | G3 Huygens independent CST source-family E/H project generation and solve/export boundary |
 | S44 | `44_g3_huygens_source_family_solver_pilot.md` | G3 Huygens independent CST source-family solver pilot timeout and solver-safe next gate |
 | S45 | `45_g3_huygens_source_family_solver_safe_pilot.md` | G3 Huygens source-family solver-safe full E-field completion and matched H-field next gate |
+| S46 | `46_g3_huygens_source_family_matched_eh_pilot.md` | G3 Huygens source-family matched 96-point E/H pilot completion and frozen-rule export gate |
 
 后续规则：
 

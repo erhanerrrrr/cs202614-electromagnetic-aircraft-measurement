@@ -4,11 +4,14 @@ This report summarizes the diagnostic ladder created for the first source-family
 
 ## Status
 
-- Stage status: `source_family_solver_safe_full_efield_finished`
-- Planned trials: `6`
-- Executed trials: `6`
-- Finished trials: `6`
+- Stage status: `source_family_solver_safe_matched_eh_finished`
+- Tracked trials: `7`
+- Solver-safe ladder trials: `6`
+- Supplemental matched-field trials: `1`
+- Executed trials: `7`
+- Finished trials: `7`
 - Timed-out trials: `0`
+- Matched E/H ready: `True`
 
 ## Trial rows
 
@@ -20,12 +23,13 @@ This report summarizes the diagnostic ladder created for the first source-family
 | 4 | `hfield24` | `hfield` | 24 | 360 | `finished` | 333.3 | 3 |  |
 | 5 | `efield48` | `efield` | 48 | 1800 | `finished` | 946.5 | 3 | yes |
 | 6 | `efield96` | `efield` | 96 | 3600 | `finished` | 3564.2 | 3 |  |
+| 7 | `hfield96` | `hfield` | 96 | 5400 | `finished` | 3348.3 | 3 |  |
 
 ## Next command
 
 All planned diagnostic rows have a trial summary.
 
-Next gate: full local E-field probe solve is now runtime-feasible on the short x case; next run a matching long-window H-field pilot for the same sample, then export matched E/H and far-field references before applying the frozen Huygens rule.
+Next gate: matched 96-point local E/H probe solves are now runtime-feasible on the short x case; next export matched local E/H CSVs and far-field references, then apply the frozen eh_love_equivalence_minus_j96 Huygens rule without retuning.
 
 ```powershell
 python code\build_cst_source_family_solver_safe_status.py

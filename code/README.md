@@ -688,22 +688,22 @@ python code\build_cst_source_family_solver_safe_status.py
 python code\build_g3_model_dashboard.py
 ```
 
-Current status: `source_family_solver_safe_full_efield_finished`.
+Current status: `source_family_solver_safe_matched_eh_finished`.
 
 - Target sample: `L1_short_dipole_x_1p2G`.
-- Planned CST diagnostic trials: `6`.
-- Executed CST diagnostic trials: `6`.
+- Tracked CST trials: `7`.
+- Executed CST trials: `7`.
 - Finished rows: `none` (`78.7 s`), `efarfield96` (`114.0 s`),
   `efield24` (`343.4 s`), `hfield24` (`333.3 s`), `efield48`
-  (`946.5 s`), and `efield96` (`3564.2 s`).
-- Next row: matching long-window `hfield96` for the same short x sample.
-- Ladder: `none -> efarfield96 -> efield24 -> hfield24 -> efield48 -> efield96`.
+  (`946.5 s`), `efield96` (`3564.2 s`), and `hfield96` (`3348.3 s`).
+- Matched E/H ready: `True`.
+- Ladder: `none -> efarfield96 -> efield24 -> hfield24 -> efield48 -> efield96 -> hfield96`.
 - Workpack: `data/cst_meshsafe_huygens_source_family_solver_safe_pilot/`.
 - Status output: `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/`.
 
 This is still not a new physics pass. It is the execution queue needed to
 determine whether the source-family timeout is caused by the base CST solve,
 far-field angular probes, or local Cartesian Huygens probe count. The completed
-full E-field row shows that the short x model is not blocked by CST itself; the
-practical gate is now long-window matched H-field export and then frozen-rule
-Huygens validation on matched E/H data.
+full E/H pilot shows that the short x model is not blocked by CST itself; the
+practical gate is now ResultTree CSV export and then frozen-rule Huygens
+validation on matched E/H data.

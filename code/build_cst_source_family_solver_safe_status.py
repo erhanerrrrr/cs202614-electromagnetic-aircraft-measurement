@@ -13,6 +13,36 @@ DEFAULT_PLAN_DIR = ROOT / "data" / "cst_meshsafe_huygens_source_family_solver_sa
 DEFAULT_OUT_DIR = ROOT / "outputs" / "cst_meshsafe_huygens_source_family_solver_safe_status"
 FINISHED_STATUSES = {"finished", "aborted_keeping_results"}
 TIMEOUT_STATUSES = {"timed_out", "controller_timeout"}
+SUPPLEMENTAL_TRIAL_ROWS = [
+    {
+        "execution_order": "7",
+        "ladder_id": "hfield96",
+        "sample_id": "L1_short_dipole_x_1p2G",
+        "probe_mode": "hfield",
+        "probe_rows": "96",
+        "timeout_seconds": "5400",
+        "summary_out": (
+            "outputs/cst_solver_trials/meshsafe_huygens_source_family_solver_safe/"
+            "L1_short_dipole_x_1p2G_hfield96_solver_summary.json"
+        ),
+        "generate_command": (
+            "python code\\run_cst_level1_required_automation.py --level1-csv "
+            "data\\cst_meshsafe_huygens_source_family_solver_safe_pilot\\solver_safe_pilot_case.csv "
+            "--probe-csv data\\cst_meshsafe_huygens_source_family_solver_safe_pilot\\solver_safe_probe_96.csv "
+            "--out-dir C:\\csttmp\\huy_sf_safe_hfield96 --probe-mode hfield --timeout-seconds 900"
+        ),
+        "solve_command": (
+            "python code\\run_cst_solver_project.py --project "
+            "C:\\csttmp\\huy_sf_safe_hfield96\\projects\\CST_L1_short_dipole_x_1p2G_meshsafe_huygens_r0p35.cst "
+            "--out-dir C:\\csttmp\\huy_sf_safe_hfield96_s --trial-name L1_short_dipole_x_1p2G_hfield96.cst "
+            "--summary-out outputs\\cst_solver_trials\\meshsafe_huygens_source_family_solver_safe\\"
+            "L1_short_dipole_x_1p2G_hfield96_solver_summary.json "
+            "--stdout-log outputs\\cst_solver_trials\\meshsafe_huygens_source_family_solver_safe\\"
+            "L1_short_dipole_x_1p2G_hfield96_stdout.log --timeout-seconds 5400 --poll-seconds 10"
+        ),
+        "gate_interpretation": "matching full local H-field pilot for the completed efield96 row",
+    }
+]
 
 
 def display_path(path: Path) -> str:
@@ -106,7 +136,16 @@ def determine_stage(plan_exists: bool, rows: list[dict[str, Any]]) -> str:
     finished = [row for row in rows if row["status"] in FINISHED_STATUSES]
     timed_out = [row for row in rows if row["status"] in TIMEOUT_STATUSES]
     full_finished = any(row["ladder_id"] == "efield96" and row["status"] in FINISHED_STATUSES for row in rows)
+    matched_hfield_finished = any(
+        row["ladder_id"] == "hfield96"
+        and row["status"] in FINISHED_STATUSES
+        and row["has_nearfield_artifact"]
+        and row["has_farfield_artifact"]
+        for row in rows
+    )
     all_run = all(row["summary_exists"] for row in rows)
+    if full_finished and matched_hfield_finished:
+        return "source_family_solver_safe_matched_eh_finished"
     if full_finished:
         return "source_family_solver_safe_full_efield_finished"
     if finished and all_run and not timed_out:
@@ -127,10 +166,13 @@ def write_markdown(path: Path, summary: dict[str, Any], rows: list[dict[str, Any
         "## Status",
         "",
         f"- Stage status: `{summary['stage_status']}`",
-        f"- Planned trials: `{summary['planned_trial_count']}`",
+        f"- Tracked trials: `{summary['planned_trial_count']}`",
+        f"- Solver-safe ladder trials: `{summary['diagnostic_planned_trial_count']}`",
+        f"- Supplemental matched-field trials: `{summary['supplemental_trial_count']}`",
         f"- Executed trials: `{summary['trial_count']}`",
         f"- Finished trials: `{summary['finished_count']}`",
         f"- Timed-out trials: `{summary['timed_out_count']}`",
+        f"- Matched E/H ready: `{summary['matched_eh_ready']}`",
         "",
         "## Trial rows",
         "",
@@ -184,7 +226,8 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
     commands_path = plan_dir / "solver_safe_pilot_commands.csv"
     plan_summary = read_json(plan_summary_path)
     plan_rows = read_csv_rows(commands_path)
-    trial_rows = [summarize_trial(row) for row in plan_rows]
+    supplemental_rows = [dict(row) for row in SUPPLEMENTAL_TRIAL_ROWS]
+    trial_rows = [summarize_trial(row) for row in plan_rows + supplemental_rows]
     stage_status = determine_stage(plan_summary_path.exists(), trial_rows)
     trial_count = sum(1 for row in trial_rows if row["summary_exists"])
     next_row = next((row for row in trial_rows if not row["summary_exists"]), None)
@@ -197,14 +240,22 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         next_generate_command = next_row["generate_command"]
         next_solve_command = next_row["solve_command"]
     else:
-        next_gate = (
-            "full local E-field probe solve is now runtime-feasible on the short x case; "
-            "next run a matching long-window H-field pilot for the same sample, then export matched E/H and far-field "
-            "references before applying the frozen Huygens rule"
-        )
+        if stage_status == "source_family_solver_safe_matched_eh_finished":
+            next_gate = (
+                "matched 96-point local E/H probe solves are now runtime-feasible on the short x case; "
+                "next export matched local E/H CSVs and far-field references, then apply the frozen "
+                "eh_love_equivalence_minus_j96 Huygens rule without retuning"
+            )
+        else:
+            next_gate = (
+                "full local E-field probe solve is now runtime-feasible on the short x case; "
+                "next run a matching long-window H-field pilot for the same sample, then export matched E/H and far-field "
+                "references before applying the frozen Huygens rule"
+            )
         next_ladder_id = ""
         next_generate_command = ""
         next_solve_command = ""
+    matched_eh_ready = stage_status == "source_family_solver_safe_matched_eh_finished"
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "stage_status": stage_status,
@@ -213,7 +264,9 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         "plan_exists": plan_summary_path.exists(),
         "target_sample_id": plan_summary.get("target_sample_id", ""),
         "full_probe_row_count": plan_summary.get("full_probe_row_count", ""),
-        "planned_trial_count": len(plan_rows),
+        "planned_trial_count": len(trial_rows),
+        "diagnostic_planned_trial_count": len(plan_rows),
+        "supplemental_trial_count": len(supplemental_rows),
         "trial_count": trial_count,
         "finished_count": sum(1 for row in trial_rows if row["status"] in FINISHED_STATUSES),
         "timed_out_count": sum(1 for row in trial_rows if row["status"] in TIMEOUT_STATUSES),
@@ -226,6 +279,7 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         "next_ladder_id": next_ladder_id,
         "next_generate_command": next_generate_command,
         "next_solve_command": next_solve_command,
+        "matched_eh_ready": matched_eh_ready,
         "trials": trial_rows,
     }
     return summary, trial_rows

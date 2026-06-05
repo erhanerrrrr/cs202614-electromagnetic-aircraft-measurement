@@ -1,0 +1,611 @@
+{
+  "created_at": "2026-06-04T17:16:06+00:00",
+  "status": "finished",
+  "real_cst_api_used": true,
+  "project": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96.cst",
+  "project_exists": true,
+  "timeout_seconds": 5400,
+  "poll_seconds": 10.0,
+  "checkpoint": "completed",
+  "tree_count_before": 139,
+  "result_tree_roots_before": [
+    "1D Results",
+    "2D/3D Results",
+    "Farfields",
+    "Tables"
+  ],
+  "result_tree_count_before": 0,
+  "farfield_items_before": [],
+  "solver_start_result": {
+    "ok": true,
+    "value": true
+  },
+  "poll_count": 334,
+  "last_poll": {
+    "elapsed_seconds": 3346.468,
+    "is_solver_running": {
+      "ok": true,
+      "value": false
+    },
+    "solver_info": {
+      "ok": false,
+      "error": "missing method get_solver_info"
+    }
+  },
+  "completed_at": "2026-06-04T18:11:55+00:00",
+  "elapsed_seconds": 3348.2969999999987,
+  "poll_log_tail": [
+    {
+      "elapsed_seconds": 3156.203,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3166.218,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3176.234,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3186.234,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3196.25,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3206.281,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3216.297,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3226.312,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3236.312,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3246.343,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3256.359,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3266.359,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3276.39,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3286.406,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3296.406,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3306.422,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3316.437,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3326.453,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3336.453,
+      "is_solver_running": {
+        "ok": true,
+        "value": true
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    },
+    {
+      "elapsed_seconds": 3346.468,
+      "is_solver_running": {
+        "ok": true,
+        "value": false
+      },
+      "solver_info": {
+        "ok": false,
+        "error": "missing method get_solver_info"
+      }
+    }
+  ],
+  "last_solver_info": {
+    "ok": false,
+    "error": "missing method get_solver_info"
+  },
+  "timeout_stop_solver": {},
+  "save_project": {
+    "ok": true,
+    "value": null
+  },
+  "tree_count_after": 1150,
+  "result_tree_roots_after": [
+    "1D Results",
+    "2D/3D Results",
+    "Farfields",
+    "Tables"
+  ],
+  "result_tree_count_after": 792,
+  "result_items_after_summary": {
+    "count": 792,
+    "category_counts": {
+      "1D Results\\Discrete Ports": 1,
+      "1D Results\\Discrete Ports\\Currents": 4,
+      "1D Results\\Discrete Ports\\Impedances": 2,
+      "1D Results\\Discrete Ports\\Voltages": 4,
+      "1D Results\\Energy": 1,
+      "1D Results\\Energy\\Energy [1]": 1,
+      "1D Results\\Port signals": 1,
+      "1D Results\\Port signals\\i1": 1,
+      "1D Results\\Power": 1,
+      "1D Results\\Power\\Excitation [1]": 2,
+      "1D Results\\Probes": 1,
+      "1D Results\\Probes\\H-Field": 770,
+      "2D/3D Results\\E-Field": 1,
+      "2D/3D Results\\E-Field\\nearfield_local_huygens_r0p35_1200MHz [1]": 1,
+      "Farfields\\farfield_1200MHz [1]": 1
+    },
+    "sample": [
+      "1D Results\\Discrete Ports",
+      "1D Results\\Discrete Ports\\Currents",
+      "1D Results\\Discrete Ports\\Currents\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Currents\\Signals",
+      "1D Results\\Discrete Ports\\Currents\\Signals\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Impedances",
+      "1D Results\\Discrete Ports\\Impedances\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Voltages",
+      "1D Results\\Discrete Ports\\Voltages\\Port 1 [1]",
+      "1D Results\\Discrete Ports\\Voltages\\Signals",
+      "1D Results\\Discrete Ports\\Voltages\\Signals\\Port 1 [1]",
+      "1D Results\\Energy",
+      "1D Results\\Energy\\Energy [1]",
+      "1D Results\\Port signals",
+      "1D Results\\Port signals\\i1",
+      "1D Results\\Power",
+      "1D Results\\Power\\Excitation [1]",
+      "1D Results\\Power\\Excitation [1]\\Power Radiated",
+      "1D Results\\Probes",
+      "1D Results\\Probes\\H-Field",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.011538 0.0490476 3.65365)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.011538 0.0490476 3.65365)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.011538 0.0490476 3.65365)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.011538 0.0490476 3.65365)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0130088 0.281327 4.20781)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0130088 0.281327 4.20781)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0130088 0.281327 4.20781)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0130088 0.281327 4.20781)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.024023 -0.308231 3.83594)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.024023 -0.308231 3.83594)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.024023 -0.308231 3.83594)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.024023 -0.308231 3.83594)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0283482 0.290446 3.80677)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0283482 0.290446 3.80677)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0283482 0.290446 3.80677)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0283482 0.290446 3.80677)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0331001 -0.255432 4.23698)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0331001 -0.255432 4.23698)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0331001 -0.255432 4.23698)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0331001 -0.255432 4.23698)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0456569 0.169842 4.3026)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0456569 0.169842 4.3026)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0456569 0.169842 4.3026)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0456569 0.169842 4.3026)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0618748 0.340119 4.05469)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0618748 0.340119 4.05469)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0618748 0.340119 4.05469)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0618748 0.340119 4.05469)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0640137 0.0586418 4.33906)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0640137 0.0586418 4.33906)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0640137 0.0586418 4.33906)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0640137 0.0586418 4.33906)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0683068 -0.225452 3.74115)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0683068 -0.225452 3.74115)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0683068 -0.225452 3.74115)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0683068 -0.225452 3.74115)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0734474 -0.342032 3.98906)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0734474 -0.342032 3.98906)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0734474 -0.342032 3.98906)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0734474 -0.342032 3.98906)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0865849 -0.166714 4.29531)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0865849 -0.166714 4.29531)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0865849 -0.166714 4.29531)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.0865849 -0.166714 4.29531)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.103643 0.319481 3.90156)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.103643 0.319481 3.90156)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.103643 0.319481 3.90156)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.103643 0.319481 3.90156)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.105286 0.219388 3.74844)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.105286 0.219388 3.74844)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.105286 0.219388 3.74844)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.105286 0.219388 3.74844)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.108243 -0.300942 4.14219)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.108243 -0.300942 4.14219)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.108243 -0.300942 4.14219)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.108243 -0.300942 4.14219)(Z) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.110336 -0.015943 3.66823)(Abs) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.110336 -0.015943 3.66823)(X) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.110336 -0.015943 3.66823)(Y) [1]",
+      "1D Results\\Probes\\H-Field\\H-Field (-0.110336 -0.015943 3.66823)(Z) [1]"
+    ],
+    "omitted_count": 712
+  },
+  "farfield_items_after": [
+    "Farfields\\farfield_1200MHz [1]"
+  ],
+  "project_size_bytes": 44294,
+  "solver_logs": {
+    "project_result_dir": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96",
+    "log_files": [
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96\\Result\\Model.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 8903,
+        "tail": [
+          "                        Calculation time for excitation:  \t0 \ts",
+          "                        Number of calculated pulse widths:\t1.00567",
+          "                        Steady state accuracy limit:      \t-40\tdB",
+          "                        Simulated number of time steps:   \t73278",
+          "                        Maximum number of time steps:     \t1457297",
+          "                        Time step width:",
+          "                           without subcycles:             \t4.065228069e-004 ns",
+          "                           used:                          \t4.065228069e-004 ns",
+          "                        CAD preparation time:             \t1      \ts",
+          "                        Matrix calculation time:          \t185 \ts",
+          "                        Solver setup time:                \t8 \ts",
+          "                        Solver loop time:                 \t3126 \ts",
+          "                        Solver post-processing time:      \t8 \ts",
+          "                                                          \t------------",
+          "                        Total solver time:                \t3328 \ts  ( = 0 h, 55 m, 28 s )",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-05 02:11:49",
+          "                        Total solver time (all cycles):      \t3328   \ts  ( = 0 h, 55 m, 28 s )",
+          "                        Solver initialization and clean-up:  \t1      \ts",
+          "                                                             \t------------",
+          "                        Total simulation time:               \t3329   \ts  ( = 0 h, 55 m, 29 s )",
+          "                      ------------------------------------------------------------------------------",
+          "2026-06-05 02:11:49   Solver finished at: 2026-06-05 02:11:49 +0800",
+          "                      ------------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96\\Result\\output.txt",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 3253,
+        "tail": [
+          "_______________________________________________________________________________________________________________________",
+          "Virtual radius setting will not be considered for the distributed discrete port 1.",
+          "_______________________________________________________________________________________________________________________",
+          "Solver Settings:",
+          "Excited discrete port: 1",
+          "[Frequency domain results normalized to default signal]",
+          "Excitation duration: 2.96212396e+001 ns",
+          "Steady state accuracy limit: -40 dB",
+          "Maximum number of time steps: 1457297",
+          "Time step width:",
+          "     without subcycles: 4.065228069e-004 ns",
+          "     used: 4.065228069e-004 ns",
+          "Number of threads used: 8",
+          "_______________________________________________________________________________________________________________________",
+          "Steady state energy criterion met, solver finished successfully.",
+          "_______________________________________________________________________________________________________________________",
+          "Balance is not available for all excitations.",
+          "_______________________________________________________________________________________________________________________",
+          "Successfully finished Secondary Quantity Evaluation.",
+          "_______________________________________________________________________________________________________________________",
+          "Successfully finished Secondary Quantity Evaluation.",
+          "_______________________________________________________________________________________________________________________",
+          "WARNING:",
+          "2 warnings occurred."
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96\\Result\\outputDS.txt",
+        "exists": false
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96\\Result\\hexmeshengine.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 457,
+        "tail": [
+          ">2026-06-05 01:16:18.00717< :  Configuring HexMeshEngine...",
+          ">2026-06-05 01:16:18.00761< :  Locals Configured.",
+          ">2026-06-05 01:16:18.00763< :  Globals Configured.",
+          ">2026-06-05 01:16:18.00763< :  Configuration Done.",
+          ">2026-06-05 01:16:18.00764< :  HexMeshEngine correctly configured.",
+          ">2026-06-05 01:16:18.00764< :  Generating Mesh Line...",
+          ">2026-06-05 01:16:18.00773< :  Done.",
+          ">2026-06-05 01:16:18.00774< :  Postprocessing...",
+          ">2026-06-05 01:16:18.00774< :  Done."
+        ]
+      },
+      {
+        "path": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96\\Result\\ml_info.log",
+        "exists": true,
+        "encoding": "utf-8-sig",
+        "size_bytes": 211,
+        "tail": [
+          "Layer Detection Run At: Fri Jun  5 01:16:18 2026",
+          "Layer Detection Version: 20180416",
+          "No Result from User Configuration (No Auto-Detection attempted).",
+          "Result from Auto-Detection.",
+          "Stack Detection Failed."
+        ]
+      }
+    ],
+    "result_jsons": {
+      "simulation_overview.json": {
+        "path": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96\\Result\\simulation_overview.json",
+        "exists": true,
+        "data": {
+          "date": "2026-06-05, 2:11:51 AM, ??????",
+          "solver_runs_and_tasks": {
+            "module_name": "standard simulation project",
+            "solver_run": {
+              "license_and_hardware_request": {
+                "in_use": true,
+                "license_type": "CST legacy token",
+                "mpi": {
+                  "consistency_check": true,
+                  "num_different_mpi_nodes": 0,
+                  "num_local_mpi_nodes": 0,
+                  "num_mpi_nodes": 0
+                },
+                "num_cpu_sockets": 1,
+                "num_dc_nodes": 0,
+                "num_gpus": 0,
+                "num_physical_cores": -1,
+                "num_threads": 1024
+              },
+              "opt_par_run_id": 0,
+              "return_code": 1,
+              "solver_hwacc_usage": {
+                "info": "gathered from solver run",
+                "mpi": {
+                  "consistency_check": true,
+                  "num_different_mpi_nodes": 0,
+                  "num_local_mpi_nodes": 0,
+                  "num_mpi_nodes": 0
+                },
+                "num_cpu_sockets": 1,
+                "num_dc_nodes": 0,
+                "num_gpus": 0,
+                "num_threads_or_physical_cores": 8
+              },
+              "solver_used": "HF Time Domain (Hex)",
+              "task_name": "solver run",
+              "time_info": {
+                "details": {
+                  "discretizer": 186,
+                  "solver": 3126
+                },
+                "run_time": 3329
+              }
+            }
+          },
+          "studio-version": "2025.2 Release from 2024-12-16 (change 1361105)",
+          "version": 1
+        }
+      },
+      "output.json": {
+        "path": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96\\Result\\output.json",
+        "exists": true,
+        "data": {
+          "messages": [
+            {
+              "message": "2026-06-05 01:16:20   current system memory usage reached 85% (14 GB)",
+              "severity": "warning"
+            },
+            {
+              "message": "2026-06-05 01:16:21   current system memory usage reached 90% (15 GB)",
+              "severity": "warning"
+            },
+            {
+              "message": "2 warnings occurred.",
+              "severity": "warning"
+            }
+          ],
+          "version": {
+            "build": "2025.2 Release from 2024-12-16 (change 1361105)",
+            "project name": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96"
+          }
+        }
+      }
+    },
+    "result_artifacts": {
+      "result_dir": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96",
+      "artifact_count": 3,
+      "suffix_counts": {
+        ".ffm": 1,
+        ".fme": 1,
+        ".m3d": 1
+      },
+      "has_farfield_artifact": true,
+      "has_nearfield_artifact": true,
+      "artifacts": [
+        {
+          "path": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96\\Result\\farfield_1200MHz_1.ffm",
+          "name": "farfield_1200MHz_1.ffm",
+          "suffix": ".ffm",
+          "size_bytes": 23003
+        },
+        {
+          "path": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96\\Result\\farfield_1200MHz_1.fme",
+          "name": "farfield_1200MHz_1.fme",
+          "suffix": ".fme",
+          "size_bytes": 57592
+        },
+        {
+          "path": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96\\Result\\nearfield_local_huygens_r0p35_1200MHz_1,1.m3d",
+          "name": "nearfield_local_huygens_r0p35_1200MHz_1,1.m3d",
+          "suffix": ".m3d",
+          "size_bytes": 204793324
+        }
+      ],
+      "omitted_count": 0
+    },
+    "error_lines": [],
+    "mesh_cell_count_billion": null,
+    "required_mpi_nodes": null,
+    "mesh_limit_detected": false,
+    "path_length_limit_detected": false,
+    "encoding_warning_detected": false,
+    "aborted_keeping_results_detected": false,
+    "solver_return_code": 1,
+    "solver_used": "HF Time Domain (Hex)",
+    "solver_run_time_seconds": 3329
+  },
+  "controller_returncode": 0,
+  "source_project": "C:\\csttmp\\huy_sf_safe_hfield96\\projects\\CST_L1_short_dipole_x_1p2G_meshsafe_huygens_r0p35.cst",
+  "trial_project": "C:\\csttmp\\huy_sf_safe_hfield96_s\\L1_short_dipole_x_1p2G_hfield96.cst",
+  "stdout_log": "outputs\\cst_solver_trials\\meshsafe_huygens_source_family_solver_safe\\L1_short_dipole_x_1p2G_hfield96_stdout.log"
+}

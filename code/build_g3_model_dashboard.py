@@ -60,6 +60,8 @@ def status_rank(status: str) -> int:
         "corr_pass_nmse_near": 1,
         "real_eh_frozen_rule_region_pass": 2,
         "rotation_covariance_pass": 2,
+        "source_family_solver_safe_matched_eh_finished": 2,
+        "source_family_solver_safe_full_efield_finished": 2,
         "source_family_solver_completed": 2,
         "source_family_projects_generated": 2,
         "source_family_workpack_ready": 3,
@@ -650,6 +652,7 @@ def build_rows() -> list[dict[str, Any]]:
     source_family_generation = read_json(source_family_generation_path)
     source_family_solver = read_json(source_family_solver_path)
     source_family_safe = read_json(source_family_safe_path)
+    safe_stage_for_workpack = str(source_family_safe.get("stage_status", "")) if source_family_safe else ""
     if source_family:
         solver_status = str(source_family_solver.get("stage_status", ""))
         if solver_status in (
@@ -675,19 +678,44 @@ def build_rows() -> list[dict[str, Any]]:
                 f"max_time_steps={source_family_solver.get('max_time_steps', 0)}; "
                 f"real_cst_api_trials={source_family_solver.get('real_cst_api_used_count', 0)}"
             )
-            source_family_interpretation = (
-                "The independent source-family gate has moved into real CST solver execution. The first pilot "
-                "started successfully and populated ResultTree probe entries, but the current time-domain setup "
-                "did not finish inside the solver timeout, so no matched local E/H CSV or far-field export is "
-                "ready for frozen-rule validation."
-            )
-            source_family_next = (
-                "Build a solver-safe pilot for the short x-oriented case before running the full 12-project queue: "
-                "reduce or verify CST time-domain settings, or switch to a validated frequency-domain/fast-path "
-                "variant, then rerun solve/export and only then evaluate the frozen Huygens rule."
-            )
-            source_family_trust = "solver_gate_not_physics_proof"
-            source_family_blocker = "current CST time-domain solver settings timed out before export"
+            if safe_stage_for_workpack == "source_family_solver_safe_matched_eh_finished":
+                source_family_interpretation = (
+                    "The original 600 s source-family solver pilot is now historical timeout evidence: it showed "
+                    "that CST could start and populate probe ResultTree entries, while the long-window solver-safe "
+                    "follow-up has since completed the matched 96-point E/H pilot for the same short x case."
+                )
+                source_family_next = (
+                    "Use the completed solver-safe E/H pilot to export matched local CSVs and far-field references, "
+                    "then evaluate the frozen Huygens rule before expanding to the rest of the source family."
+                )
+                source_family_trust = "historical_timeout_superseded_by_matched_solver_safe_pilot"
+                source_family_blocker = ""
+            elif safe_stage_for_workpack == "source_family_solver_safe_full_efield_finished":
+                source_family_interpretation = (
+                    "The original 600 s source-family solver pilot is now historical timeout evidence: it showed "
+                    "that CST could start and populate probe ResultTree entries, while the solver-safe follow-up "
+                    "has since completed the full 96-point E-field pilot."
+                )
+                source_family_next = (
+                    "Run the matching 96-point H-field long-window pilot, then export matched local E/H CSVs and "
+                    "far-field references for frozen-rule validation."
+                )
+                source_family_trust = "historical_timeout_partly_superseded_by_solver_safe_pilot"
+                source_family_blocker = "matching 96-point H-field pilot not yet complete"
+            else:
+                source_family_interpretation = (
+                    "The independent source-family gate has moved into real CST solver execution. The first pilot "
+                    "started successfully and populated ResultTree probe entries, but the current time-domain setup "
+                    "did not finish inside the solver timeout, so no matched local E/H CSV or far-field export is "
+                    "ready for frozen-rule validation."
+                )
+                source_family_next = (
+                    "Build a solver-safe pilot for the short x-oriented case before running the full 12-project queue: "
+                    "reduce or verify CST time-domain settings, or switch to a validated frequency-domain/fast-path "
+                    "variant, then rerun solve/export and only then evaluate the frozen Huygens rule."
+                )
+                source_family_trust = "solver_gate_not_physics_proof"
+                source_family_blocker = "current CST time-domain solver settings timed out before export"
         else:
             generation_status = str(source_family_generation.get("stage_status", ""))
             if generation_status in ("source_family_projects_generated", "source_family_project_generation_partial"):
@@ -759,12 +787,22 @@ def build_rows() -> list[dict[str, Any]]:
         )
         if source_family_safe:
             planned_count = int(source_family_safe.get("planned_trial_count", 0) or 0)
+            diagnostic_planned_count = int(source_family_safe.get("diagnostic_planned_trial_count", 0) or 0)
+            supplemental_count = int(source_family_safe.get("supplemental_trial_count", 0) or 0)
             trial_count = int(source_family_safe.get("trial_count", 0) or 0)
             finished_count = int(source_family_safe.get("finished_count", 0) or 0)
             timed_out_count = int(source_family_safe.get("timed_out_count", 0) or 0)
             artifact_ready_count = int(source_family_safe.get("artifact_ready_count", 0) or 0)
             safe_status = str(source_family_safe.get("stage_status", ""))
-            if trial_count:
+            if safe_status == "source_family_solver_safe_matched_eh_finished":
+                safe_trust = "matched_solver_evidence_not_huygens_proof"
+                safe_interpretation = (
+                    "The short x source-family case now has completed 96-point local E-field and H-field "
+                    "solver evidence with near-field and far-field artifacts. This resolves the earlier "
+                    "runtime gate for the pilot case, but frozen-rule validation still requires ResultTree "
+                    "CSV export and comparison against the CST far-field reference."
+                )
+            elif trial_count:
                 safe_trust = "solver_diagnostic_evidence_not_huygens_proof"
                 safe_interpretation = (
                     "The source-family timeout is now being isolated with a staged CST diagnostic ladder. "
@@ -783,7 +821,8 @@ def build_rows() -> list[dict[str, Any]]:
                     category="rerun_priority",
                     artifact="meshsafe_huygens_source_family_solver_safe_pilot",
                     scope=(
-                        f"{planned_count} planned CST diagnostic trial(s); {trial_count} executed; "
+                        f"{planned_count} tracked CST trial(s): {diagnostic_planned_count} solver-safe ladder "
+                        f"and {supplemental_count} matched-field; {trial_count} executed; "
                         f"{finished_count} finished; {timed_out_count} timed out"
                     ),
                     evidence_path=source_family_safe_path,
@@ -791,14 +830,22 @@ def build_rows() -> list[dict[str, Any]]:
                     best_setting=(
                         f"target={source_family_safe.get('target_sample_id', '')}; "
                         f"artifact_ready={artifact_ready_count}; "
-                        "ladder=none->efarfield96->efield24->hfield24->efield48->efield96"
+                        "ladder=none->efarfield96->efield24->hfield24->efield48->efield96->hfield96"
                     ),
                     status=safe_status,
                     trust_level=safe_trust,
                     sensor_count=source_family_safe.get("full_probe_row_count"),
                     interpretation=safe_interpretation,
                     next_action=str(source_family_safe.get("next_gate", "")),
-                    blocker="" if safe_status == "source_family_solver_safe_full_efield_finished" else "diagnostic ladder not yet complete",
+                    blocker=(
+                        ""
+                        if safe_status
+                        in (
+                            "source_family_solver_safe_full_efield_finished",
+                            "source_family_solver_safe_matched_eh_finished",
+                        )
+                        else "diagnostic ladder not yet complete"
+                    ),
                 )
             )
     else:
@@ -1000,39 +1047,92 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             & status["status"].isin(["source_family_solver_pilot_timed_out", "source_family_solver_partial_with_timeout"])
         ).any()
     )
-    source_family_action = (
-        "Repair the CST source-family solver pilot before running the full 12-project queue: keep the short "
-        "x-oriented case as the pilot, adjust CST time-domain settings or use a validated frequency-domain/fast-path "
-        "variant, then export local E/H probes and far-field references."
-        if source_family_solver_timed_out
-        else (
+    source_family_safe_full_efield = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_source_family_solver_safe_pilot")
+            & status["status"].eq("source_family_solver_safe_full_efield_finished")
+        ).any()
+    )
+    source_family_safe_matched_eh = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_source_family_solver_safe_pilot")
+            & status["status"].eq("source_family_solver_safe_matched_eh_finished")
+        ).any()
+    )
+    if source_family_safe_matched_eh:
+        source_family_action = (
+            "Export matched local E/H CSVs and far-field references from the completed short x 96-point E/H pilot, "
+            "then evaluate the frozen eh_love_equivalence_minus_j96 Huygens rule without retuning before expanding "
+            "to the remaining source-family cases."
+        )
+        source_family_trigger = (
+            "The short x solver-safe pilot now has completed full local E-field and H-field artifacts; "
+            "the active gate is no longer runtime repair, but matched export and frozen-rule verification."
+        )
+        source_family_blocker = ""
+    elif source_family_safe_full_efield:
+        source_family_action = (
+            "Run the matching long-window H-field pilot for the short x case, then export matched E/H and "
+            "far-field references."
+        )
+        source_family_trigger = (
+            "The full local E-field pilot completed cleanly; the remaining runtime check is the matching H-field pilot."
+        )
+        source_family_blocker = "matching 96-point H-field pilot not yet complete"
+    elif source_family_solver_timed_out:
+        source_family_action = (
+            "Repair the CST source-family solver pilot before running the full 12-project queue: keep the short "
+            "x-oriented case as the pilot, adjust CST time-domain settings or use a validated frequency-domain/fast-path "
+            "variant, then export local E/H probes and far-field references."
+        )
+        source_family_trigger = (
+            "The first real CST source-family solver pilot started and populated probe ResultTree entries, but the "
+            "current time-domain setup timed out before export; the next proof step is solver-parameter repair, not "
+            "blindly running all remaining cases."
+        )
+        source_family_blocker = "Current source-family CST time-domain solver settings timed out before export"
+    else:
+        source_family_action = (
             "Execute the CST source-family handoff in "
             "data\\cst_meshsafe_huygens_source_family_workpack\\next_source_family_commands.csv: generate E/H "
             "projects, solve the six x/y/off-axis cases, export local E/H probes, then test the frozen rule "
             "without per-source retuning."
         )
-    )
-    source_family_trigger = (
-        "The first real CST source-family solver pilot started and populated probe ResultTree entries, but the "
-        "current time-domain setup timed out before export; the next proof step is solver-parameter repair, not "
-        "blindly running all remaining cases."
-        if source_family_solver_timed_out
-        else (
-            "The frozen Huygens rule passes rotation-covariance and the source-family E/H CST projects have been generated; the next proof step is solve/export plus frozen-rule evaluation." if frozen_real_eh_needs_validation and rotation_covariance_ready and source_family_projects_generated else
-            "The frozen Huygens rule passes rotation-covariance and the source-family workpack is ready; the next proof step is running those independent CST solves." if frozen_real_eh_needs_validation and rotation_covariance_ready and source_family_workpack_ready else
-            "Mesh-safe real CST batch has a frozen real E/H candidate and the rotation-covariance gate passes; the remaining proof is independent CST source-family validation." if frozen_real_eh_needs_validation and rotation_covariance_ready else
-            "Mesh-safe real CST batch now has a frozen real E/H candidate accepted by every current Level 1 case; it still needs a physics/geometry explanation and broader source-family validation." if frozen_real_eh_needs_validation else
-            "Mesh-safe real CST batch gate now reaches strict/proxy status with real E/H currents, but the best J-scale/sign is source-dependent." if real_eh_calibration_needed else
-            "Mesh-safe real CST batch gate is region/proxy ready, but the stability gate still shows "
-            "source-dependent impedance sensitivity." if impedance_extension_needed else
-            "Mesh-safe real CST batch gate is region/proxy ready and the impedance stability gate is available."
-        )
-    )
-    source_family_blocker = (
-        "Current source-family CST time-domain solver settings timed out before export"
-        if source_family_solver_timed_out
-        else "" if meshsafe_ready and source_family_workpack_ready else "Mesh-safe batch gate or source-family workpack"
-    )
+        if frozen_real_eh_needs_validation and rotation_covariance_ready and source_family_projects_generated:
+            source_family_trigger = (
+                "The frozen Huygens rule passes rotation-covariance and the source-family E/H CST projects have "
+                "been generated; the next proof step is solve/export plus frozen-rule evaluation."
+            )
+        elif frozen_real_eh_needs_validation and rotation_covariance_ready and source_family_workpack_ready:
+            source_family_trigger = (
+                "The frozen Huygens rule passes rotation-covariance and the source-family workpack is ready; "
+                "the next proof step is running those independent CST solves."
+            )
+        elif frozen_real_eh_needs_validation and rotation_covariance_ready:
+            source_family_trigger = (
+                "Mesh-safe real CST batch has a frozen real E/H candidate and the rotation-covariance gate passes; "
+                "the remaining proof is independent CST source-family validation."
+            )
+        elif frozen_real_eh_needs_validation:
+            source_family_trigger = (
+                "Mesh-safe real CST batch now has a frozen real E/H candidate accepted by every current Level 1 case; "
+                "it still needs a physics/geometry explanation and broader source-family validation."
+            )
+        elif real_eh_calibration_needed:
+            source_family_trigger = (
+                "Mesh-safe real CST batch gate now reaches strict/proxy status with real E/H currents, but the best "
+                "J-scale/sign is source-dependent."
+            )
+        elif impedance_extension_needed:
+            source_family_trigger = (
+                "Mesh-safe real CST batch gate is region/proxy ready, but the stability gate still shows "
+                "source-dependent impedance sensitivity."
+            )
+        else:
+            source_family_trigger = (
+                "Mesh-safe real CST batch gate is region/proxy ready and the impedance stability gate is available."
+            )
+        source_family_blocker = "" if meshsafe_ready and source_family_workpack_ready else "Mesh-safe batch gate or source-family workpack"
     actions = [
         {
             "priority": 1,
@@ -1132,8 +1232,19 @@ def write_markdown(status: pd.DataFrame, actions: pd.DataFrame, summary: dict[st
             "- The frozen Huygens rule also has a rotation-covariance operator check; treat it as geometry-rule evidence, "
             "not as a substitute for independent CST source-family solves."
         )
+    source_family_safe_rows = status.loc[status["artifact"] == "meshsafe_huygens_source_family_solver_safe_pilot"]
+    if not source_family_safe_rows.empty and str(source_family_safe_rows.iloc[0].get("status", "")) == "source_family_solver_safe_matched_eh_finished":
+        lines.append(
+            "- The short x source-family solver-safe pilot now has matched 96-point local E/H artifacts; the active "
+            "CST gate is ResultTree CSV export plus frozen-rule validation, not solver-runtime repair."
+        )
+    elif not source_family_safe_rows.empty and str(source_family_safe_rows.iloc[0].get("status", "")) == "source_family_solver_safe_full_efield_finished":
+        lines.append(
+            "- The short x source-family solver-safe pilot has completed the full 96-point E-field row; the matching "
+            "long-window H-field row remains the next CST runtime check."
+        )
     source_family_rows = status.loc[status["artifact"] == "meshsafe_huygens_source_family_workpack"]
-    if not source_family_rows.empty and str(source_family_rows.iloc[0].get("status", "")) in (
+    if source_family_safe_rows.empty and not source_family_rows.empty and str(source_family_rows.iloc[0].get("status", "")) in (
         "source_family_solver_pilot_timed_out",
         "source_family_solver_partial_with_timeout",
     ):
