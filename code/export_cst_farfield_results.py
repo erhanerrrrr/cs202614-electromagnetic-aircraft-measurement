@@ -426,9 +426,14 @@ def controller_run(args: argparse.Namespace) -> int:
 
     stdout_log = resolve_path(args.stdout_log)
     stdout_log.parent.mkdir(parents=True, exist_ok=True)
+    worker_script = Path(__file__).resolve()
+    try:
+        worker_script_arg = str(worker_script.relative_to(ROOT))
+    except ValueError:
+        worker_script_arg = str(worker_script)
     command = [
         str(args.cst_python),
-        str(Path("src") / Path(__file__).name),
+        worker_script_arg,
         "--worker",
         "--project",
         str(args.project),

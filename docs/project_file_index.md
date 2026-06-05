@@ -282,6 +282,27 @@ Related entries:
 | `data/sampling_layouts/cst_meshsafe_huygens_impedance_stability/` | Stability summary, per-case eta table, H-field ResultTree readiness, and next commands. |
 | `outputs/g3_model_dashboard/g3_model_status.csv` | Dashboard row `meshsafe_huygens_impedance_stability`. |
 
+## 2026-06-05 source-family matched E/H validation index
+
+S47 closes the short x-oriented source-family pilot gate. The CST solver-safe
+projects produced matched 96-point local E/H data, the same-source far-field
+reference was exported, and the Huygens extrapolation script accepted both the
+best real E/H branch and the frozen `j96` check under the region-lobe gate.
+
+Related entries:
+
+| File/Directory | Meaning |
+|---|---|
+| `docs/stage_notes/47_g3_huygens_source_family_matched_eh_export_validation.md` | Stage note for the matched E/H ResultTree export, far-field reference export, validation metrics, and remaining boundary. |
+| `data/cst_exports/level1_meshsafe_huygens_source_family/` | Git-tracked source-family pilot CSVs: local E, local H, FarfieldPlot 13 m nearfield, and far-field reference for `L1_short_dipole_x_1p2G`. |
+| `data/sampling_layouts/cst_meshsafe_huygens_source_family_matched_eh_x/` | Huygens extrapolation result table, best far-field shape, field-quality table, and machine-readable summary. |
+| `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/solver_safe_status_summary.json` | Status script output; current stage should read `source_family_solver_safe_matched_eh_validated` after refresh. |
+| `outputs/g3_model_dashboard/g3_model_status.csv` | Dashboard row for the validated matched E/H pilot and next generalization actions. |
+
+These CSVs are small enough for GitHub and are not CST solver-cache files. They
+should stay in the repository because they anchor the next reduced-layout and
+source-family validation steps.
+
 ## 2026-06-04 CST mesh-safe Huygens H-field 工作包
 
 本轮把 H-field handoff 从“下一步想法”整理成可执行工程路径：`run_cst_level1_required_automation.py`

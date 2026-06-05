@@ -4,7 +4,7 @@
 
 当前测量面选择：半球面 2π 测点布局；`outputs/cst_templates/sensor_layout_hemisphere_for_cst.csv` 是本阶段 CST Level 1/Level 2 的唯一测点表。
 
-最新进展：Level 1 两个 required 标准源已经完成本机 CST solver-safe 求解、FarfieldPlot 线性 E-field 导出、CSV 校验、严格合并、批量重建和角域校准；角域校准最大 NMSE 约 `8.41e-5`、最小相关系数约 `0.99988`。Level 2 已完成 CST element-library 路线的 48/48 个样本导出、严格合并、识别和消融，accuracy=`1.000`。Level 2 简化结构遮挡对照中 mean shadow 约 `3.06 dB`、P95 shadow 约 `6.63 dB`、cross-domain accuracy=`1.000`；该证据用于说明结构/安装效应敏感性，不等同于 full-wave airframe scattering。本轮已生成正式报告 `submission/01_report/solution_report.docx/pdf`、答辩 `submission/02_presentation/defense_slides.pptx/pdf`、演示视频 `submission/03_video/demo_video.mp4` 和最终压缩包 `outputs/final_archive/CS-202614_submission.zip`。当前 `completion_proven=true`，zip 完整性检查通过；视频是 PowerPoint 自动计时静音版，正式报送前建议人工播放并按竞赛要求决定是否替换为带讲解版本。
+最新进展：Level 1 两个 required 标准源已经完成本机 CST solver-safe 求解、FarfieldPlot 线性 E-field 导出、CSV 校验、严格合并、批量重建和角域校准；角域校准最大 NMSE 约 `8.41e-5`、最小相关系数约 `0.99988`。G3 source-family 的短 x 源 pilot 已完成 96 点本地 E/H ResultTree 导出、同源 CST far-field reference 导出和 real/frozen E/H Huygens 区域主瓣验证；最佳 real E/H 相关系数约 `0.9966`、scaled NMSE 约 `8.18e-4`，冻结 `j96` 规则相关系数约 `0.9954`、scaled NMSE 约 `1.12e-3`。Level 2 已完成 CST element-library 路线的 48/48 个样本导出、严格合并、识别和消融，accuracy=`1.000`。Level 2 简化结构遮挡对照中 mean shadow 约 `3.06 dB`、P95 shadow 约 `6.63 dB`、cross-domain accuracy=`1.000`；该证据用于说明结构/安装效应敏感性，不等同于 full-wave airframe scattering。本轮已生成正式报告 `submission/01_report/solution_report.docx/pdf`、答辩 `submission/02_presentation/defense_slides.pptx/pdf`、演示视频 `submission/03_video/demo_video.mp4` 和最终压缩包 `outputs/final_archive/CS-202614_submission.zip`。当前 `completion_proven=true`，zip 完整性检查通过；视频是 PowerPoint 自动计时静音版，正式报送前建议人工播放并按竞赛要求决定是否替换为带讲解版本。
 
 ## 目录总览
 
@@ -89,6 +89,7 @@
 62. G5 结构化缺测验证：`code/run_cst_recognition_structured_dropout.py` 输出 `data/recognition_stress_tests/level2_structured_dropout/`，在已知扰动增强训练后测试 sensor-node dropout、polarization-pair dropout 和 60 deg azimuth-sector dropout；当前 240 行全部高于 `0.85`，最低 accuracy=`0.933`，frequency/sensor median imputation 两种策略 mean/min 均为 `1.000`。
 63. G5 仪器相关误差验证：`code/run_cst_recognition_instrument_error.py` 输出 `data/recognition_stress_tests/level2_instrument_error/`，测试全局增益漂移、传感器增益偏置、频率响应斜率、极化增益不平衡和混合幅相偏置；当前 150 行全部高于 `0.85`，最低 accuracy=`0.933`，最紧项为 `geometric_farthest_32/sensor_gain_bias_3db`。
 64. G5 仪器偏置+结构化缺测复合压力验证：`code/run_cst_recognition_compound_stress.py` 输出 `data/recognition_stress_tests/level2_compound_stress/`，把传感器增益/混合幅相/极化失衡等仪器偏置与 sensor-node、azimuth-sector、polarization-pair 缺测组合测试；当前 240 行中 zero-fill/mask 暴露低于 `0.85` 的边界，最差为 `full_grid_162/zero_fill/sensor_gain3db_sensor_node_dropout25pct`，accuracy=`0.733`；最佳总体策略为 frequency/sensor median imputation，mean accuracy 约 `0.993`、min accuracy 约 `0.867`。
+65. G3 source-family matched E/H pilot 导出验证：`code/build_cst_source_family_solver_safe_status.py` 现在识别 `source_family_solver_safe_matched_eh_validated` 状态；`data/cst_exports/level1_meshsafe_huygens_source_family/` 保存短 x 源本地 E/H 与 far-field CSV，`data/sampling_layouts/cst_meshsafe_huygens_source_family_matched_eh_x/` 保存外推验证结果，`docs/stage_notes/47_g3_huygens_source_family_matched_eh_export_validation.md` 记录证据和边界。
 
 ## 如何阅读本项目
 

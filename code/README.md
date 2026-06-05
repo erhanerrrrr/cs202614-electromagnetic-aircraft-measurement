@@ -688,7 +688,7 @@ python code\build_cst_source_family_solver_safe_status.py
 python code\build_g3_model_dashboard.py
 ```
 
-Current status: `source_family_solver_safe_matched_eh_finished`.
+Current status: `source_family_solver_safe_matched_eh_validated`.
 
 - Target sample: `L1_short_dipole_x_1p2G`.
 - Tracked CST trials: `7`.
@@ -697,13 +697,22 @@ Current status: `source_family_solver_safe_matched_eh_finished`.
   `efield24` (`343.4 s`), `hfield24` (`333.3 s`), `efield48`
   (`946.5 s`), `efield96` (`3564.2 s`), and `hfield96` (`3348.3 s`).
 - Matched E/H ready: `True`.
+- Matched E/H export ready: `True`.
+- Matched E/H Huygens validation ready: `True`.
+- Best real E/H branch: `eh_love_equivalence_minus`, `region_shape_pass`,
+  correlation about `0.9966`, scaled NMSE about `8.18e-4`, and region-lobe
+  error `0 deg`.
+- Frozen rule check: `eh_love_equivalence_minus_j96`, `region_shape_pass`,
+  correlation about `0.9954`, scaled NMSE about `1.12e-3`, and region-lobe
+  error `0 deg`.
 - Ladder: `none -> efarfield96 -> efield24 -> hfield24 -> efield48 -> efield96 -> hfield96`.
 - Workpack: `data/cst_meshsafe_huygens_source_family_solver_safe_pilot/`.
 - Status output: `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/`.
+- Exported E/H and far-field CSVs:
+  `data/cst_exports/level1_meshsafe_huygens_source_family/`.
+- Huygens validation outputs:
+  `data/sampling_layouts/cst_meshsafe_huygens_source_family_matched_eh_x/`.
 
-This is still not a new physics pass. It is the execution queue needed to
-determine whether the source-family timeout is caused by the base CST solve,
-far-field angular probes, or local Cartesian Huygens probe count. The completed
-full E/H pilot shows that the short x model is not blocked by CST itself; the
-practical gate is now ResultTree CSV export and then frozen-rule Huygens
-validation on matched E/H data.
+This closes the short x-oriented source-family pilot data gate. It is still not
+final reduced-sampling proof: the next gate is to reuse the frozen operator
+without retuning on reduced layouts and additional source-family CST cases.

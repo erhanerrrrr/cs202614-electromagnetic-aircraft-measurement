@@ -59,6 +59,8 @@ def status_rank(status: str) -> int:
         "physics_proxy_pass": 1,
         "corr_pass_nmse_near": 1,
         "real_eh_frozen_rule_region_pass": 2,
+        "source_family_solver_safe_matched_eh_validated": 1,
+        "source_family_solver_safe_matched_eh_exported": 2,
         "rotation_covariance_pass": 2,
         "source_family_solver_safe_matched_eh_finished": 2,
         "source_family_solver_safe_full_efield_finished": 2,
@@ -678,7 +680,32 @@ def build_rows() -> list[dict[str, Any]]:
                 f"max_time_steps={source_family_solver.get('max_time_steps', 0)}; "
                 f"real_cst_api_trials={source_family_solver.get('real_cst_api_used_count', 0)}"
             )
-            if safe_stage_for_workpack == "source_family_solver_safe_matched_eh_finished":
+            if safe_stage_for_workpack == "source_family_solver_safe_matched_eh_validated":
+                source_family_interpretation = (
+                    "The original 600 s source-family solver pilot is now historical timeout evidence. The "
+                    "solver-safe follow-up has completed the matched 96-point E/H pilot, exported local E/H "
+                    "CSV rows and a CST far-field reference for the short x case, and passed the real/frozen "
+                    "E/H Huygens region-shape validation."
+                )
+                source_family_next = (
+                    "Use this as the closed short x pilot gate, then expand the same frozen operator to reduced "
+                    "layouts and additional source-family cases without retuning."
+                )
+                source_family_trust = "historical_timeout_superseded_by_validated_matched_eh_pilot"
+                source_family_blocker = ""
+            elif safe_stage_for_workpack == "source_family_solver_safe_matched_eh_exported":
+                source_family_interpretation = (
+                    "The original 600 s source-family solver pilot is now historical timeout evidence. The "
+                    "solver-safe follow-up has completed matched 96-point E/H pilot solves and CSV/far-field "
+                    "exports for the short x case; the remaining gate is frozen Huygens validation."
+                )
+                source_family_next = (
+                    "Run the frozen real E/H Huygens validation on the exported short x source-family pilot, "
+                    "then update the dashboard before expanding the source family."
+                )
+                source_family_trust = "historical_timeout_superseded_by_exported_matched_eh_pilot"
+                source_family_blocker = "frozen Huygens validation not yet recorded"
+            elif safe_stage_for_workpack == "source_family_solver_safe_matched_eh_finished":
                 source_family_interpretation = (
                     "The original 600 s source-family solver pilot is now historical timeout evidence: it showed "
                     "that CST could start and populate probe ResultTree entries, while the long-window solver-safe "
@@ -794,7 +821,31 @@ def build_rows() -> list[dict[str, Any]]:
             timed_out_count = int(source_family_safe.get("timed_out_count", 0) or 0)
             artifact_ready_count = int(source_family_safe.get("artifact_ready_count", 0) or 0)
             safe_status = str(source_family_safe.get("stage_status", ""))
-            if safe_status == "source_family_solver_safe_matched_eh_finished":
+            validation_best_variant = str(source_family_safe.get("validation_best_variant", ""))
+            validation_best_status = str(source_family_safe.get("validation_best_status", ""))
+            frozen_j96_status = str(source_family_safe.get("frozen_j96_status", ""))
+            validation_corr = source_family_safe.get("validation_best_correlation", math.nan)
+            validation_nmse = source_family_safe.get("validation_best_scaled_power_nmse", math.nan)
+            validation_region_error = source_family_safe.get("validation_best_region_error_deg", math.nan)
+            validation_jaccard = source_family_safe.get("validation_best_region_jaccard", math.nan)
+            frozen_corr = source_family_safe.get("frozen_j96_correlation", math.nan)
+            frozen_nmse = source_family_safe.get("frozen_j96_scaled_power_nmse", math.nan)
+            if safe_status == "source_family_solver_safe_matched_eh_validated":
+                safe_trust = "validated_matched_eh_cst_pilot"
+                safe_interpretation = (
+                    "The short x source-family case now has completed 96-point local E/H CST solver evidence, "
+                    "ResultTree local E/H CSV exports, a CST FarfieldPlot far-field reference, and a passed "
+                    "real/frozen E/H Huygens region-shape validation. The remaining G3 work is no longer a CST "
+                    "runtime blocker; it is reduced-layout and source-family generalization."
+                )
+            elif safe_status == "source_family_solver_safe_matched_eh_exported":
+                safe_trust = "matched_eh_export_evidence_not_huygens_proof"
+                safe_interpretation = (
+                    "The short x source-family case now has completed 96-point local E/H CST solver evidence "
+                    "and matching CSV/far-field exports. Frozen-rule electromagnetic validation is the only "
+                    "remaining gate before calling the pilot closed."
+                )
+            elif safe_status == "source_family_solver_safe_matched_eh_finished":
                 safe_trust = "matched_solver_evidence_not_huygens_proof"
                 safe_interpretation = (
                     "The short x source-family case now has completed 96-point local E-field and H-field "
@@ -830,11 +881,19 @@ def build_rows() -> list[dict[str, Any]]:
                     best_setting=(
                         f"target={source_family_safe.get('target_sample_id', '')}; "
                         f"artifact_ready={artifact_ready_count}; "
-                        "ladder=none->efarfield96->efield24->hfield24->efield48->efield96->hfield96"
+                        "ladder=none->efarfield96->efield24->hfield24->efield48->efield96->hfield96; "
+                        f"validation={validation_best_variant}/{validation_best_status}; "
+                        f"frozen_j96={frozen_j96_status}; "
+                        f"corr={format_float(validation_corr)}; "
+                        f"scaled_nmse={format_float(validation_nmse)}; "
+                        f"region_jaccard={format_float(validation_jaccard)}"
                     ),
                     status=safe_status,
                     trust_level=safe_trust,
                     sensor_count=source_family_safe.get("full_probe_row_count"),
+                    min_correlation=validation_corr,
+                    max_nmse=validation_nmse,
+                    max_main_lobe_error_deg=validation_region_error,
                     interpretation=safe_interpretation,
                     next_action=str(source_family_safe.get("next_gate", "")),
                     blocker=(
@@ -843,6 +902,8 @@ def build_rows() -> list[dict[str, Any]]:
                         in (
                             "source_family_solver_safe_full_efield_finished",
                             "source_family_solver_safe_matched_eh_finished",
+                            "source_family_solver_safe_matched_eh_exported",
+                            "source_family_solver_safe_matched_eh_validated",
                         )
                         else "diagnostic ladder not yet complete"
                     ),
@@ -1053,13 +1114,46 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             & status["status"].eq("source_family_solver_safe_full_efield_finished")
         ).any()
     )
+    source_family_safe_validated = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_source_family_solver_safe_pilot")
+            & status["status"].eq("source_family_solver_safe_matched_eh_validated")
+        ).any()
+    )
+    source_family_safe_exported = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_source_family_solver_safe_pilot")
+            & status["status"].eq("source_family_solver_safe_matched_eh_exported")
+        ).any()
+    )
     source_family_safe_matched_eh = bool(
         (
             status["artifact"].eq("meshsafe_huygens_source_family_solver_safe_pilot")
             & status["status"].eq("source_family_solver_safe_matched_eh_finished")
         ).any()
     )
-    if source_family_safe_matched_eh:
+    if source_family_safe_validated:
+        source_family_action = (
+            "Use the validated short x matched E/H pilot as the closed source-family seed: run reduced-layout "
+            "subsets and additional x/y/off-axis source-family cases with the same frozen Huygens operator, without "
+            "per-case retuning."
+        )
+        source_family_trigger = (
+            "The short x solver-safe pilot now has completed matched E/H CST solves, ResultTree CSV exports, a CST "
+            "far-field reference, and real/frozen E/H region-shape validation."
+        )
+        source_family_blocker = ""
+    elif source_family_safe_exported:
+        source_family_action = (
+            "Evaluate the frozen eh_love_equivalence_minus_j96 Huygens rule on the exported short x matched E/H "
+            "pilot, then update the source-family status before expanding to reduced layouts or additional cases."
+        )
+        source_family_trigger = (
+            "The short x solver-safe pilot now has completed matched E/H CST solves and CSV/far-field exports; "
+            "the remaining pilot gate is frozen-rule validation."
+        )
+        source_family_blocker = "frozen-rule Huygens validation not yet recorded"
+    elif source_family_safe_matched_eh:
         source_family_action = (
             "Export matched local E/H CSVs and far-field references from the completed short x 96-point E/H pilot, "
             "then evaluate the frozen eh_love_equivalence_minus_j96 Huygens rule without retuning before expanding "

@@ -1,0 +1,26 @@
+{
+  "created_at": "2026-06-05T03:15:43+00:00",
+  "completed_at": "2026-06-05T03:16:05+00:00",
+  "status": "export_complete",
+  "real_cst_api_used": true,
+  "sample_id": "L1_short_dipole_x_1p2G",
+  "project": "C:\\csttmp\\huy_sf_safe_efield96_s\\L1_short_dipole_x_1p2G_efield96.cst",
+  "project_exists": true,
+  "selected_farfield_item": "Farfields\\farfield_1200MHz [1]",
+  "available_farfield_items": [
+    "Farfields\\farfield_1200MHz [1]"
+  ],
+  "frequency_hz": 1200000000,
+  "frequency_ghz": 1.2,
+  "radius_m": 13.0,
+  "probe_csv": "C:\\Users\\heh20\\Desktop\\复杂航空载体电磁辐射空域特性测量技术比赛\\outputs\\cst_operator_runbook\\cst_probe_points_hemisphere_162.csv",
+  "farfield_grid": "C:\\Users\\heh20\\Desktop\\复杂航空载体电磁辐射空域特性测量技术比赛\\outputs\\cst_operator_runbook\\cst_farfield_sampling_grid.csv",
+  "nearfield_out": "C:\\Users\\heh20\\Desktop\\复杂航空载体电磁辐射空域特性测量技术比赛\\data\\cst_exports\\level1_meshsafe_huygens_source_family\\L1_short_dipole_x_1p2G_farfieldplot_13m_nearfield.csv",
+  "farfield_out": "C:\\Users\\heh20\\Desktop\\复杂航空载体电磁辐射空域特性测量技术比赛\\data\\cst_exports\\level1_meshsafe_huygens_source_family\\L1_short_dipole_x_1p2G_farfield.csv",
+  "probe_points": 162,
+  "farfield_grid_points": 2664,
+  "nearfield_rows": 486,
+  "farfield_rows": 2664,
+  "chunk_size": 250,
+  "assumption": "Nearfield rows are farfield-derived equivalent fields at the 13 m hemisphere: Etheta/Ephi are taken from CST FarfieldPlot in linear E-field mode and converted to Ex/Ey/Ez."
+}

@@ -4,7 +4,7 @@ This report summarizes the diagnostic ladder created for the first source-family
 
 ## Status
 
-- Stage status: `source_family_solver_safe_matched_eh_finished`
+- Stage status: `source_family_solver_safe_matched_eh_validated`
 - Tracked trials: `7`
 - Solver-safe ladder trials: `6`
 - Supplemental matched-field trials: `1`
@@ -12,6 +12,16 @@ This report summarizes the diagnostic ladder created for the first source-family
 - Finished trials: `7`
 - Timed-out trials: `0`
 - Matched E/H ready: `True`
+- Matched E/H export ready: `True`
+- Matched E/H Huygens validation ready: `True`
+
+## Export and Huygens gate
+
+- E-field CSV rows: `288` (data\cst_exports\level1_meshsafe_huygens_source_family\L1_short_dipole_x_1p2G_level1_local_sphere_r0p35_local_efield.csv)
+- H-field CSV rows: `288` (data\cst_exports\level1_meshsafe_huygens_source_family\L1_short_dipole_x_1p2G_level1_local_sphere_r0p35_local_hfield.csv)
+- Far-field CSV rows: `2664` (data\cst_exports\level1_meshsafe_huygens_source_family\L1_short_dipole_x_1p2G_farfield.csv)
+- Best real E/H validation: `eh_love_equivalence_minus` / `region_shape_pass`, corr `0.9966187532119293`, scaled NMSE `0.0008179603314047596`, region error deg `0.0`, region Jaccard `0.9440809042236764`
+- Frozen j96 validation: `eh_love_equivalence_minus_j96` / `region_shape_pass`, corr `0.9953722660993981`, scaled NMSE `0.001118942244285282`, region error deg `0.0`, region Jaccard `0.9034564958283671`
 
 ## Trial rows
 
@@ -29,7 +39,7 @@ This report summarizes the diagnostic ladder created for the first source-family
 
 All planned diagnostic rows have a trial summary.
 
-Next gate: matched 96-point local E/H probe solves are now runtime-feasible on the short x case; next export matched local E/H CSVs and far-field references, then apply the frozen eh_love_equivalence_minus_j96 Huygens rule without retuning.
+Next gate: short x source-family pilot has completed matched 96-point local E/H CST solves, ResultTree CSV export, CST far-field reference export, and real/frozen E/H Huygens region-shape validation; next expand to reduced layouts and additional source-family cases without retuning the frozen operator.
 
 ```powershell
 python code\build_cst_source_family_solver_safe_status.py

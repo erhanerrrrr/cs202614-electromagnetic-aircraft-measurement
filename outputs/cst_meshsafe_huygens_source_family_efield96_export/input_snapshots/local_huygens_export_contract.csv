@@ -1,0 +1,25 @@
+﻿column_name,type,meaning
+sample_id,string,Level 1 case id.
+frequency_hz,integer,Solved monitor frequency in Hz.
+sensor_id,integer,Local Huygens probe id from level1_local_huygens_probe_points.csv.
+node_id,integer,Huygens surface node id from the source-prior CSV.
+prior_id,string,"Huygens prior id, for this workpack level1_local_sphere_r0p35."
+x_m,float,Cartesian probe x coordinate in meters.
+y_m,float,Cartesian probe y coordinate in meters.
+z_m,float,Cartesian probe z coordinate in meters.
+normal_x,float,Outward surface normal x component.
+normal_y,float,Outward surface normal y component.
+normal_z,float,Outward surface normal z component.
+tangent1_x,float,First local tangent x component.
+tangent1_y,float,First local tangent y component.
+tangent1_z,float,First local tangent z component.
+tangent2_x,float,Second local tangent x component.
+tangent2_y,float,Second local tangent y component.
+tangent2_z,float,Second local tangent z component.
+weight_m2,float,Surface quadrature weight associated with this node.
+polarization,string,"One of Ex, Ey, Ez; keep Cartesian electric fields for audit."
+e_real,float,Real part of the electric field component.
+e_imag,float,Imaginary part of the electric field component.
+cst_project,string,CST project that produced the row.
+cst_probe_item,string,CST result-tree item or probe label used for extraction.
+extraction_method,string,Use 'CST local Cartesian E-field probe on mesh-safe Huygens surface'.

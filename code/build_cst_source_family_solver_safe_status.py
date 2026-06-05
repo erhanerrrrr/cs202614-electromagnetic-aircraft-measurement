@@ -13,6 +13,12 @@ DEFAULT_PLAN_DIR = ROOT / "data" / "cst_meshsafe_huygens_source_family_solver_sa
 DEFAULT_OUT_DIR = ROOT / "outputs" / "cst_meshsafe_huygens_source_family_solver_safe_status"
 FINISHED_STATUSES = {"finished", "aborted_keeping_results"}
 TIMEOUT_STATUSES = {"timed_out", "controller_timeout"}
+TARGET_SAMPLE_ID = "L1_short_dipole_x_1p2G"
+SOURCE_FAMILY_EXPORT_DIR = ROOT / "data" / "cst_exports" / "level1_meshsafe_huygens_source_family"
+MATCHED_EH_VALIDATION_DIR = (
+    ROOT / "data" / "sampling_layouts" / "cst_meshsafe_huygens_source_family_matched_eh_x"
+)
+VALIDATION_PASS_STATUSES = {"strict_pass", "physics_proxy_pass", "region_shape_pass"}
 SUPPLEMENTAL_TRIAL_ROWS = [
     {
         "execution_order": "7",
@@ -73,6 +79,13 @@ def write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: list[str]) -> 
         writer.writerows(rows)
 
 
+def csv_row_count(path: Path) -> int:
+    if not path.exists():
+        return 0
+    with path.open("r", encoding="utf-8-sig", newline="") as handle:
+        return sum(1 for _ in csv.DictReader(handle))
+
+
 def as_float(value: Any) -> float | None:
     if value in ("", None):
         return None
@@ -94,6 +107,89 @@ def resolve_repo_path(text: str) -> Path:
     if path.is_absolute():
         return path
     return ROOT / path
+
+
+def summarize_export_validation(sample_id: str) -> dict[str, Any]:
+    efield_path = (
+        SOURCE_FAMILY_EXPORT_DIR
+        / f"{sample_id}_level1_local_sphere_r0p35_local_efield.csv"
+    )
+    hfield_path = (
+        SOURCE_FAMILY_EXPORT_DIR
+        / f"{sample_id}_level1_local_sphere_r0p35_local_hfield.csv"
+    )
+    farfield_path = SOURCE_FAMILY_EXPORT_DIR / f"{sample_id}_farfield.csv"
+    farfieldplot_nearfield_path = SOURCE_FAMILY_EXPORT_DIR / f"{sample_id}_farfieldplot_13m_nearfield.csv"
+    validation_summary_path = MATCHED_EH_VALIDATION_DIR / "meshsafe_huygens_extrapolation_summary.json"
+    validation_results_path = MATCHED_EH_VALIDATION_DIR / "meshsafe_huygens_extrapolation_results.csv"
+    field_quality_path = MATCHED_EH_VALIDATION_DIR / "meshsafe_huygens_field_quality.csv"
+    validation_summary = read_json(validation_summary_path)
+    best = validation_summary.get("best_setting", {}) if validation_summary else {}
+    if not isinstance(best, dict):
+        best = {}
+    result_rows = read_csv_rows(validation_results_path)
+    frozen_j96 = next(
+        (row for row in result_rows if row.get("variant") == "eh_love_equivalence_minus_j96"),
+        {},
+    )
+    efield_rows = csv_row_count(efield_path)
+    hfield_rows = csv_row_count(hfield_path)
+    farfield_rows = csv_row_count(farfield_path)
+    farfieldplot_nearfield_rows = csv_row_count(farfieldplot_nearfield_path)
+    export_ready = efield_rows == 288 and hfield_rows == 288 and farfield_rows > 0
+    best_status = str(best.get("status", ""))
+    frozen_status = str(frozen_j96.get("status", ""))
+    validation_ready = bool(
+        export_ready
+        and validation_summary
+        and validation_summary.get("hfield_available", False)
+        and best_status in VALIDATION_PASS_STATUSES
+        and frozen_status in VALIDATION_PASS_STATUSES
+    )
+    return {
+        "sample_id": sample_id,
+        "efield_export_path": display_path(efield_path),
+        "hfield_export_path": display_path(hfield_path),
+        "farfield_export_path": display_path(farfield_path),
+        "farfieldplot_nearfield_path": display_path(farfieldplot_nearfield_path),
+        "validation_summary_path": display_path(validation_summary_path),
+        "validation_results_path": display_path(validation_results_path),
+        "field_quality_path": display_path(field_quality_path),
+        "efield_export_exists": efield_path.exists(),
+        "hfield_export_exists": hfield_path.exists(),
+        "farfield_export_exists": farfield_path.exists(),
+        "farfieldplot_nearfield_exists": farfieldplot_nearfield_path.exists(),
+        "validation_summary_exists": validation_summary_path.exists(),
+        "validation_results_exists": validation_results_path.exists(),
+        "field_quality_exists": field_quality_path.exists(),
+        "efield_export_rows": efield_rows,
+        "hfield_export_rows": hfield_rows,
+        "farfield_export_rows": farfield_rows,
+        "farfieldplot_nearfield_rows": farfieldplot_nearfield_rows,
+        "export_ready": export_ready,
+        "validation_ready": validation_ready,
+        "validation_hfield_available": bool(validation_summary.get("hfield_available", False))
+        if validation_summary
+        else False,
+        "validation_best_variant": str(best.get("variant", "")),
+        "validation_best_status": best_status,
+        "validation_best_correlation": as_float(best.get("correlation")),
+        "validation_best_scaled_power_nmse": as_float(best.get("scaled_power_nmse")),
+        "validation_best_nmse": as_float(best.get("nmse")),
+        "validation_best_region_error_deg": as_float(best.get("main_lobe_region_error_deg")),
+        "validation_best_region_jaccard": as_float(best.get("main_lobe_region_jaccard")),
+        "validation_best_capture": as_float(best.get("reference_lobe_region_capture")),
+        "validation_best_precision": as_float(best.get("predicted_lobe_region_precision")),
+        "frozen_j96_variant": str(frozen_j96.get("variant", "")),
+        "frozen_j96_status": frozen_status,
+        "frozen_j96_correlation": as_float(frozen_j96.get("correlation")),
+        "frozen_j96_scaled_power_nmse": as_float(frozen_j96.get("scaled_power_nmse")),
+        "frozen_j96_nmse": as_float(frozen_j96.get("nmse")),
+        "frozen_j96_region_error_deg": as_float(frozen_j96.get("main_lobe_region_error_deg")),
+        "frozen_j96_region_jaccard": as_float(frozen_j96.get("main_lobe_region_jaccard")),
+        "frozen_j96_capture": as_float(frozen_j96.get("reference_lobe_region_capture")),
+        "frozen_j96_precision": as_float(frozen_j96.get("predicted_lobe_region_precision")),
+    }
 
 
 def summarize_trial(plan_row: dict[str, str]) -> dict[str, Any]:
@@ -173,6 +269,30 @@ def write_markdown(path: Path, summary: dict[str, Any], rows: list[dict[str, Any
         f"- Finished trials: `{summary['finished_count']}`",
         f"- Timed-out trials: `{summary['timed_out_count']}`",
         f"- Matched E/H ready: `{summary['matched_eh_ready']}`",
+        f"- Matched E/H export ready: `{summary['matched_eh_export_ready']}`",
+        f"- Matched E/H Huygens validation ready: `{summary['matched_eh_validation_ready']}`",
+        "",
+        "## Export and Huygens gate",
+        "",
+        f"- E-field CSV rows: `{summary['efield_export_rows']}` ({summary['efield_export_path']})",
+        f"- H-field CSV rows: `{summary['hfield_export_rows']}` ({summary['hfield_export_path']})",
+        f"- Far-field CSV rows: `{summary['farfield_export_rows']}` ({summary['farfield_export_path']})",
+        (
+            "- Best real E/H validation: "
+            f"`{summary['validation_best_variant']}` / `{summary['validation_best_status']}`, "
+            f"corr `{summary['validation_best_correlation']}`, "
+            f"scaled NMSE `{summary['validation_best_scaled_power_nmse']}`, "
+            f"region error deg `{summary['validation_best_region_error_deg']}`, "
+            f"region Jaccard `{summary['validation_best_region_jaccard']}`"
+        ),
+        (
+            "- Frozen j96 validation: "
+            f"`{summary['frozen_j96_variant']}` / `{summary['frozen_j96_status']}`, "
+            f"corr `{summary['frozen_j96_correlation']}`, "
+            f"scaled NMSE `{summary['frozen_j96_scaled_power_nmse']}`, "
+            f"region error deg `{summary['frozen_j96_region_error_deg']}`, "
+            f"region Jaccard `{summary['frozen_j96_region_jaccard']}`"
+        ),
         "",
         "## Trial rows",
         "",
@@ -229,6 +349,13 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
     supplemental_rows = [dict(row) for row in SUPPLEMENTAL_TRIAL_ROWS]
     trial_rows = [summarize_trial(row) for row in plan_rows + supplemental_rows]
     stage_status = determine_stage(plan_summary_path.exists(), trial_rows)
+    sample_id = str(plan_summary.get("target_sample_id", "")) or TARGET_SAMPLE_ID
+    export_validation = summarize_export_validation(sample_id)
+    if stage_status == "source_family_solver_safe_matched_eh_finished":
+        if export_validation["validation_ready"]:
+            stage_status = "source_family_solver_safe_matched_eh_validated"
+        elif export_validation["export_ready"]:
+            stage_status = "source_family_solver_safe_matched_eh_exported"
     trial_count = sum(1 for row in trial_rows if row["summary_exists"])
     next_row = next((row for row in trial_rows if not row["summary_exists"]), None)
     if next_row:
@@ -240,7 +367,19 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         next_generate_command = next_row["generate_command"]
         next_solve_command = next_row["solve_command"]
     else:
-        if stage_status == "source_family_solver_safe_matched_eh_finished":
+        if stage_status == "source_family_solver_safe_matched_eh_validated":
+            next_gate = (
+                "short x source-family pilot has completed matched 96-point local E/H CST solves, "
+                "ResultTree CSV export, CST far-field reference export, and real/frozen E/H Huygens "
+                "region-shape validation; next expand to reduced layouts and additional source-family "
+                "cases without retuning the frozen operator"
+            )
+        elif stage_status == "source_family_solver_safe_matched_eh_exported":
+            next_gate = (
+                "matched local E/H CSVs and the CST far-field reference are exported for the short x case; "
+                "next run the frozen Huygens validation and update the dashboard"
+            )
+        elif stage_status == "source_family_solver_safe_matched_eh_finished":
             next_gate = (
                 "matched 96-point local E/H probe solves are now runtime-feasible on the short x case; "
                 "next export matched local E/H CSVs and far-field references, then apply the frozen "
@@ -255,7 +394,11 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         next_ladder_id = ""
         next_generate_command = ""
         next_solve_command = ""
-    matched_eh_ready = stage_status == "source_family_solver_safe_matched_eh_finished"
+    matched_eh_ready = stage_status in (
+        "source_family_solver_safe_matched_eh_finished",
+        "source_family_solver_safe_matched_eh_exported",
+        "source_family_solver_safe_matched_eh_validated",
+    )
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "stage_status": stage_status,
@@ -280,6 +423,9 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         "next_generate_command": next_generate_command,
         "next_solve_command": next_solve_command,
         "matched_eh_ready": matched_eh_ready,
+        "matched_eh_export_ready": bool(export_validation["export_ready"]),
+        "matched_eh_validation_ready": bool(export_validation["validation_ready"]),
+        **export_validation,
         "trials": trial_rows,
     }
     return summary, trial_rows
