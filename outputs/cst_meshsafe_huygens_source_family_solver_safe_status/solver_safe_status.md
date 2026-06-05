@@ -4,7 +4,7 @@ This report summarizes the diagnostic ladder created for the first source-family
 
 ## Status
 
-- Stage status: `source_family_solver_safe_matched_eh_validated`
+- Stage status: `source_family_solver_safe_reduced_layout_validated`
 - Tracked trials: `7`
 - Solver-safe ladder trials: `6`
 - Supplemental matched-field trials: `1`
@@ -14,6 +14,7 @@ This report summarizes the diagnostic ladder created for the first source-family
 - Matched E/H ready: `True`
 - Matched E/H export ready: `True`
 - Matched E/H Huygens validation ready: `True`
+- Reduced-layout reconstruction ready: `True`
 
 ## Export and Huygens gate
 
@@ -22,6 +23,16 @@ This report summarizes the diagnostic ladder created for the first source-family
 - Far-field CSV rows: `2664` (data\cst_exports\level1_meshsafe_huygens_source_family\L1_short_dipole_x_1p2G_farfield.csv)
 - Best real E/H validation: `eh_love_equivalence_minus` / `region_shape_pass`, corr `0.9966187532119293`, scaled NMSE `0.0008179603314047596`, region error deg `0.0`, region Jaccard `0.9440809042236764`
 - Frozen j96 validation: `eh_love_equivalence_minus_j96` / `region_shape_pass`, corr `0.9953722660993981`, scaled NMSE `0.001118942244285282`, region error deg `0.0`, region Jaccard `0.9034564958283671`
+
+## Reduced layout reconstruction gate
+
+- Gate status: `reduced_layout_validated`
+- Result rows: `25` (data\sampling_layouts\cst_meshsafe_huygens_source_family_reduced_layout_x\reduced_layout_summary.csv)
+- Frozen accepted layouts: `13` / `25`
+- Deployable frozen accepted layouts: `9`
+- Direct-subset frozen accepted layouts: `0`
+- Smallest deployable frozen pass: `fibonacci_snap_24` / `poly_reconstruct_full96`, sensors `24`, degree `3`
+- Smallest pass metrics: corr `0.9942109460499295`, scaled NMSE `0.0014029945844148`, region Jaccard `0.9095238095238096`, E/H holdout NRMSE `0.041840717963852865` / `0.05781390926075293`
 
 ## Trial rows
 
@@ -39,7 +50,7 @@ This report summarizes the diagnostic ladder created for the first source-family
 
 All planned diagnostic rows have a trial summary.
 
-Next gate: short x source-family pilot has completed matched 96-point local E/H CST solves, ResultTree CSV export, CST far-field reference export, and real/frozen E/H Huygens region-shape validation; next expand to reduced layouts and additional source-family cases without retuning the frozen operator.
+Next gate: short x source-family pilot has completed matched 96-point local E/H CST solves, ResultTree CSV export, CST far-field reference export, frozen E/H Huygens validation, and a sparse reconstruction gate down to a deployable 24-point Fibonacci layout; next apply the same export/reconstruction/frozen-j96 chain to y-oriented and off-axis source-family cases without retuning.
 
 ```powershell
 python code\build_cst_source_family_solver_safe_status.py

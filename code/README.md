@@ -81,6 +81,7 @@ python code\run_true_nearfield_workflow_decision.py
 python code\build_true_nearfield_handoff.py
 python code\check_true_nearfield_dropzone.py
 python code\build_g3_model_dashboard.py
+python code\run_cst_meshsafe_huygens_reduced_layout.py
 python code\run_cst_impedance_stability_gate.py
 python code\compare_true_nearfield_exports.py --true-nearfield data\cst_exports\level1\all_nearfield.csv --reference-nearfield data\cst_exports\level1\all_nearfield.csv --out-dir data\cst_true_nearfield_workpack\reference_self_check
 python code\run_spherical_nf_ff_baseline.py
@@ -100,6 +101,23 @@ python code\run_cst_recognition_structured_dropout.py
 python code\run_cst_recognition_instrument_error.py
 python code\run_cst_recognition_compound_stress.py
 ```
+
+## CST source-family reduced-layout addendum
+
+`run_cst_meshsafe_huygens_reduced_layout.py` writes
+`data/sampling_layouts/cst_meshsafe_huygens_source_family_reduced_layout_x/`.
+It consumes the validated short-x source-family local E/H CST exports and the
+CST far-field reference, then tests deterministic 72/48/32/24 point local
+layouts under two modes:
+
+- `direct_subset`: diagnostic-only direct thinning of the local Huygens surface.
+- `poly_reconstruct_full96`: sparse selected E/H samples reconstruct the full
+  96-node local surface before the frozen Huygens operator is applied.
+
+Current result: direct thinning has `0` frozen passes. The reconstruction path
+has `12` frozen passes, including the geometry-only `fibonacci_snap_24` layout
+with frozen correlation about `0.9942`, scaled NMSE about `1.40e-3`, region
+Jaccard about `0.9095`, and E/H holdout NRMSE about `0.0418` / `0.0578`.
 
 ## Spherical reduced-layout addendum
 

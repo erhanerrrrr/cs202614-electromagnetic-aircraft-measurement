@@ -18,6 +18,11 @@ SOURCE_FAMILY_EXPORT_DIR = ROOT / "data" / "cst_exports" / "level1_meshsafe_huyg
 MATCHED_EH_VALIDATION_DIR = (
     ROOT / "data" / "sampling_layouts" / "cst_meshsafe_huygens_source_family_matched_eh_x"
 )
+REDUCED_LAYOUT_DIR = (
+    ROOT / "data" / "sampling_layouts" / "cst_meshsafe_huygens_source_family_reduced_layout_x"
+)
+REDUCED_LAYOUT_SUMMARY_PATH = REDUCED_LAYOUT_DIR / "reduced_layout_summary.json"
+REDUCED_LAYOUT_RESULTS_PATH = REDUCED_LAYOUT_DIR / "reduced_layout_summary.csv"
 VALIDATION_PASS_STATUSES = {"strict_pass", "physics_proxy_pass", "region_shape_pass"}
 SUPPLEMENTAL_TRIAL_ROWS = [
     {
@@ -192,6 +197,70 @@ def summarize_export_validation(sample_id: str) -> dict[str, Any]:
     }
 
 
+def summarize_reduced_layout_validation() -> dict[str, Any]:
+    summary = read_json(REDUCED_LAYOUT_SUMMARY_PATH)
+    gate = summary.get("gate", {}) if summary else {}
+    if not isinstance(gate, dict):
+        gate = {}
+    smallest = gate.get("smallest_deployable_frozen_pass", {})
+    if not isinstance(smallest, dict):
+        smallest = {}
+    status = str(gate.get("status", ""))
+    reduced_ready = bool(status == "reduced_layout_validated" and smallest)
+    return {
+        "reduced_layout_summary_path": display_path(REDUCED_LAYOUT_SUMMARY_PATH),
+        "reduced_layout_results_path": display_path(REDUCED_LAYOUT_RESULTS_PATH),
+        "reduced_layout_summary_exists": REDUCED_LAYOUT_SUMMARY_PATH.exists(),
+        "reduced_layout_results_exists": REDUCED_LAYOUT_RESULTS_PATH.exists(),
+        "reduced_layout_result_rows": csv_row_count(REDUCED_LAYOUT_RESULTS_PATH),
+        "reduced_layout_ready": reduced_ready,
+        "reduced_layout_status": status,
+        "reduced_layout_frozen_variant": str(gate.get("frozen_variant", "")),
+        "reduced_layout_layout_count": as_int(gate.get("layout_count")),
+        "reduced_layout_frozen_accepted_count": as_int(gate.get("frozen_accepted_count")),
+        "reduced_layout_deployable_frozen_accepted_count": as_int(
+            gate.get("deployable_frozen_accepted_count")
+        ),
+        "reduced_layout_direct_subset_frozen_accepted_count": as_int(
+            gate.get("direct_subset_frozen_accepted_count")
+        ),
+        "reduced_layout_reconstructed_frozen_accepted_count": as_int(
+            gate.get("reconstructed_frozen_accepted_count")
+        ),
+        "reduced_layout_smallest_layout": str(smallest.get("layout", "")),
+        "reduced_layout_smallest_mode": str(smallest.get("mode", "")),
+        "reduced_layout_smallest_method": str(smallest.get("method", "")),
+        "reduced_layout_smallest_sensor_count": as_int(smallest.get("sensor_count")),
+        "reduced_layout_smallest_reconstruction_degree": as_int(
+            smallest.get("reconstruction_degree")
+        ),
+        "reduced_layout_smallest_frozen_status": str(smallest.get("frozen_status", "")),
+        "reduced_layout_smallest_frozen_correlation": as_float(
+            smallest.get("frozen_correlation")
+        ),
+        "reduced_layout_smallest_frozen_scaled_power_nmse": as_float(
+            smallest.get("frozen_scaled_power_nmse")
+        ),
+        "reduced_layout_smallest_frozen_nmse": as_float(smallest.get("frozen_nmse")),
+        "reduced_layout_smallest_region_error_deg": as_float(
+            smallest.get("frozen_main_lobe_region_error_deg")
+        ),
+        "reduced_layout_smallest_region_jaccard": as_float(
+            smallest.get("frozen_main_lobe_region_jaccard")
+        ),
+        "reduced_layout_smallest_capture": as_float(
+            smallest.get("frozen_main_lobe_region_capture")
+        ),
+        "reduced_layout_smallest_e_holdout_nrmse": as_float(
+            smallest.get("e_reconstruction_holdout_nrmse")
+        ),
+        "reduced_layout_smallest_h_holdout_nrmse": as_float(
+            smallest.get("h_reconstruction_holdout_nrmse")
+        ),
+        "reduced_layout_command": "python code\\run_cst_meshsafe_huygens_reduced_layout.py",
+    }
+
+
 def summarize_trial(plan_row: dict[str, str]) -> dict[str, Any]:
     summary_path = resolve_repo_path(plan_row.get("summary_out", ""))
     summary = read_json(summary_path)
@@ -271,6 +340,7 @@ def write_markdown(path: Path, summary: dict[str, Any], rows: list[dict[str, Any
         f"- Matched E/H ready: `{summary['matched_eh_ready']}`",
         f"- Matched E/H export ready: `{summary['matched_eh_export_ready']}`",
         f"- Matched E/H Huygens validation ready: `{summary['matched_eh_validation_ready']}`",
+        f"- Reduced-layout reconstruction ready: `{summary['reduced_layout_ready']}`",
         "",
         "## Export and Huygens gate",
         "",
@@ -292,6 +362,34 @@ def write_markdown(path: Path, summary: dict[str, Any], rows: list[dict[str, Any
             f"scaled NMSE `{summary['frozen_j96_scaled_power_nmse']}`, "
             f"region error deg `{summary['frozen_j96_region_error_deg']}`, "
             f"region Jaccard `{summary['frozen_j96_region_jaccard']}`"
+        ),
+        "",
+        "## Reduced layout reconstruction gate",
+        "",
+        f"- Gate status: `{summary['reduced_layout_status']}`",
+        f"- Result rows: `{summary['reduced_layout_result_rows']}` ({summary['reduced_layout_results_path']})",
+        (
+            "- Frozen accepted layouts: "
+            f"`{summary['reduced_layout_frozen_accepted_count']}` / "
+            f"`{summary['reduced_layout_layout_count']}`"
+        ),
+        f"- Deployable frozen accepted layouts: `{summary['reduced_layout_deployable_frozen_accepted_count']}`",
+        f"- Direct-subset frozen accepted layouts: `{summary['reduced_layout_direct_subset_frozen_accepted_count']}`",
+        (
+            "- Smallest deployable frozen pass: "
+            f"`{summary['reduced_layout_smallest_layout']}` / "
+            f"`{summary['reduced_layout_smallest_mode']}`, "
+            f"sensors `{summary['reduced_layout_smallest_sensor_count']}`, "
+            f"degree `{summary['reduced_layout_smallest_reconstruction_degree']}`"
+        ),
+        (
+            "- Smallest pass metrics: "
+            f"corr `{summary['reduced_layout_smallest_frozen_correlation']}`, "
+            f"scaled NMSE `{summary['reduced_layout_smallest_frozen_scaled_power_nmse']}`, "
+            f"region Jaccard `{summary['reduced_layout_smallest_region_jaccard']}`, "
+            f"E/H holdout NRMSE "
+            f"`{summary['reduced_layout_smallest_e_holdout_nrmse']}` / "
+            f"`{summary['reduced_layout_smallest_h_holdout_nrmse']}`"
         ),
         "",
         "## Trial rows",
@@ -351,11 +449,17 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
     stage_status = determine_stage(plan_summary_path.exists(), trial_rows)
     sample_id = str(plan_summary.get("target_sample_id", "")) or TARGET_SAMPLE_ID
     export_validation = summarize_export_validation(sample_id)
+    reduced_layout = summarize_reduced_layout_validation()
     if stage_status == "source_family_solver_safe_matched_eh_finished":
         if export_validation["validation_ready"]:
             stage_status = "source_family_solver_safe_matched_eh_validated"
         elif export_validation["export_ready"]:
             stage_status = "source_family_solver_safe_matched_eh_exported"
+    if (
+        stage_status == "source_family_solver_safe_matched_eh_validated"
+        and reduced_layout["reduced_layout_ready"]
+    ):
+        stage_status = "source_family_solver_safe_reduced_layout_validated"
     trial_count = sum(1 for row in trial_rows if row["summary_exists"])
     next_row = next((row for row in trial_rows if not row["summary_exists"]), None)
     if next_row:
@@ -367,7 +471,15 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         next_generate_command = next_row["generate_command"]
         next_solve_command = next_row["solve_command"]
     else:
-        if stage_status == "source_family_solver_safe_matched_eh_validated":
+        if stage_status == "source_family_solver_safe_reduced_layout_validated":
+            next_gate = (
+                "short x source-family pilot has completed matched 96-point local E/H CST solves, "
+                "ResultTree CSV export, CST far-field reference export, frozen E/H Huygens validation, "
+                "and a sparse reconstruction gate down to a deployable 24-point Fibonacci layout; next "
+                "apply the same export/reconstruction/frozen-j96 chain to y-oriented and off-axis "
+                "source-family cases without retuning"
+            )
+        elif stage_status == "source_family_solver_safe_matched_eh_validated":
             next_gate = (
                 "short x source-family pilot has completed matched 96-point local E/H CST solves, "
                 "ResultTree CSV export, CST far-field reference export, and real/frozen E/H Huygens "
@@ -398,6 +510,7 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         "source_family_solver_safe_matched_eh_finished",
         "source_family_solver_safe_matched_eh_exported",
         "source_family_solver_safe_matched_eh_validated",
+        "source_family_solver_safe_reduced_layout_validated",
     )
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -426,6 +539,7 @@ def build_status(args: argparse.Namespace) -> tuple[dict[str, Any], list[dict[st
         "matched_eh_export_ready": bool(export_validation["export_ready"]),
         "matched_eh_validation_ready": bool(export_validation["validation_ready"]),
         **export_validation,
+        **reduced_layout,
         "trials": trial_rows,
     }
     return summary, trial_rows
@@ -483,6 +597,7 @@ def main() -> int:
                 "out_dir": display_path(out_dir),
                 "planned_trial_count": summary["planned_trial_count"],
                 "trial_count": summary["trial_count"],
+                "reduced_layout_ready": summary["reduced_layout_ready"],
             },
             ensure_ascii=False,
             indent=2,

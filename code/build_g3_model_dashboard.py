@@ -59,7 +59,9 @@ def status_rank(status: str) -> int:
         "physics_proxy_pass": 1,
         "corr_pass_nmse_near": 1,
         "real_eh_frozen_rule_region_pass": 2,
+        "source_family_solver_safe_reduced_layout_validated": 1,
         "source_family_solver_safe_matched_eh_validated": 1,
+        "reduced_layout_validated": 1,
         "source_family_solver_safe_matched_eh_exported": 2,
         "rotation_covariance_pass": 2,
         "source_family_solver_safe_matched_eh_finished": 2,
@@ -650,6 +652,13 @@ def build_rows() -> list[dict[str, Any]]:
         / "cst_meshsafe_huygens_source_family_solver_safe_status"
         / "solver_safe_status_summary.json"
     )
+    source_family_reduced_layout_path = (
+        ROOT
+        / "data"
+        / "sampling_layouts"
+        / "cst_meshsafe_huygens_source_family_reduced_layout_x"
+        / "reduced_layout_summary.json"
+    )
     source_family = read_json(source_family_path)
     source_family_generation = read_json(source_family_generation_path)
     source_family_solver = read_json(source_family_solver_path)
@@ -680,7 +689,20 @@ def build_rows() -> list[dict[str, Any]]:
                 f"max_time_steps={source_family_solver.get('max_time_steps', 0)}; "
                 f"real_cst_api_trials={source_family_solver.get('real_cst_api_used_count', 0)}"
             )
-            if safe_stage_for_workpack == "source_family_solver_safe_matched_eh_validated":
+            if safe_stage_for_workpack == "source_family_solver_safe_reduced_layout_validated":
+                source_family_interpretation = (
+                    "The original 600 s source-family solver pilot is now historical timeout evidence. The "
+                    "solver-safe follow-up has completed the matched 96-point E/H short x pilot, exported local "
+                    "E/H and far-field references, passed the frozen E/H Huygens validation, and passed a sparse "
+                    "reconstruction gate down to a deployable 24-point Fibonacci layout."
+                )
+                source_family_next = (
+                    "Carry the same CST export, sparse reconstruction, and frozen j96 Huygens chain to the "
+                    "y-oriented and off-axis source-family cases without retuning."
+                )
+                source_family_trust = "historical_timeout_superseded_by_reduced_layout_cst_pilot"
+                source_family_blocker = ""
+            elif safe_stage_for_workpack == "source_family_solver_safe_matched_eh_validated":
                 source_family_interpretation = (
                     "The original 600 s source-family solver pilot is now historical timeout evidence. The "
                     "solver-safe follow-up has completed the matched 96-point E/H pilot, exported local E/H "
@@ -830,7 +852,15 @@ def build_rows() -> list[dict[str, Any]]:
             validation_jaccard = source_family_safe.get("validation_best_region_jaccard", math.nan)
             frozen_corr = source_family_safe.get("frozen_j96_correlation", math.nan)
             frozen_nmse = source_family_safe.get("frozen_j96_scaled_power_nmse", math.nan)
-            if safe_status == "source_family_solver_safe_matched_eh_validated":
+            if safe_status == "source_family_solver_safe_reduced_layout_validated":
+                safe_trust = "validated_reduced_layout_cst_pilot"
+                safe_interpretation = (
+                    "The short x source-family case now has completed 96-point local E/H CST solver evidence, "
+                    "ResultTree local E/H CSV exports, a CST FarfieldPlot far-field reference, a passed "
+                    "real/frozen E/H Huygens validation, and a passed reduced-layout reconstruction gate. The "
+                    "current CST work is therefore source-family generalization, not runtime repair."
+                )
+            elif safe_status == "source_family_solver_safe_matched_eh_validated":
                 safe_trust = "validated_matched_eh_cst_pilot"
                 safe_interpretation = (
                     "The short x source-family case now has completed 96-point local E/H CST solver evidence, "
@@ -904,11 +934,62 @@ def build_rows() -> list[dict[str, Any]]:
                             "source_family_solver_safe_matched_eh_finished",
                             "source_family_solver_safe_matched_eh_exported",
                             "source_family_solver_safe_matched_eh_validated",
+                            "source_family_solver_safe_reduced_layout_validated",
                         )
                         else "diagnostic ladder not yet complete"
                     ),
                 )
             )
+            if source_family_safe.get("reduced_layout_summary_exists", False):
+                rows.append(
+                    row(
+                        category="trusted_sanity",
+                        artifact="meshsafe_huygens_source_family_reduced_layout",
+                        scope=(
+                            f"{source_family_safe.get('reduced_layout_layout_count', 0)} reduced-layout rows on "
+                            "the real short x CST matched E/H pilot; "
+                            f"{source_family_safe.get('reduced_layout_deployable_frozen_accepted_count', 0)} "
+                            "deployable frozen passes"
+                        ),
+                        evidence_path=source_family_reduced_layout_path,
+                        command=str(source_family_safe.get("reduced_layout_command", "")),
+                        best_setting=(
+                            f"smallest={source_family_safe.get('reduced_layout_smallest_layout', '')}/"
+                            f"{source_family_safe.get('reduced_layout_smallest_mode', '')}; "
+                            f"sensors={source_family_safe.get('reduced_layout_smallest_sensor_count', '')}; "
+                            f"degree={source_family_safe.get('reduced_layout_smallest_reconstruction_degree', '')}; "
+                            f"direct_subset_accept="
+                            f"{source_family_safe.get('reduced_layout_direct_subset_frozen_accepted_count', 0)}; "
+                            f"reconstruct_accept="
+                            f"{source_family_safe.get('reduced_layout_reconstructed_frozen_accepted_count', 0)}"
+                        ),
+                        status=str(source_family_safe.get("reduced_layout_status", "missing")),
+                        trust_level="single_source_cst_sparse_reconstruction_gate",
+                        sensor_count=source_family_safe.get("reduced_layout_smallest_sensor_count"),
+                        min_correlation=source_family_safe.get(
+                            "reduced_layout_smallest_frozen_correlation", math.nan
+                        ),
+                        max_nmse=source_family_safe.get(
+                            "reduced_layout_smallest_frozen_scaled_power_nmse", math.nan
+                        ),
+                        max_main_lobe_error_deg=source_family_safe.get(
+                            "reduced_layout_smallest_region_error_deg", math.nan
+                        ),
+                        interpretation=(
+                            "The real short x CST E/H surface supports sparse sampling only when the selected "
+                            "24/32/48/72 probes reconstruct the full local 96-node Huygens surface before the "
+                            "frozen j96 propagation step. Direct quadrature thinning is retained as a failed "
+                            "diagnostic, so the claim is sparse measurement plus reconstruction rather than "
+                            "directly deleting surface cells."
+                        ),
+                        next_action=(
+                            "Use geometry-only 24-point Fibonacci and farthest-point layouts as the current "
+                            "candidate sampling plans, then repeat the same reconstruction/frozen-j96 gate on "
+                            "y-oriented and off-axis CST source-family exports."
+                        ),
+                        blocker="single-source evidence until additional source-family orientations are exported",
+                    )
+                )
     else:
         rows.append(
             missing_row(
@@ -1120,6 +1201,12 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             & status["status"].eq("source_family_solver_safe_matched_eh_validated")
         ).any()
     )
+    source_family_safe_reduced_validated = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_source_family_solver_safe_pilot")
+            & status["status"].eq("source_family_solver_safe_reduced_layout_validated")
+        ).any()
+    )
     source_family_safe_exported = bool(
         (
             status["artifact"].eq("meshsafe_huygens_source_family_solver_safe_pilot")
@@ -1132,7 +1219,18 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             & status["status"].eq("source_family_solver_safe_matched_eh_finished")
         ).any()
     )
-    if source_family_safe_validated:
+    if source_family_safe_reduced_validated:
+        source_family_action = (
+            "Run the same CST export, sparse reconstruction, and frozen eh_love_equivalence_minus_j96 Huygens gate "
+            "on y-oriented and off-axis source-family cases. Keep the 24-point Fibonacci layout as the current "
+            "deployment candidate, with farthest-point 24/32 layouts as robustness checks."
+        )
+        source_family_trigger = (
+            "The short x solver-safe pilot now has completed matched E/H CST solves, exports, far-field reference "
+            "validation, and a reduced-layout reconstruction pass down to 24 geometry-only probes."
+        )
+        source_family_blocker = ""
+    elif source_family_safe_validated:
         source_family_action = (
             "Use the validated short x matched E/H pilot as the closed source-family seed: run reduced-layout "
             "subsets and additional x/y/off-axis source-family cases with the same frozen Huygens operator, without "
@@ -1235,7 +1333,7 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
             "action": source_family_action,
             "trigger": source_family_trigger,
             "artifact": "data/cst_meshsafe_huygens_source_family_workpack/next_source_family_commands.csv and data/cst_exports/level1_meshsafe_huygens_source_family/*_local_[eh]field.csv",
-            "proof_to_close": "Six automation-ready source-family rows have matched local E/H exports, far-field references, and the same frozen Huygens rule remains accepted without retuning.",
+            "proof_to_close": "Six automation-ready source-family rows have matched local E/H exports, far-field references, and the same sparse reconstruction plus frozen Huygens rule remains accepted without retuning.",
             "blocked_by": source_family_blocker,
         },
         {
@@ -1283,6 +1381,12 @@ def build_next_actions(status: pd.DataFrame) -> pd.DataFrame:
 
 
 def write_markdown(status: pd.DataFrame, actions: pd.DataFrame, summary: dict[str, Any], out_dir: Path) -> None:
+    source_family_reduced_ready = bool(
+        (
+            status["artifact"].eq("meshsafe_huygens_source_family_reduced_layout")
+            & status["status"].eq("reduced_layout_validated")
+        ).any()
+    )
     lines: list[str] = [
         "# G3 Model Dashboard",
         "",
@@ -1327,7 +1431,12 @@ def write_markdown(status: pd.DataFrame, actions: pd.DataFrame, summary: dict[st
             "not as a substitute for independent CST source-family solves."
         )
     source_family_safe_rows = status.loc[status["artifact"] == "meshsafe_huygens_source_family_solver_safe_pilot"]
-    if not source_family_safe_rows.empty and str(source_family_safe_rows.iloc[0].get("status", "")) == "source_family_solver_safe_matched_eh_finished":
+    if source_family_reduced_ready:
+        lines.append(
+            "- The short-x source-family CST pilot now passes the reduced-layout reconstruction gate; the active "
+            "source-family task is y/off-axis expansion, not CST runtime repair."
+        )
+    elif not source_family_safe_rows.empty and str(source_family_safe_rows.iloc[0].get("status", "")) == "source_family_solver_safe_matched_eh_finished":
         lines.append(
             "- The short x source-family solver-safe pilot now has matched 96-point local E/H artifacts; the active "
             "CST gate is ResultTree CSV export plus frozen-rule validation, not solver-runtime repair."

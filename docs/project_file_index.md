@@ -527,3 +527,25 @@ Tracked entries:
 | `outputs/cst_solver_trials/meshsafe_huygens_source_family_solver_safe/L1_short_dipole_x_1p2G_hfield96_solver_summary.json` | Raw `hfield96` solver summary. |
 | `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/` | Seven-row status summary, trial CSV, and Markdown report; currently `source_family_solver_safe_matched_eh_finished`. |
 | `outputs/g3_model_dashboard/` | Dashboard now makes matched E/H export and `eh_love_equivalence_minus_j96` validation the first source-family action. |
+
+## 2026-06-05 CST source-family matched E/H export and reduced layout gate
+
+S47 exports the short x source-family local E/H ResultTree rows and CST
+FarfieldPlot reference, then validates the frozen E/H Huygens rule. S48 adds a
+reduced-layout reconstruction gate on the same physical CST pilot. Direct
+Huygens thinning has zero frozen passes; sparse sampling followed by full-96
+local surface reconstruction passes down to the deployable `fibonacci_snap_24`
+layout.
+
+Tracked entries:
+
+| File/directory | Meaning |
+|---|---|
+| `docs/stage_notes/47_g3_huygens_source_family_matched_eh_export_validation.md` | S47 note covering matched E/H export, far-field reference export, and frozen-rule validation. |
+| `docs/stage_notes/48_g3_huygens_source_family_reduced_layout_reconstruction.md` | S48 note covering sparse local layouts, reconstruction metrics, and the remaining source-family boundary. |
+| `code/run_cst_meshsafe_huygens_reduced_layout.py` | Builds reduced local layouts, reconstructs full-96 E/H surfaces, and reruns the frozen Huygens gate. |
+| `data/cst_exports/level1_meshsafe_huygens_source_family/` | Short x source-family local E/H and far-field CSV exports used by S47/S48. |
+| `data/sampling_layouts/cst_meshsafe_huygens_source_family_matched_eh_x/` | Matched E/H Huygens validation output for the full 96-point short x pilot. |
+| `data/sampling_layouts/cst_meshsafe_huygens_source_family_reduced_layout_x/` | Reduced-layout summary, generated sparse inputs, reconstructed full-96 inputs, and per-layout Huygens outputs. |
+| `outputs/cst_meshsafe_huygens_source_family_solver_safe_status/` | Status summary now promotes this gate to `source_family_solver_safe_reduced_layout_validated` after refresh. |
+| `outputs/g3_model_dashboard/` | Dashboard next action now shifts from reduced-layout testing to y/off-axis source-family expansion. |
